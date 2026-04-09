@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suivi Jeûne Hicham - Expert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --fasting-color: #6366f1;
+            --eating-color: #f59e0b;
+            --bg-light: #f8fafc;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            background: #e2e8f0;
+            padding: 20px 0;
+        }
+
+        .container {
+            background: white;
+            width: 90%;
+            max-width: 450px;
+            padding: 25px;
+            border-radius: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .profile-img {
+            width: 110px; height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--eating-color);
+            margin-bottom: 10px;
+        }
+
+        h1 { margin: 5px 0; font-size: 1.5rem; color: #1e293b; }
+
+        .status-badge {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .status-fasting { background: #e0e7ff; color: #4338ca; }
+        .status-eating { background: #fef3c7; color: #92400e; }
+
+        /* Timer Circle */
+        .timer-container {
+            position: relative;
+            width: 180px; height: 180px;
+            margin: 0 auto 25px;
+        }
+        .circle-svg { transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: #f1f5f9; stroke-width: 12; }
+        .circle-progress {
+            fill: none; stroke-width: 12; stroke-linecap: round;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .timer-text {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .time-left { font-size: 1.6rem; font-weight: 700; color: #1e293b; }
+
+        /* Motivation Card */
+        .motivation-card {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 25px;
+            margin-top: 10px;
+            border-left: 6px solid var(--fasting-color);
+            text-align: left;
+            animation: fadeIn 0.8s ease-in;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .mot-title { font-weight: 700; color: #1e293b; margin-bottom: 5px; display: block; }
+        .mot-text { font-size: 0.9rem; color: #475569; line-height: 1.5; }
+
+        .schedule { margin-top: 20px; font-size: 0.8rem; color: #94a3b8; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <img src="votre-photo.jpg" alt="Hicham" class="profile-img">
+    <h1>Hicham, Force & Santé</h1>
+    <div id="status-badge" class="status-badge">Analyse...</div>
+
+    <div class="timer-container">
+        <svg class="circle-svg" width="180" height="180">
+            <circle class="circle-bg" cx="90" cy="90" r="80"></circle>
+            <circle id="progress-bar" class="circle-progress" cx="90" cy="90" r="80" stroke-dasharray="502.6" stroke-dashoffset="0"></circle>
+        </svg>
+        <div class="timer-text">
+            <div id="timer-display" class="time-left">00:00:00</div>
+        </div>
+    </div>
+
+    <!-- Carte de Motivation Dynamique -->
+    <div class="motivation-card" id="motivation-card">
+        <span class="mot-title" id="mot-title">Chargement...</span>
+        <span class="mot-text" id="mot-text">Votre corps se prépare.</span>
+    </div>
+
+    <div class="schedule">
+        Fenêtre : 10h-16h Repas | 16h-10h Jeûne
+    </div>
+</div>
+
+<script>
+    function updateTracker() {
+        const now = new Date();
+        const hrs = now.getHours();
+        const mins = now.getMinutes();
+        const secs = now.getSeconds();
+        const currentSecs = (hrs * 3600) + (mins * 60) + secs;
+
+        const startEating = 10 * 3600; // 10:00
+        const endEating = 16 * 3600;   // 16:00
+        
+        const progressBar = document.getElementById('progress-bar');
+        const timerDisplay = document.getElementById('timer-display');
+        const statusBadge = document.getElementById('status-badge');
+        const motTitle = document.getElementById('mot-title');
+        const motText = document.getElementById('mot-text');
+        const motCard = document.getElementById('motivation-card');
+
+        let isEating = currentSecs >= startEating && currentSecs < endEating;
+        let timeLeft, totalDuration, progressPercent;
+
+        if (isEating) {
+            // PHASE ALIMENTATION
+            timeLeft = endEating - currentSecs;
+            totalDuration = 6 * 3600;
+            statusBadge.innerText = "🍽️ FENÊTRE D'ALIMENTATION";
+            statusBadge.className = "status-badge status-eating";
+            progressBar.style.stroke = "var(--eating-color)";
+            motCard.style.borderColor = "var(--eating-color)";
+            
+            motTitle.innerText = "Nourrissez vos muscles !";
+            motText.innerText = "Hicham, privilégiez les protéines et les fibres. C'est le moment de recharger vos batteries pour demain.";
+        } else {
+            // PHASE JEÛNE
+            statusBadge.innerText = "⏳ PÉRIODE DE JEÛNE";
+            statusBadge.className = "status-badge status-fasting";
+            progressBar.style.stroke = "var(--fasting-color)";
+            motCard.style.borderColor = "var(--fasting-color)";
+
+            if (currentSecs >= endEating) {
+                timeLeft = (24 * 3600 - currentSecs) + startEating;
+            } else {
+                timeLeft = startEating - currentSecs;
+            }
+            totalDuration = 18 * 3600;
+
+            // Logique de motivation par étapes (selon l'heure)
+            if (hrs >= 16 && hrs < 20) {
+                motTitle.innerText = "Phase 1 : Digestion (0-4h)";
+                motText.innerText = "Votre dernier repas se termine. Votre glycémie commence à se stabiliser. Buvez un grand verre d'eau !";
+            } else if (hrs >= 20 || hrs < 4) {
+                motTitle.innerText = "Phase 2 : Pic d'insuline bas (4-12h)";
+                motText.innerText = "Pendant que vous dormez, votre corps commence à puiser dans le glycogène. Votre foie se repose.";
+            } else if (hrs >= 4 && hrs < 8) {
+                motTitle.innerText = "Phase 3 : Brûlage de graisses (12-16h)";
+                motText.innerText = "Le mode 'Fat Burn' est activé ! Votre corps transforme vos réserves en énergie pure. Tenez bon !";
+            } else {
+                motTitle.innerText = "Phase 4 : Autophagie (16h+)";
+                motText.innerText = "Phase d'élite ! Votre corps répare ses cellules et élimine les déchets. Vous gagnez en clarté mentale, Hicham.";
+            }
+        }
+
+        const h = Math.floor(timeLeft / 3600);
+        const m = Math.floor((timeLeft % 3600) / 60);
+        const s = timeLeft % 60;
+        timerDisplay.innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+
+        const circumference = 502.6;
+        const offset = circumference - (timeLeft / totalDuration) * circumference;
+        progressBar.style.strokeDashoffset = offset;
+    }
+
+    setInterval(updateTracker, 1000);
+    updateTracker();
+</script>
+
+</body>
+</html>
