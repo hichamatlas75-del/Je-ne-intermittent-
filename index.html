@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jeûne Premium - Corrigé</title>
+<title>Jeûne Premium + Suivi Poids</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
@@ -67,9 +67,7 @@ circle{
     stroke-width:12;
 }
 
-.bg{
-    stroke:#1f2937;
-}
+.bg{ stroke:#1f2937; }
 
 .progress{
     stroke:var(--green);
@@ -132,6 +130,32 @@ circle{
     box-shadow:0 0 15px var(--green);
 }
 
+/* INPUT POIDS */
+input{
+    width:100%;
+    padding:10px;
+    border-radius:10px;
+    border:none;
+    margin-top:10px;
+}
+
+button{
+    width:100%;
+    padding:10px;
+    margin-top:10px;
+    border:none;
+    border-radius:10px;
+    background:var(--green);
+    color:white;
+    font-weight:bold;
+}
+
+ul{
+    font-size:12px;
+    opacity:0.8;
+    padding-left:15px;
+}
+
 </style>
 </head>
 
@@ -141,10 +165,11 @@ circle{
     <img src="votre-photo.jpg" class="avatar">
     <div>
         <b>Hicham</b><br>
-        <small>Jeûne intelligent</small>
+        <small>Jeûne + Suivi santé</small>
     </div>
 </div>
 
+<!-- TIMER -->
 <div class="timer">
 
 <svg width="300" height="300">
@@ -158,6 +183,7 @@ circle{
 
 </div>
 
+<!-- CARD METABOLIQUE -->
 <div class="card">
     <h3 id="title">Etat du corps</h3>
     <p id="desc">Suivi métabolique en temps réel</p>
@@ -171,6 +197,17 @@ circle{
     <div class="step" id="p4">✨ Autophagie</div>
 </div>
 
+<!-- MODULE POIDS / IMC -->
+<div class="card">
+    <h3>📊 Suivi poids & IMC</h3>
+
+    <input id="weightInput" type="number" placeholder="Ton poids (kg)">
+    <button onclick="addWeight()">Ajouter poids</button>
+
+    <p id="bmiText"></p>
+    <ul id="history"></ul>
+</div>
+
 <script>
 
 const circle = document.getElementById("circle");
@@ -179,9 +216,15 @@ const statusEl = document.getElementById("status");
 
 const TOTAL = 816;
 
-// 🔥 JEÛNE 10h → 16h (corrigé)
-const EAT_START = 10 * 3600;
-const EAT_END = 16 * 3600;
+// jeûne 10h → 16h
+const EAT_START = 10*3600;
+const EAT_END = 16*3600;
+
+// IMC
+const HEIGHT = 1.82;
+let weightHistory = [];
+
+/* ================= TIMER ================= */
 
 function update(){
 
@@ -220,13 +263,11 @@ function update(){
     updateTimeline(t);
 }
 
-/* =========================
-   TIMELINE CORRIGÉE
-========================= */
+/* ================= TIMELINE ================= */
 
 function updateTimeline(seconds){
 
-    const start = 16 * 3600; // début jeûne
+    const start = 16 * 3600;
 
     let elapsed;
 
@@ -254,30 +295,87 @@ function updateTimeline(seconds){
     setCard(phase);
 }
 
-/* ========================= */
+/* ================= CARD ================= */
 
 function setCard(p){
 
     if(p===1){
-        document.getElementById("title").innerText="Glycémie";
-        document.getElementById("desc").innerText="Utilisation du glucose sanguin";
+        title="Glycémie";
+        desc="Utilisation du glucose";
     }
-
     if(p===2){
-        document.getElementById("title").innerText="Insuline";
-        document.getElementById("desc").innerText="Début transition métabolique";
+        title="Insuline";
+        desc="Transition métabolique";
     }
-
     if(p===3){
-        document.getElementById("title").innerText="Graisses";
-        document.getElementById("desc").innerText="Lipolyse activée";
+        title="Graisses";
+        desc="Brûlage activé";
+    }
+    if(p===4){
+        title="Autophagie";
+        desc="Nettoyage cellulaire";
     }
 
-    if(p===4){
-        document.getElementById("title").innerText="Autophagie";
-        document.getElementById("desc").innerText="Nettoyage cellulaire profond";
+    document.getElementById("title").innerText = title;
+    document.getElementById("desc").innerText = desc;
+}
+
+/* ================= POIDS + IMC ================= */
+
+function addWeight(){
+
+    const w = parseFloat(document.getElementById("weightInput").value);
+    if(!w) return;
+
+    const bmi = (w/(HEIGHT*HEIGHT)).toFixed(1);
+
+    weightHistory.push({
+        date:new Date().toLocaleDateString(),
+        weight:w,
+        bmi:bmi
+    });
+
+    renderHistory();
+    updateBMI(w,bmi);
+    localStorage.setItem("weights",JSON.stringify(weightHistory));
+}
+
+function updateBMI(w,bmi){
+
+    let status="";
+
+    if(bmi<18.5) status="Maigreur";
+    else if(bmi<25) status="Normal";
+    else if(bmi<30) status="Surpoids";
+    else status="Obésité";
+
+    document.getElementById("bmiText").innerText =
+        `Poids: ${w}kg | IMC: ${bmi} (${status})`;
+}
+
+function renderHistory(){
+
+    const list = document.getElementById("history");
+    list.innerHTML="";
+
+    weightHistory.slice().reverse().forEach(i=>{
+        const li=document.createElement("li");
+        li.textContent=`${i.date} → ${i.weight}kg (IMC ${i.bmi})`;
+        list.appendChild(li);
+    });
+}
+
+function load(){
+    const data = localStorage.getItem("weights");
+    if(data){
+        weightHistory = JSON.parse(data);
+        renderHistory();
     }
 }
+
+load();
+
+/* ================= LOOP ================= */
 
 setInterval(update,1000);
 update();
