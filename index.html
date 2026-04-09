@@ -2,187 +2,285 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hicham - Master Jeûne 18/6</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Fastic Clone - Hicham</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --phase1: #60a5fa; --phase2: #818cf8; --phase3: #a78bfa; 
-            --phase4: #f472b6; --phase5: #fbbf24;
-            --bg-dark: #0f172a;
+            --fastic-green: #2ecc71;
+            --fastic-orange: #f39c12;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-main: #2d3436;
+            --text-sub: #636e72;
         }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
         body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-dark);
-            color: white;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             margin: 0;
             display: flex;
-            justify-content: center;
-            min-height: 100vh;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .app-container {
+        /* Header Profil */
+        .header {
             width: 100%;
-            max-width: 450px;
             padding: 20px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: white;
         }
 
-        .profile-img {
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            border: 3px solid var(--phase5);
+        .profile-pic {
+            width: 50px; height: 50px;
+            border-radius: 18px;
             object-fit: cover;
-            margin-bottom: 10px;
+            border: 2px solid var(--fastic-green);
         }
 
-        .timer-display {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin: 10px 0;
-            text-shadow: 0 0 20px rgba(255,255,255,0.2);
-        }
+        .user-info h2 { margin: 0; font-size: 1.1rem; }
+        .user-info p { margin: 0; font-size: 0.8rem; color: var(--text-sub); }
 
-        /* L'horloge SVG */
-        .clock-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 20px auto;
-        }
-
-        svg { transform: rotate(-90deg); cursor: pointer; }
-        
-        path {
-            transition: transform 0.3s, opacity 0.3s;
-            opacity: 0.8;
-        }
-        path:hover { opacity: 1; transform: scale(1.02); }
-        path.active { opacity: 1; stroke: white; stroke-width: 2px; }
-
-        /* Le point qui indique l'heure actuelle */
-        #current-time-marker {
-            fill: white;
-            stroke: var(--bg-dark);
-            stroke-width: 2;
-        }
-
-        /* Carte d'info */
-        .info-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
+        /* Main Dashboard */
+        .main-container {
+            flex: 1;
+            width: 100%;
+            max-width: 500px;
             padding: 20px;
-            margin-top: 20px;
-            border-bottom: 5px solid var(--phase5);
-            min-height: 150px;
-            transition: all 0.5s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
         }
 
-        .info-card h3 { margin-top: 0; color: var(--phase5); }
-        .info-card p { font-size: 0.95rem; line-height: 1.6; color: #cbd5e1; }
+        /* Le Timer Circulaire */
+        .timer-section {
+            position: relative;
+            width: 280px; height: 280px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+        }
 
-        .btn-reset {
-            margin-top: 15px;
-            background: transparent;
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 15px;
+        .timer-circle-svg {
+            position: absolute;
+            transform: rotate(-90deg);
+        }
+
+        .countdown-val { font-size: 3rem; font-weight: 700; color: var(--text-main); margin: 0; }
+        .countdown-label { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Phases de Jeûne (Interaction style Fastic) */
+        .phases-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 10px;
+        }
+
+        .phase-step {
+            width: 55px;
+            text-align: center;
             cursor: pointer;
-            font-size: 0.8rem;
+            transition: transform 0.2s;
         }
+
+        .phase-step:active { transform: scale(0.9); }
+
+        .step-icon {
+            width: 45px; height: 45px;
+            border-radius: 14px;
+            background: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 8px;
+            font-size: 1.2rem;
+            transition: 0.3s;
+        }
+
+        .step-label { font-size: 0.65rem; font-weight: 700; color: var(--text-sub); }
+
+        .phase-active .step-icon { background: var(--fastic-green); color: white; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); }
+        .phase-active .step-label { color: var(--fastic-green); }
+
+        /* Carte d'information */
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 24px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            border-left: 5px solid var(--fastic-green);
+        }
+
+        .info-card h3 { margin: 0 0 10px; font-size: 1rem; color: var(--fastic-green); }
+        .info-card p { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--text-sub); }
+
+        /* Navigation Basse (Style App) */
+        .nav-bar {
+            width: 100%;
+            background: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #eee;
+        }
+        .nav-item { font-size: 1.2rem; color: #ccc; }
+        .nav-item.active { color: var(--fastic-green); }
+
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <img src="votre-photo.jpg" alt="Hicham" class="profile-img">
-    <div style="font-size: 1.2rem; font-weight: 300;">Hicham, objectif 18/6</div>
-    <div id="timer" class="timer-display">00:00:00</div>
-
-    <div class="clock-container">
-        <svg viewBox="0 0 100 100" width="300" height="300">
-            <!-- Phase 1: 16h-20h (4h) -->
-            <path id="p1" d="M 50,50 L 50,5 A 45,45 0 0,1 89,27.5 Z" fill="var(--phase1)" onclick="showInfo(1)"></path>
-            <!-- Phase 2: 20h-00h (4h) -->
-            <path id="p2" d="M 50,50 L 89,27.5 A 45,45 0 0,1 89,72.5 Z" fill="var(--phase2)" onclick="showInfo(2)"></path>
-            <!-- Phase 3: 00h-06h (6h) -->
-            <path id="p3" d="M 50,50 L 89,72.5 A 45,45 0 0,1 5,50 Z" fill="var(--phase3)" onclick="showInfo(3)"></path>
-            <!-- Phase 4: 06h-10h (4h) -->
-            <path id="p4" d="M 50,50 L 5,50 A 45,45 0 0,1 27.5,11 Z" fill="var(--phase4)" onclick="showInfo(4)"></path>
-            <!-- Phase 5: 10h-16h (6h) - ALIMENTATION -->
-            <path id="p5" d="M 50,50 L 27.5,11 A 45,45 0 0,1 50,5 Z" fill="var(--phase5)" onclick="showInfo(5)"></path>
-            
-            <!-- Indicateur de l'heure actuelle -->
-            <circle id="marker" cx="50" cy="5" r="3" fill="white" />
-        </svg>
+    <div class="header">
+        <img src="votre-photo.jpg" alt="Hicham" class="profile-pic">
+        <div class="user-info">
+            <h2>Hicham</h2>
+            <p>Objectif : Santé & Longévité</p>
+        </div>
     </div>
 
-    <div class="info-card" id="info-card">
-        <h3 id="info-title">Cliquez sur une phase</h3>
-        <p id="info-text">Découvrez les secrets de votre métabolisme en touchant les segments de l'horloge.</p>
-        <button class="btn-reset" onclick="autoDetect()">Revenir à l'heure actuelle</button>
+    <div class="main-container">
+        <!-- Section Timer -->
+        <div class="timer-section">
+            <svg class="timer-circle-svg" width="280" height="280">
+                <circle cx="140" cy="140" r="130" fill="none" stroke="#f1f2f6" stroke-width="12"></circle>
+                <circle id="progress-bar" cx="140" cy="140" r="130" fill="none" stroke="#2ecc71" stroke-width="12" stroke-dasharray="816.8" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 1s linear;"></circle>
+            </svg>
+            <p id="timer-label" class="countdown-label">Temps restant</p>
+            <h1 id="countdown" class="countdown-val">00:00:00</h1>
+            <p id="status-text" style="font-size: 0.8rem; margin-top: 10px; font-weight: 600;"></p>
+        </div>
+
+        <!-- Phases Interactives -->
+        <div class="phases-row">
+            <div class="phase-step" onclick="selectPhase(1)" id="step1">
+                <div class="step-icon">🩸</div>
+                <div class="step-label">GLYCÉMIE</div>
+            </div>
+            <div class="phase-step" onclick="selectPhase(2)" id="step2">
+                <div class="step-icon">📉</div>
+                <div class="step-label">INSULINE</div>
+            </div>
+            <div class="phase-step" onclick="selectPhase(3)" id="step3">
+                <div class="step-icon">🔥</div>
+                <div class="step-label">GRAISSES</div>
+            </div>
+            <div class="phase-step" onclick="selectPhase(4)" id="step4">
+                <div class="step-icon">✨</div>
+                <div class="step-label">CELLULES</div>
+            </div>
+        </div>
+
+        <!-- Carte d'info dynamique -->
+        <div class="info-card">
+            <h3 id="phase-title">État actuel du corps</h3>
+            <p id="phase-desc">Cliquez sur une phase ci-dessus pour comprendre les bénéfices sur votre santé.</p>
+        </div>
     </div>
-</div>
+
+    <!-- Navigation Fake -->
+    <div class="nav-bar">
+        <div class="nav-item active">🔥</div>
+        <div class="nav-item">📊</div>
+        <div class="nav-item">💧</div>
+        <div class="nav-item">👤</div>
+    </div>
 
 <script>
-    const phases = {
-        1: { title: "⚡ Phase 1 : Digestion", color: "#60a5fa", text: "Hicham, votre corps traite votre dernier repas. L'insuline est active pour stocker l'énergie. Buvez de l'eau pour faciliter le transit." },
-        2: { title: "📉 Phase 2 : Baisse d'Insuline", color: "#818cf8", text: "Le taux de sucre baisse. Votre corps commence à se calmer. C'est le moment idéal pour se relaxer avant de dormir." },
-        3: { title: "🔥 Phase 3 : Mode Brûle-Graisse", color: "#a78bfa", text: "Pendant votre sommeil, le corps a épuisé le sucre et commence à brûler vos graisses pour fonctionner. Travail efficace !" },
-        4: { title: "💎 Phase 4 : Autophagie (Élite)", color: "#f472b6", text: "Hicham, c'est l'étape royale ! Vos cellules s'auto-nettoient. Votre esprit est plus clair. Le café noir ou le thé sont vos alliés ici." },
-        5: { title: "🍽️ Phase 5 : Alimentation", color: "#fbbf24", text: "Bon appétit ! Profitez de vos nutriments. C'est le moment de nourrir vos muscles et de savourer votre victoire du jour." }
+    const phaseData = {
+        1: { t: "Phase 1 : Digestion & Glycémie", d: "Votre corps traite les glucides du dernier repas. Votre glycémie commence à redescendre doucement.", icon: "🩸" },
+        2: { t: "Phase 2 : Chute de l'Insuline", d: "Après 8h, l'insuline est au plus bas. C'est le signal pour que le corps commence à chercher de l'énergie ailleurs.", icon: "📉" },
+        3: { t: "Phase 3 : Brûlage des Graisses", d: "Entre 12h et 16h de jeûne, votre corps passe en mode 'Kétose'. Vous brûlez vos réserves de gras !", icon: "🔥" },
+        4: { t: "Phase 4 : Autophagie (Nettoyage)", d: "Phase ultime (16h+). Vos cellules se régénèrent et éliminent les protéines défectueuses. Santé pure.", icon: "✨" }
     };
 
-    function showInfo(id) {
-        const card = document.getElementById('info-card');
-        document.querySelectorAll('path').forEach(p => p.classList.remove('active'));
-        document.getElementById('p'+id).classList.add('active');
-        
-        document.getElementById('info-title').innerText = phases[id].title;
-        document.getElementById('info-title').style.color = phases[id].color;
-        document.getElementById('info-text').innerText = phases[id].text;
-        card.style.borderColor = phases[id].color;
-    }
-
-    function updateClock() {
+    function updateApp() {
         const now = new Date();
         const hrs = now.getHours();
         const mins = now.getMinutes();
         const secs = now.getSeconds();
-        
-        // Timer display
-        document.getElementById('timer').innerText = 
-            `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        const currentTotalSecs = (hrs * 3600) + (mins * 60) + secs;
 
-        // Rotation du marqueur blanc sur le cercle (360 degrés / 24h)
-        const angle = ((hrs + mins/60) * 15) - 90; 
-        const radius = 45;
-        const x = 50 + radius * Math.cos(angle * Math.PI / 180);
-        const y = 50 + radius * Math.sin(angle * Math.PI / 180);
+        const startEating = 10 * 3600; // 10h
+        const endEating = 16 * 3600;   // 16h
         
-        const marker = document.getElementById('marker');
-        marker.setAttribute('cx', x);
-        marker.setAttribute('cy', y);
+        let isFasting = true;
+        let timeLeft = 0;
+        let totalWindow = 18 * 3600;
+
+        if (currentTotalSecs >= startEating && currentTotalSecs < endEating) {
+            isFasting = false;
+            timeLeft = endEating - currentTotalSecs;
+            totalWindow = 6 * 3600;
+        } else {
+            isFasting = true;
+            if (currentTotalSecs >= endEating) {
+                timeLeft = (24 * 3600 - currentTotalSecs) + startEating;
+            } else {
+                timeLeft = startEating - currentTotalSecs;
+            }
+        }
+
+        // Affichage Timer
+        const h = Math.floor(timeLeft / 3600);
+        const m = Math.floor((timeLeft % 3600) / 60);
+        const s = timeLeft % 60;
+        document.getElementById('countdown').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        
+        // Style selon l'état
+        const progressCircle = document.getElementById('progress-bar');
+        const statusText = document.getElementById('status-text');
+        
+        if (isFasting) {
+            progressCircle.style.stroke = "var(--fastic-green)";
+            statusText.innerText = "JEÛNE EN COURS";
+            statusText.style.color = "var(--fastic-green)";
+            autoSelectPhase(hrs);
+        } else {
+            progressCircle.style.stroke = "var(--fastic-orange)";
+            statusText.innerText = "FENÊTRE REPAS";
+            statusText.style.color = "var(--fastic-orange)";
+            document.getElementById('phase-title').innerText = "Bon Appétit Hicham !";
+            document.getElementById('phase-desc').innerText = "Profitez de cette fenêtre pour manger sainement. Prochain jeûne à 16:00.";
+        }
+
+        // Animation du cercle
+        const circumference = 816.8;
+        const offset = circumference - (timeLeft / totalWindow) * circumference;
+        progressCircle.style.strokeDashoffset = offset;
     }
 
-    function autoDetect() {
-        const hrs = new Date().getHours();
-        let current = 0;
-        if (hrs >= 16 && hrs < 20) current = 1;
-        else if (hrs >= 20 || hrs < 0) current = 2;
-        else if (hrs >= 0 && hrs < 6) current = 3;
-        else if (hrs >= 6 && hrs < 10) current = 4;
-        else current = 5;
-        showInfo(current);
+    function selectPhase(id) {
+        document.querySelectorAll('.phase-step').forEach(s => s.classList.remove('phase-active'));
+        document.getElementById('step'+id).classList.add('phase-active');
+        document.getElementById('phase-title').innerText = phaseData[id].t;
+        document.getElementById('phase-desc').innerText = phaseData[id].d;
     }
 
-    setInterval(updateClock, 1000);
-    updateClock();
-    autoDetect(); // Lance la détection auto au démarrage
+    function autoSelectPhase(h) {
+        // Logique simplifiée pour surligner la phase actuelle pendant le jeûne
+        if (h >= 16 && h < 20) selectPhase(1);
+        else if (h >= 20 || h < 2) selectPhase(2);
+        else if (h >= 2 && h < 7) selectPhase(3);
+        else if (h >= 7 && h < 10) selectPhase(4);
+    }
+
+    setInterval(updateApp, 1000);
+    updateApp();
 </script>
-
 </body>
 </html>
