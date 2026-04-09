@@ -1,286 +1,288 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fastic Clone - Hicham</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --fastic-green: #2ecc71;
-            --fastic-orange: #f39c12;
-            --bg-color: #f8f9fa;
-            --card-bg: #ffffff;
-            --text-main: #2d3436;
-            --text-sub: #636e72;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jeûne Premium - Hicham</title>
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-        }
+<style>
 
-        /* Header Profil */
-        .header {
-            width: 100%;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            background: white;
-        }
+:root{
+    --green:#2ecc71;
+    --orange:#f39c12;
+    --bg:#0f172a;
+}
 
-        .profile-pic {
-            width: 50px; height: 50px;
-            border-radius: 18px;
-            object-fit: cover;
-            border: 2px solid var(--fastic-green);
-        }
+*{box-sizing:border-box}
 
-        .user-info h2 { margin: 0; font-size: 1.1rem; }
-        .user-info p { margin: 0; font-size: 0.8rem; color: var(--text-sub); }
+body{
+    margin:0;
+    font-family:Inter;
+    background:linear-gradient(135deg,#0f172a,#111827);
+    color:white;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
 
-        /* Main Dashboard */
-        .main-container {
-            flex: 1;
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 25px;
-        }
+/* HEADER */
+.header{
+    width:100%;
+    padding:20px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
 
-        /* Le Timer Circulaire */
-        .timer-section {
-            position: relative;
-            width: 280px; height: 280px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.05);
-        }
+.avatar{
+    width:50px;
+    height:50px;
+    border-radius:15px;
+    border:2px solid var(--green);
+}
 
-        .timer-circle-svg {
-            position: absolute;
-            transform: rotate(-90deg);
-        }
+/* TIMER */
+.timer{
+    margin-top:10px;
+    width:300px;
+    height:300px;
+    border-radius:50%;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(20px);
+}
 
-        .countdown-val { font-size: 3rem; font-weight: 700; color: var(--text-main); margin: 0; }
-        .countdown-label { font-size: 0.9rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+svg{
+    position:absolute;
+    transform:rotate(-90deg);
+}
 
-        /* Phases de Jeûne (Interaction style Fastic) */
-        .phases-row {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            padding: 0 10px;
-        }
+circle{
+    fill:none;
+    stroke-width:12;
+}
 
-        .phase-step {
-            width: 55px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
+.bg{
+    stroke:#1f2937;
+}
 
-        .phase-step:active { transform: scale(0.9); }
+.progress{
+    stroke:var(--green);
+    stroke-linecap:round;
+    transition:0.8s;
+}
 
-        .step-icon {
-            width: 45px; height: 45px;
-            border-radius: 14px;
-            background: #eee;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 8px;
-            font-size: 1.2rem;
-            transition: 0.3s;
-        }
+.time{
+    font-size:3rem;
+    font-weight:800;
+}
 
-        .step-label { font-size: 0.65rem; font-weight: 700; color: var(--text-sub); }
+.status{
+    font-size:0.9rem;
+    opacity:0.7;
+}
 
-        .phase-active .step-icon { background: var(--fastic-green); color: white; box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3); }
-        .phase-active .step-label { color: var(--fastic-green); }
+/* CARD */
+.card{
+    margin-top:20px;
+    width:90%;
+    max-width:400px;
+    padding:20px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(20px);
+}
 
-        /* Carte d'information */
-        .info-card {
-            background: white;
-            padding: 20px;
-            border-radius: 24px;
-            width: 100%;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
-            border-left: 5px solid var(--fastic-green);
-        }
+/* TIMELINE */
+.timeline{
+    position:relative;
+    width:90%;
+    max-width:400px;
+    margin-top:25px;
+}
 
-        .info-card h3 { margin: 0 0 10px; font-size: 1rem; color: var(--fastic-green); }
-        .info-card p { margin: 0; font-size: 0.9rem; line-height: 1.5; color: var(--text-sub); }
+.line{
+    position:absolute;
+    top:20px;
+    left:0;
+    right:0;
+    height:4px;
+    background:rgba(255,255,255,0.1);
+    border-radius:10px;
+}
 
-        /* Navigation Basse (Style App) */
-        .nav-bar {
-            width: 100%;
-            background: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            border-top: 1px solid #eee;
-        }
-        .nav-item { font-size: 1.2rem; color: #ccc; }
-        .nav-item.active { color: var(--fastic-green); }
+.step{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:18px 0;
+    opacity:0.4;
+    transform:translateX(-10px);
+    transition:0.4s;
+}
 
-    </style>
+.step::before{
+    content:'';
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    background:#555;
+    transition:0.4s;
+}
+
+.step.active{
+    opacity:1;
+    transform:translateX(0);
+}
+
+.step.active::before{
+    background:var(--green);
+    box-shadow:0 0 15px var(--green);
+}
+
+</style>
 </head>
+
 <body>
 
-    <div class="header">
-        <img src="votre-photo.jpg" alt="Hicham" class="profile-pic">
-        <div class="user-info">
-            <h2>Hicham</h2>
-            <p>Objectif : Santé & Longévité</p>
-        </div>
+<div class="header">
+    <img src="votre-photo.jpg" class="avatar">
+    <div>
+        <b>Hicham</b><br>
+        <small>Jeûne intelligent</small>
     </div>
+</div>
 
-    <div class="main-container">
-        <!-- Section Timer -->
-        <div class="timer-section">
-            <svg class="timer-circle-svg" width="280" height="280">
-                <circle cx="140" cy="140" r="130" fill="none" stroke="#f1f2f6" stroke-width="12"></circle>
-                <circle id="progress-bar" cx="140" cy="140" r="130" fill="none" stroke="#2ecc71" stroke-width="12" stroke-dasharray="816.8" stroke-dashoffset="0" stroke-linecap="round" style="transition: stroke-dashoffset 1s linear;"></circle>
-            </svg>
-            <p id="timer-label" class="countdown-label">Temps restant</p>
-            <h1 id="countdown" class="countdown-val">00:00:00</h1>
-            <p id="status-text" style="font-size: 0.8rem; margin-top: 10px; font-weight: 600;"></p>
-        </div>
+<div class="timer">
 
-        <!-- Phases Interactives -->
-        <div class="phases-row">
-            <div class="phase-step" onclick="selectPhase(1)" id="step1">
-                <div class="step-icon">🩸</div>
-                <div class="step-label">GLYCÉMIE</div>
-            </div>
-            <div class="phase-step" onclick="selectPhase(2)" id="step2">
-                <div class="step-icon">📉</div>
-                <div class="step-label">INSULINE</div>
-            </div>
-            <div class="phase-step" onclick="selectPhase(3)" id="step3">
-                <div class="step-icon">🔥</div>
-                <div class="step-label">GRAISSES</div>
-            </div>
-            <div class="phase-step" onclick="selectPhase(4)" id="step4">
-                <div class="step-icon">✨</div>
-                <div class="step-label">CELLULES</div>
-            </div>
-        </div>
+<svg width="300" height="300">
+    <circle cx="150" cy="150" r="130" class="bg"></circle>
+    <circle cx="150" cy="150" r="130" class="progress" id="circle"
+        stroke-dasharray="816" stroke-dashoffset="0"></circle>
+</svg>
 
-        <!-- Carte d'info dynamique -->
-        <div class="info-card">
-            <h3 id="phase-title">État actuel du corps</h3>
-            <p id="phase-desc">Cliquez sur une phase ci-dessus pour comprendre les bénéfices sur votre santé.</p>
-        </div>
-    </div>
+<div class="time" id="time">00:00:00</div>
+<div class="status" id="status">JEÛNE</div>
 
-    <!-- Navigation Fake -->
-    <div class="nav-bar">
-        <div class="nav-item active">🔥</div>
-        <div class="nav-item">📊</div>
-        <div class="nav-item">💧</div>
-        <div class="nav-item">👤</div>
-    </div>
+</div>
+
+<div class="card">
+    <h3 id="title">Etat du corps</h3>
+    <p id="desc">Suivi métabolique en temps réel</p>
+</div>
+
+<!-- TIMELINE -->
+<div class="timeline">
+    <div class="line"></div>
+
+    <div class="step" id="p1">🩸 Glycémie</div>
+    <div class="step" id="p2">📉 Insuline</div>
+    <div class="step" id="p3">🔥 Graisses</div>
+    <div class="step" id="p4">✨ Autophagie</div>
+</div>
 
 <script>
-    const phaseData = {
-        1: { t: "Phase 1 : Digestion & Glycémie", d: "Votre corps traite les glucides du dernier repas. Votre glycémie commence à redescendre doucement.", icon: "🩸" },
-        2: { t: "Phase 2 : Chute de l'Insuline", d: "Après 8h, l'insuline est au plus bas. C'est le signal pour que le corps commence à chercher de l'énergie ailleurs.", icon: "📉" },
-        3: { t: "Phase 3 : Brûlage des Graisses", d: "Entre 12h et 16h de jeûne, votre corps passe en mode 'Kétose'. Vous brûlez vos réserves de gras !", icon: "🔥" },
-        4: { t: "Phase 4 : Autophagie (Nettoyage)", d: "Phase ultime (16h+). Vos cellules se régénèrent et éliminent les protéines défectueuses. Santé pure.", icon: "✨" }
-    };
 
-    function updateApp() {
-        const now = new Date();
-        const hrs = now.getHours();
-        const mins = now.getMinutes();
-        const secs = now.getSeconds();
-        const currentTotalSecs = (hrs * 3600) + (mins * 60) + secs;
+const circle = document.getElementById("circle");
+const timeEl = document.getElementById("time");
+const statusEl = document.getElementById("status");
 
-        const startEating = 10 * 3600; // 10h
-        const endEating = 16 * 3600;   // 16h
-        
-        let isFasting = true;
-        let timeLeft = 0;
-        let totalWindow = 18 * 3600;
+const TOTAL = 816;
 
-        if (currentTotalSecs >= startEating && currentTotalSecs < endEating) {
-            isFasting = false;
-            timeLeft = endEating - currentTotalSecs;
-            totalWindow = 6 * 3600;
-        } else {
-            isFasting = true;
-            if (currentTotalSecs >= endEating) {
-                timeLeft = (24 * 3600 - currentTotalSecs) + startEating;
-            } else {
-                timeLeft = startEating - currentTotalSecs;
-            }
-        }
+// heures jeûne
+const START = 10*3600;
+const END = 16*3600;
 
-        // Affichage Timer
-        const h = Math.floor(timeLeft / 3600);
-        const m = Math.floor((timeLeft % 3600) / 60);
-        const s = timeLeft % 60;
-        document.getElementById('countdown').innerText = `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        
-        // Style selon l'état
-        const progressCircle = document.getElementById('progress-bar');
-        const statusText = document.getElementById('status-text');
-        
-        if (isFasting) {
-            progressCircle.style.stroke = "var(--fastic-green)";
-            statusText.innerText = "JEÛNE EN COURS";
-            statusText.style.color = "var(--fastic-green)";
-            autoSelectPhase(hrs);
-        } else {
-            progressCircle.style.stroke = "var(--fastic-orange)";
-            statusText.innerText = "FENÊTRE REPAS";
-            statusText.style.color = "var(--fastic-orange)";
-            document.getElementById('phase-title').innerText = "Bon Appétit Hicham !";
-            document.getElementById('phase-desc').innerText = "Profitez de cette fenêtre pour manger sainement. Prochain jeûne à 16:00.";
-        }
+function update(){
 
-        // Animation du cercle
-        const circumference = 816.8;
-        const offset = circumference - (timeLeft / totalWindow) * circumference;
-        progressCircle.style.strokeDashoffset = offset;
+    const now = new Date();
+    const t = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
+
+    let fasting = true;
+    let remain;
+
+    if(t>=START && t<END){
+        fasting=false;
+        remain = END - t;
+    }else{
+        remain = t>=END
+        ? 86400 - t + START
+        : START - t;
     }
 
-    function selectPhase(id) {
-        document.querySelectorAll('.phase-step').forEach(s => s.classList.remove('phase-active'));
-        document.getElementById('step'+id).classList.add('phase-active');
-        document.getElementById('phase-title').innerText = phaseData[id].t;
-        document.getElementById('phase-desc').innerText = phaseData[id].d;
+    const h=Math.floor(remain/3600);
+    const m=Math.floor((remain%3600)/60);
+    const s=remain%60;
+
+    timeEl.innerText =
+        `${h.toString().padStart(2,'0')}:`+
+        `${m.toString().padStart(2,'0')}:`+
+        `${s.toString().padStart(2,'0')}`;
+
+    statusEl.innerText = fasting ? "JEÛNE 🔥" : "REPAS 🍽";
+
+    circle.style.stroke =
+        fasting ? "var(--green)" : "var(--orange)";
+
+    circle.style.strokeDashoffset =
+        TOTAL - (remain/(fasting?18*3600:6*3600))*TOTAL;
+
+    updateTimeline(now.getHours());
+}
+
+/* ===== TIMELINE ===== */
+
+function updateTimeline(hour){
+
+    let phase = 1;
+
+    if(hour < 4) phase = 1;
+    else if(hour < 8) phase = 2;
+    else if(hour < 12) phase = 3;
+    else phase = 4;
+
+    document.querySelectorAll(".step").forEach(e=>{
+        e.classList.remove("active");
+    });
+
+    document.getElementById("p"+phase).classList.add("active");
+
+    setCard(phase);
+}
+
+function setCard(p){
+
+    if(p===1){
+        document.getElementById("title").innerText="Glycémie active";
+        document.getElementById("desc").innerText="Utilisation du glucose du dernier repas";
     }
 
-    function autoSelectPhase(h) {
-        // Logique simplifiée pour surligner la phase actuelle pendant le jeûne
-        if (h >= 16 && h < 20) selectPhase(1);
-        else if (h >= 20 || h < 2) selectPhase(2);
-        else if (h >= 2 && h < 7) selectPhase(3);
-        else if (h >= 7 && h < 10) selectPhase(4);
+    if(p===2){
+        document.getElementById("title").innerText="Insuline en baisse";
+        document.getElementById("desc").innerText="Transition vers les réserves internes";
     }
 
-    setInterval(updateApp, 1000);
-    updateApp();
+    if(p===3){
+        document.getElementById("title").innerText="Brûlage des graisses";
+        document.getElementById("desc").innerText="Lipolyse activée, perte de graisse";
+    }
+
+    if(p===4){
+        document.getElementById("title").innerText="Autophagie";
+        document.getElementById("desc").innerText="Nettoyage cellulaire et régénération";
+    }
+}
+
+setInterval(update,1000);
+update();
+
 </script>
+
 </body>
 </html>
