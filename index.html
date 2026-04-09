@@ -3,327 +3,277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hicham - Jeûne Pro</title>
-
-    <!-- Chargement sécurisé de Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js" onerror="console.log('Erreur chargement Chart.js')"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-
+    <title>Hicham Fasting Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background: #0f172a !important; /* Couleur forcée pour éviter le blanc */
-            color: white;
-            overflow: hidden;
-            height: 100vh;
-        }
+        :root { --green: #2ecc71; --orange: #f39c12; --dark: #090e1a; --card: #161c2d; --text: #ffffff; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        
+        /* UI COMPONENTS */
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(9,14,26,0.95); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 100; }
+        .profile { display: flex; align-items: center; gap: 12px; }
+        .profile img { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--green); object-fit: cover; }
+        .clock-ui { font-weight: 700; background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; color: var(--green); }
 
-        /* HEADER */
-        .header {
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #1e293b;
-        }
+        .main { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 20px; padding-bottom: 100px; }
+        
+        .timer-box { position: relative; width: 260px; height: 260px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--card); box-shadow: 0 20px 50px rgba(0,0,0,0.6); }
+        #countdown { font-size: 3.5rem; font-weight: 800; margin: 0; letter-spacing: -2px; }
+        .status-badge { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
 
-        .profile-group { display: flex; align-items: center; gap: 10px; }
-        .profile-mini { width: 40px; height: 40px; border-radius: 12px; object-fit: cover; border: 2px solid #2ecc71; }
+        .phases { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
+        .ph { background: var(--card); padding: 12px 5px; border-radius: 18px; text-align: center; opacity: 0.2; border: 1px solid transparent; transition: 0.5s; }
+        .ph.active { opacity: 1; border-color: var(--green); background: rgba(46, 204, 113, 0.1); transform: translateY(-5px); }
+        .ph i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+        .ph span { font-size: 0.6rem; font-weight: 800; color: #64748b; }
 
-        .clock { font-size: 14px; font-weight: 600; opacity: 0.8; background: rgba(255,255,255,0.1); padding: 4px 10px; border-radius: 20px; }
-
-        /* DASHBOARD */
-        .container { padding: 20px; text-align: center; }
-
-        .timer-card {
-            background: #1e293b;
-            padding: 30px 20px;
-            border-radius: 30px;
-            margin-top: 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .big-time {
-            font-size: 3.5rem;
-            font-weight: 800;
-            letter-spacing: -2px;
-            margin: 10px 0;
-            color: #2ecc71;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        /* BOUTON */
-        .actions { margin-top: 30px; }
-        .btn-main {
-            padding: 16px 30px;
-            border: none;
-            border-radius: 18px;
-            background: #2ecc71;
-            color: white;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            width: 80%;
-        }
+        .info-card { background: var(--card); padding: 18px; border-radius: 22px; border-left: 5px solid var(--green); width: 100%; }
+        #info-title { margin: 0; color: var(--green); font-size: 0.9rem; }
+        #info-desc { font-size: 0.8rem; color: #94a3b8; margin: 5px 0 0; line-height: 1.4; }
 
         /* DRAWER */
-        .drawer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #161e2e;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            transform: translateY(calc(100% - 70px));
-            transition: 0.4s ease-in-out;
-            padding: 20px;
-            height: 80vh;
-            z-index: 100;
-        }
+        .drawer { position: fixed; bottom: 0; width: 100%; background: #0f172a; border-radius: 30px 30px 0 0; height: 85vh; transform: translateY(calc(100% - 65px)); transition: transform 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); z-index: 1000; border-top: 1px solid rgba(255,255,255,0.1); }
+        .drawer.open { transform: translateY(0); }
+        .handle { width: 45px; height: 5px; background: #334155; border-radius: 10px; margin: 12px auto; cursor: pointer; }
 
-        .drawer.open { transform: translateY(0%); }
+        .tabs { display: flex; justify-content: space-around; padding: 10px; }
+        .tab { font-size: 0.8rem; font-weight: 800; opacity: 0.4; color: white; cursor: pointer; padding: 10px; }
+        .tab.active { opacity: 1; color: var(--green); border-bottom: 3px solid var(--green); }
 
-        .drawer-handle {
-            width: 40px; height: 5px; background: rgba(255,255,255,0.2);
-            border-radius: 10px; margin: -10px auto 20px;
-        }
+        .section { display: none; padding: 20px; height: calc(100% - 130px); flex-direction: column; }
+        .section.active { display: flex; }
 
-        /* TABS */
-        .tabs { display: flex; justify-content: space-around; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .tab { padding: 10px; opacity: 0.4; font-weight: 700; font-size: 0.9rem; cursor: pointer;}
-        .tab.active { opacity: 1; color: #2ecc71; border-bottom: 2px solid #2ecc71; }
+        /* CHAT IA */
+        .chat-view { flex: 1; overflow-y: auto; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 20px; display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; }
+        .msg { padding: 14px; border-radius: 18px; font-size: 0.9rem; line-height: 1.5; max-width: 85%; }
+        .msg.bot { background: #1e293b; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .msg.user { background: var(--green); color: black; font-weight: 700; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .typing { font-size: 0.75rem; color: var(--green); margin: 5px; display: none; font-weight: 600; }
 
-        .section { display: none; }
-        .section.active { display: block; }
+        .chat-input { display: flex; gap: 10px; }
+        .chat-input input { flex: 1; background: #1e293b; border: none; border-radius: 15px; padding: 15px; color: white; outline: none; }
+        .btn-send { background: var(--green); border: none; width: 50px; border-radius: 15px; cursor: pointer; font-size: 1.2rem; }
 
-        .input-group { display: flex; gap: 10px; margin-top: 10px; }
-        input {
-            flex: 1; background: #1e293b; border: 1px solid rgba(255,255,255,0.1);
-            padding: 15px; border-radius: 12px; color: white;
-        }
-
-        .chat-box { height: 200px; overflow-y: auto; background: rgba(0,0,0,0.2); border-radius: 15px; padding: 15px; }
-        .msg { margin-bottom: 12px; padding: 10px; border-radius: 12px; font-size: 0.9rem; max-width: 85%; }
-        .user { background: #2ecc71; color: white; margin-left: auto; }
-        .bot { background: #334155; color: #cbd5e1; }
+        canvas { width: 100% !important; max-height: 200px; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="profile-group">
-            <!-- Avatar par défaut de secours -->
-            <img src="votre-photo.jpg" class="profile-mini" onerror="this.src='https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff'">
-            <span style="font-weight:800">HICHAM</span>
+        <div class="profile">
+            <img src="votre-photo.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff'">
+            <div>
+                <div style="font-weight: 800; font-size: 1rem;">HICHAM</div>
+                <div style="font-size: 0.65rem; color: var(--green); font-weight: 800;">FASTING MASTER 18/6</div>
+            </div>
         </div>
-        <div class="clock" id="clock">00:00:00</div>
+        <div id="clock" class="clock-ui">00:00</div>
     </div>
 
-    <div class="container">
-        <div class="timer-card">
-            <div id="status-badge" class="status-badge" style="background:rgba(46, 204, 113, 0.2); color:#2ecc71;">Jeûne Actif 🔥</div>
-            <div class="big-time" id="countdown">00:00:00</div>
-            <div id="target-label" style="opacity: 0.6; font-size: 0.9rem;">Temps restant</div>
+    <div class="main">
+        <div class="timer-box">
+            <div id="status-label" class="status-badge">Analyse...</div>
+            <h1 id="countdown">00:00:00</h1>
+            <div id="target-ui" style="font-size: 0.7rem; color: #64748b; margin-top: 8px; font-weight: 700;">OBJECTIF 10:00</div>
         </div>
 
-        <div class="actions">
-            <button class="btn-main" onclick="toggleDrawer()">Ouvrir mon Dashboard</button>
+        <div class="phases">
+            <div id="p1" class="ph"><i>🧪</i><span>SUCRE</span></div>
+            <div id="p2" class="ph"><i>📉</i><span>INSULINE</span></div>
+            <div id="p3" class="ph"><i>🔥</i><span>KÉTOSE</span></div>
+            <div id="p4" class="ph"><i>✨</i><span>AUTO-P</span></div>
         </div>
+
+        <div class="info-card">
+            <h4 id="info-title">Phase en cours...</h4>
+            <p id="info-desc">Lancement de l'analyse métabolique.</p>
+        </div>
+
+        <button onclick="toggleDrawer()" style="width: 100%; padding: 18px; border-radius: 22px; border: none; background: linear-gradient(135deg, #2ecc71, #27ae60); color: white; font-weight: 800; box-shadow: 0 10px 30px rgba(46,204,113,0.3); cursor: pointer;">DASHBOARD COACH IA</button>
     </div>
 
     <!-- DRAWER -->
     <div class="drawer" id="drawer">
-        <div class="drawer-handle" onclick="toggleDrawer()"></div>
-
+        <div class="handle" onclick="toggleDrawer()"></div>
         <div class="tabs">
-            <div class="tab active" onclick="showTab(1)">⚖️ POIDS</div>
-            <div class="tab" onclick="showTab(2)">📈 PROGRÈS</div>
-            <div class="tab" onclick="showTab(3)">🧠 COACH</div>
+            <div class="tab active" onclick="setTab(1)">COACH IA</div>
+            <div class="tab" onclick="setTab(2)">GRAPH</div>
+            <div class="tab" onclick="setTab(3)">POIDS</div>
         </div>
 
-        <!-- TAB 1: POIDS -->
-        <div class="section active" id="tab1">
-            <p style="opacity:0.6; font-size:0.8rem">Enregistre ton poids :</p>
-            <div class="input-group">
-                <input id="weightInput" type="number" step="0.1" placeholder="Ex: 82.5 kg">
-                <button onclick="addWeight()" style="background:#2ecc71; border:none; border-radius:12px; padding:0 20px; color:white; font-weight:bold; cursor:pointer;">OK</button>
+        <!-- IA SECTION -->
+        <div class="section active" id="sec1">
+            <div id="chat-box" class="chat-view">
+                <div class="msg bot">Hicham, je suis ton Coach Mistral AI. Je connais ton rythme 10h-16h. Pose-moi une question !</div>
             </div>
+            <div id="ai-loading" class="typing">Mistral réfléchit...</div>
+            <div class="chat-input">
+                <input type="text" id="ai-input" placeholder="Ex: Pourquoi mon corps brûle du gras ?">
+                <button class="btn-send" onclick="askAI()">🚀</button>
+            </div>
+            <button onclick="resetKey()" style="background:none; border:none; color:#334155; font-size:0.6rem; margin-top:10px; cursor:pointer;">Réinitialiser clé IA</button>
         </div>
 
-        <!-- TAB 2: GRAPH -->
-        <div class="section" id="tab2">
-            <div style="background:rgba(255,255,255,0.02); border-radius:15px; padding:10px; height: 220px;">
-                <canvas id="chart"></canvas>
-            </div>
+        <!-- GRAPH SECTION -->
+        <div class="section" id="sec2">
+            <canvas id="wChart"></canvas>
         </div>
 
-        <!-- TAB 3: COACH -->
-        <div class="section" id="tab3">
-            <div class="chat-box" id="chat">
-                <div class="msg bot">Salut Hicham ! Comment se passe ton jeûne 18/6 aujourd'hui ?</div>
-            </div>
-            <div class="input-group">
-                <input id="coachInput" placeholder="Ta question...">
-                <button onclick="askCoach()" style="background:#f39c12; border:none; border-radius:12px; padding:0 15px; color:white; cursor:pointer;">⚡</button>
+        <!-- WEIGHT SECTION -->
+        <div class="section" id="sec3">
+            <h4 style="margin:0 0 10px">Nouveau poids (kg)</h4>
+            <div class="chat-input">
+                <input type="number" id="w-input" step="0.1" placeholder="82.5">
+                <button class="btn-send" onclick="saveW()" style="width:auto; padding:0 20px; color:white; font-weight:bold;">OK</button>
             </div>
         </div>
     </div>
 
 <script>
-/* ================= SECURITE STOCKAGE ================= */
-let weightData = [];
-try {
-    const saved = localStorage.getItem("hicham_weight");
-    if (saved) {
-        weightData = JSON.parse(saved);
-        if (!Array.isArray(weightData)) weightData = [];
-    }
-} catch (e) {
-    console.log("Erreur de lecture mémoire, réinitialisation.");
-    weightData = [];
-}
+/* ================= CONFIGURATION SÉCURISÉE ================= */
+let HF_TOKEN = localStorage.getItem('hf_ai_token_hicham'); 
+const MODEL = "mistralai/Mistral-7B-Instruct-v0.2";
+const START_E = 10; const END_E = 16;
+let fastH = 0;
 
-/* ================= LOGIQUE JEÛNE (10h-16h) ================= */
-const START_EAT = 10 * 3600; 
-const END_EAT = 16 * 3600;
+/* ================= TIMER & PHASES ================= */
+function update() {
+    const n = new Date();
+    const h = n.getHours(); const m = n.getMinutes(); const s = n.getSeconds();
+    const totS = h*3600 + m*60 + s;
+    document.getElementById('clock').innerText = n.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
-function updateLogic() {
-    const now = new Date();
-    const t = now.getHours()*3600 + now.getMinutes()*60 + now.getSeconds();
-    
-    document.getElementById("clock").innerText = now.toLocaleTimeString('fr-FR');
-
-    let remain;
-    const badge = document.getElementById("status-badge");
-    const timerText = document.getElementById("countdown");
-
-    if(t >= START_EAT && t < END_EAT) {
-        remain = END_EAT - t;
-        badge.innerText = "Fenêtre Repas 🍽️";
-        badge.style.background = "rgba(243, 156, 18, 0.2)";
-        badge.style.color = "#f39c12";
-        timerText.style.color = "#f39c12";
+    let isFasting = true; let rem = 0;
+    if(h >= START_E && h < END_E) {
+        isFasting = false; rem = (END_E*3600) - totS;
+        setUI("REPAS 🍽️", "var(--orange)", "Fin à 16:00");
     } else {
-        remain = t >= END_EAT ? (86400 - t + START_EAT) : (START_EAT - t);
-        badge.innerText = "Jeûne Actif 🔥";
-        badge.style.background = "rgba(46, 204, 113, 0.2)";
-        badge.style.color = "#2ecc71";
-        timerText.style.color = "#2ecc71";
+        isFasting = true; rem = h >= END_E ? (86400 - totS + START_E*3600) : (START_E*3600 - totS);
+        setUI("JEÛNE 🔥", "var(--green)", "Prochain à 10:00");
+        fastH = h >= 16 ? h - 16 + (m/60) : h + 8 + (m/60);
     }
 
-    const h = String(Math.floor(remain/3600)).padStart(2,'0');
-    const m = String(Math.floor((remain%3600)/60)).padStart(2,'0');
-    const s = String(remain%60).padStart(2,'0');
-    timerText.innerText = `${h}:${m}:${s}`;
-}
-setInterval(updateLogic, 1000);
-updateLogic();
-
-/* ================= UI CONTROLS ================= */
-function toggleDrawer() {
-    document.getElementById("drawer").classList.toggle("open");
+    const hr = Math.floor(rem/3600); const mn = Math.floor((rem%3600)/60); const sc = rem%60;
+    document.getElementById('countdown').innerText = `${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
+    updatePhasesUI(isFasting ? fastH : -1);
 }
 
-function showTab(i) {
-    document.querySelectorAll(".section, .tab").forEach(e => e.classList.remove("active"));
-    document.getElementById("tab"+i).classList.add("active");
-    document.querySelectorAll(".tab")[i-1].classList.add("active");
+function setUI(t, c, tar) {
+    const s = document.getElementById('status-label');
+    s.innerText = t; s.style.color = c;
+    document.getElementById('countdown').style.color = c;
+    document.getElementById('target-ui').innerText = tar;
 }
 
-/* ================= GRAPH (SÉCURISÉ) ================= */
-let chart;
-function initChart() {
-    const canvas = document.getElementById("chart");
-    if (typeof Chart === 'undefined') {
-        canvas.parentNode.innerHTML = "<p style='color:gray;text-align:center;padding-top:50px;'>Graphique indisponible hors ligne.</p>";
-        return;
+function updatePhasesUI(h) {
+    document.querySelectorAll('.ph').forEach(p => p.classList.remove('active'));
+    const t = document.getElementById('info-title'); const d = document.getElementById('info-desc');
+    if(h < 0) {
+        t.innerText = "Alimentation active"; d.innerText = "Hicham, nourris tes muscles avec des protéines pour préparer ton prochain jeûne.";
+    } else if(h < 4) {
+        document.getElementById('p1').classList.add('active');
+        t.innerText = "Stabilisation Glycémique"; d.innerText = "Le sang se nettoie du sucre du dernier repas. L'insuline commence à baisser.";
+    } else if(h < 12) {
+        document.getElementById('p2').classList.add('active');
+        t.innerText = "Baisse d'Insuline"; d.innerText = "Ton corps puise maintenant dans tes réserves de sucre (glycogène).";
+    } else if(h < 16) {
+        document.getElementById('p3').classList.add('active');
+        t.innerText = "Cétose Active"; d.innerText = "Brûlage intensif des graisses ! Tes cellules utilisent tes réserves comme carburant.";
+    } else {
+        document.getElementById('p4').classList.add('active');
+        t.innerText = "Autophagie"; d.innerText = "Régénération cellulaire profonde. Hicham, ton corps se répare et élimine les toxines.";
     }
+}
 
-    const ctx = canvas.getContext('2d');
-    chart = new Chart(ctx, {
-        type: "line",
-        data: {
-            labels: weightData.map(d => d.date),
-            datasets: [{
-                label: 'Poids (kg)',
-                data: weightData.map(d => d.w),
-                borderColor: "#2ecc71",
-                tension: 0.4,
-                fill: false
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+/* ================= IA CONNECTÉE AVEC PROMPT CLÉ ================= */
+async function askAI() {
+    if (!HF_TOKEN || HF_TOKEN === "") {
+        const userKey = prompt("Hicham, entre ton nouveau Token Hugging Face pour activer l'IA (hf_...) :");
+        if (userKey && userKey.startsWith("hf_")) {
+            localStorage.setItem('hf_ai_token_hicham', userKey);
+            HF_TOKEN = userKey;
+        } else {
+            alert("Clé invalide. L'IA a besoin d'une clé hf_ pour fonctionner."); return;
         }
+    }
+
+    const input = document.getElementById('ai-input');
+    const msg = input.value.trim();
+    if(!msg) return;
+
+    addMsg(msg, 'user');
+    input.value = "";
+    document.getElementById('ai-loading').style.display = 'block';
+
+    const promptText = `[INST] Tu es le coach IA de Hicham. Hicham suit un jeûne 18/6 (10h-16h). Actuellement il est à ${fastH.toFixed(1)} heures de jeûne. Réponds de manière experte, courte (max 3 phrases) et motivante en français. Question: ${msg} [/INST]`;
+
+    try {
+        const resp = await fetch(`https://api-inference.huggingface.co/models/${MODEL}`, {
+            method: "POST",
+            headers: { "Authorization": `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
+            body: JSON.stringify({ inputs: promptText, parameters: { max_new_tokens: 120, temperature: 0.7 } })
+        });
+        const data = await resp.json();
+        
+        if (data.error) {
+            resetKey();
+            addMsg("Erreur de clé. Merci de réinitialiser ton Token.", 'bot');
+            return;
+        }
+
+        let botText = data[0].generated_text.split('[/INST]')[1].trim();
+        addMsg(botText, 'bot');
+    } catch (e) {
+        addMsg("Hicham, erreur de connexion à l'IA.", 'bot');
+    } finally {
+        document.getElementById('ai-loading').style.display = 'none';
+    }
+}
+
+function addMsg(t, c) {
+    const box = document.getElementById('chat-box');
+    const d = document.createElement('div');
+    d.className = `msg ${c}`; d.innerText = t;
+    box.appendChild(d); box.scrollTop = box.scrollHeight;
+}
+
+function resetKey() {
+    localStorage.removeItem('hf_ai_token_hicham');
+    HF_TOKEN = null;
+    alert("Clé IA supprimée. Elle sera demandée lors du prochain message.");
+}
+
+/* ================= STATS & GRAPH ================= */
+function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
+function setTab(n) {
+    document.querySelectorAll('.tab, .section').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab')[n-1].classList.add('active');
+    document.getElementById('sec'+n).classList.add('active');
+    if(n==2) loadChart();
+}
+
+let weights = JSON.parse(localStorage.getItem('h_w') || '[]');
+function saveW() {
+    const v = document.getElementById('w-input').value; if(!v) return;
+    weights.push({d: new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}), v: parseFloat(v)});
+    localStorage.setItem('h_w', JSON.stringify(weights));
+    document.getElementById('w-input').value = ""; alert("Poids enregistré !");
+}
+
+let chart = null;
+function loadChart() {
+    const ctx = document.getElementById('wChart').getContext('2d');
+    if(chart) chart.destroy();
+    chart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: weights.slice(-7).map(x=>x.d), datasets: [{label:'kg', data:weights.slice(-7).map(x=>x.v), borderColor:'#2ecc71', tension:0.4, fill:true, backgroundColor:'rgba(46,204,113,0.1)'}]},
+        options: { responsive:true, maintainAspectRatio:false, plugins: { legend: { display: false } } }
     });
 }
 
-function addWeight() {
-    const input = document.getElementById("weightInput");
-    const val = parseFloat(input.value);
-    if(!val) return;
-
-    const dateStr = new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
-    weightData.push({date: dateStr, w: val});
-    
-    try {
-        localStorage.setItem("hicham_weight", JSON.stringify(weightData));
-    } catch(e) {}
-    
-    input.value = "";
-    if (chart) {
-        chart.data.labels = weightData.map(d => d.date);
-        chart.data.datasets[0].data = weightData.map(d => d.w);
-        chart.update();
-    }
-    alert("Poids enregistré !");
-}
-
-/* ================= COACH IA ================= */
-function askCoach() {
-    const input = document.getElementById("coachInput");
-    const text = input.value.trim().toLowerCase();
-    if(!text) return;
-
-    const chat = document.getElementById("chat");
-    
-    const uDiv = document.createElement("div");
-    uDiv.className = "msg user";
-    uDiv.innerText = input.value;
-    chat.appendChild(uDiv);
-
-    setTimeout(() => {
-        let resp = "Je ne suis pas sûr de comprendre, mais continue tes efforts Hicham !";
-        if(text.includes("faim")) resp = "C'est normal Hicham, bois de l'eau pétillante ou un café noir sans sucre. Ça va passer en 15 min.";
-        if(text.includes("sport")) resp = "Le meilleur moment pour le sport est juste avant ta fenêtre de repas (vers 9h) pour brûler un max de graisses.";
-        
-        const bDiv = document.createElement("div");
-        bDiv.className = "msg bot";
-        bDiv.innerText = resp;
-        chat.appendChild(bDiv);
-        chat.scrollTop = chat.scrollHeight;
-    }, 600);
-
-    input.value = "";
-}
-
-// Lancement sécurisé au chargement de la page
-window.onload = function() {
-    initChart();
-};
+setInterval(update, 1000); update();
 </script>
 </body>
 </html>
