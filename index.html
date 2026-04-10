@@ -109,13 +109,19 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 16px 20px;
-            padding-bottom: 100px;
+            padding-bottom: 120px; /* Augmenté pour éviter la barre de nav */
             display: none; 
             flex-direction: column; 
             gap: 16px;
             -webkit-overflow-scrolling: touch;
+            position: relative;
         }
         .app-view.active { display: flex; }
+
+        /* Correction scroll IA - s'assurer que le contenu peut défiler */
+        #view-ai {
+            padding-bottom: 140px; /* Extra padding pour la page IA */
+        }
 
         /* AI & Search View Styles */
         .mode-switcher {
@@ -125,7 +131,7 @@
             display: flex;
             gap: 4px;
             margin-bottom: 16px;
-            box-shadow: var(--shadow-soft);
+            flex-shrink: 0; /* Empêche le rétrécissement */
         }
 
         .mode-switch-btn {
@@ -163,6 +169,7 @@
             text-align: center;
             margin-bottom: 8px;
             transition: all 0.3s;
+            flex-shrink: 0; /* Empêche le rétrécissement */
         }
 
         .ai-welcome.search-active {
@@ -200,6 +207,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .search-info::before {
@@ -216,6 +224,8 @@
             overflow: hidden;
             box-shadow: var(--shadow-soft);
             border: 1px solid rgba(139, 115, 85, 0.08);
+            min-height: 300px; /* Hauteur minimum pour le chat */
+            margin-bottom: 16px;
         }
 
         .ai-chat-messages {
@@ -225,6 +235,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            -webkit-overflow-scrolling: touch;
         }
 
         .ai-message {
@@ -318,6 +329,7 @@
             border-top: 1px solid rgba(139, 115, 85, 0.08);
             display: flex;
             gap: 10px;
+            flex-shrink: 0;
         }
 
         .ai-input {
@@ -352,6 +364,7 @@
             align-items: center;
             justify-content: center;
             transition: transform 0.2s;
+            flex-shrink: 0;
         }
 
         .ai-send-btn.search-mode {
@@ -367,6 +380,7 @@
             padding: 4px 0;
             margin-bottom: 8px;
             -webkit-overflow-scrolling: touch;
+            flex-shrink: 0;
         }
 
         .ai-suggestion-chip {
@@ -970,6 +984,22 @@
             font-size: 0.9rem;
             height: 48px;
         }
+        
+        /* Info phase pour la synchro */
+        .sync-phase-info {
+            background: var(--bg-primary);
+            padding: 12px;
+            border-radius: 12px;
+            margin: 12px 0;
+            font-size: 0.85rem;
+            text-align: center;
+            border-left: 4px solid var(--accent-success);
+        }
+        
+        .sync-phase-info.active {
+            border-left-color: var(--accent-success);
+            color: var(--accent-success);
+        }
     </style>
 </head>
 <body>
@@ -1123,7 +1153,7 @@
         </div>
     </div>
 
-    <!-- VUE IA & RECHERCHE -->
+    <!-- VUE IA & RECHERCHE - CORRIGÉE POUR SCROLL -->
     <div class="app-view" id="view-ai">
         <!-- Switch Mode -->
         <div class="mode-switcher">
@@ -1162,7 +1192,7 @@
             </div>
         </div>
 
-        <button class="btn-full btn-ai" onclick="generateAIReport()" style="margin-top: 16px;" id="btn-report">
+        <button class="btn-full btn-ai" onclick="generateAIReport()" style="margin-top: 16px; margin-bottom: 20px;" id="btn-report">
             📊 Générer mon bilan hebdomadaire IA
         </button>
     </div>
@@ -1190,6 +1220,12 @@
     <div class="drawer" id="drawer-cloud">
         <div class="handle" onclick="closeDrawers()"></div>
         <h3 style="margin: 0 0 20px 0; font-size: 1.2rem;">Synchronisation Cloud</h3>
+        
+        <!-- Info phase de jeûne pour la synchro -->
+        <div class="sync-phase-info" id="sync-phase-display">
+            Phase actuelle : <strong id="current-phase-text">Non disponible</strong>
+        </div>
+        
         <div id="oauth-connect">
             <div class="oauth-box">
                 <div style="font-size: 3rem; margin-bottom: 12px;">☁️</div>
@@ -1233,6 +1269,7 @@ const KEY_AI_CHAT = 'HICHAM_AI_CHAT_v3';
 const KEY_AI_MODE = 'HICHAM_AI_MODE_v3';
 const KEY_SLEEP = 'HICHAM_SLEEP_v3';
 const KEY_DROPBOX_TOKEN = 'HICHAM_DROPBOX_TOKEN_v3';
+const KEY_CLOUD_DATA = 'HICHAM_CLOUD_DATA_v3'; // Pour simuler le stockage cloud
 
 // ========== VARIABLES GLOBALES ==========
 let currentAIMode = 'ai';
@@ -1339,7 +1376,7 @@ function init() {
     // Vérifier l'état Dropbox
     checkDropboxStatus();
     
-    // Restaurer état du jeûne - CORRECTION ICI
+    // Restaurer état du jeûne
     if (fastState && fastState.isFasting && fastState.startTime) {
         console.log('Restauration du jeûne en cours...');
         startTimer();
@@ -1367,13 +1404,16 @@ function init() {
     window.addEventListener('offline', updateConnectionStatus);
 }
 
-// ========== GESTION DROPBOX ==========
+// ========== GESTION DROPBOX & SYNCHRONISATION ==========
 function checkDropboxStatus() {
     const token = safeGetItem(KEY_DROPBOX_TOKEN);
     const oauthConnect = document.getElementById('oauth-connect');
     const cloudConnected = document.getElementById('cloud-connected');
     const cloudStatusText = document.getElementById('cloud-status-text');
     const cloudStatus = document.getElementById('cloud-status');
+    
+    // Mettre à jour l'affichage de la phase dans le drawer
+    updateSyncPhaseDisplay();
     
     if (token) {
         // Connecté
@@ -1390,10 +1430,37 @@ function checkDropboxStatus() {
     }
 }
 
+function updateSyncPhaseDisplay() {
+    const phaseText = document.getElementById('current-phase-text');
+    const phaseDisplay = document.getElementById('sync-phase-display');
+    
+    if (!phaseText) return;
+    
+    if (fastState.isFasting) {
+        const phaseData = PHASES[currentPhase] || PHASES[0];
+        phaseText.textContent = `${phaseData.title} (${Math.floor(calculateElapsedHours())}h de jeûne)`;
+        if (phaseDisplay) phaseDisplay.classList.add('active');
+    } else {
+        phaseText.textContent = 'Aucun jeûne en cours';
+        if (phaseDisplay) phaseDisplay.classList.remove('active');
+    }
+}
+
+function calculateElapsedHours() {
+    if (!fastState.startTime) return 0;
+    const start = new Date(fastState.startTime);
+    const now = new Date();
+    return (now - start) / (1000 * 60 * 60);
+}
+
 function startOAuth() {
-    // Simulation de connexion Dropbox (à remplacer par vraie implémentation OAuth)
+    // Simulation de connexion Dropbox
     console.log('Connexion Dropbox...');
     safeSetItem(KEY_DROPBOX_TOKEN, 'simulated_token_' + Date.now());
+    
+    // Sauvegarder immédiatement les données actuelles
+    syncToDropbox();
+    
     checkDropboxStatus();
     showSync('Connecté à Dropbox !', true);
     closeDrawers();
@@ -1408,17 +1475,25 @@ function disconnect() {
 function syncToDropbox() {
     showSync('Sauvegarde en cours...');
     
-    // Simuler sauvegarde
+    // Préparer les données complètes incluant la phase
+    const data = {
+        weights: weights,
+        logs: logs,
+        settings: settings,
+        fastState: fastState,
+        currentPhase: currentPhase, // IMPORTANT : sauvegarder la phase
+        lastSync: new Date().toISOString(),
+        deviceInfo: navigator.userAgent
+    };
+    
+    // Simuler stockage cloud (dans la pratique, appel API Dropbox ici)
     setTimeout(() => {
-        const data = {
-            weights: weights,
-            logs: logs,
-            settings: settings,
-            fastState: fastState,
-            lastSync: new Date().toISOString()
-        };
+        safeSetItem(KEY_CLOUD_DATA, JSON.stringify(data));
         console.log('Données sauvegardées:', data);
         showSync('Sauvegardé sur Dropbox !', true);
+        
+        // Mettre à jour l'affichage de la phase
+        updateSyncPhaseDisplay();
     }, 1000);
 }
 
@@ -1426,7 +1501,48 @@ function syncFromDropbox() {
     showSync('Restauration...');
     
     setTimeout(() => {
+        const cloudData = safeJSONParse(safeGetItem(KEY_CLOUD_DATA), null);
+        
+        if (!cloudData) {
+            showSync('Aucune donnée cloud trouvée', true);
+            return;
+        }
+        
+        // Restaurer toutes les données
+        if (cloudData.weights) weights = cloudData.weights;
+        if (cloudData.logs) logs = cloudData.logs;
+        if (cloudData.settings) settings = cloudData.settings;
+        if (cloudData.fastState) fastState = cloudData.fastState;
+        if (cloudData.currentPhase !== undefined) currentPhase = cloudData.currentPhase;
+        
+        // Sauvegarder localement
+        safeSetItem(KEY_WEIGHTS, JSON.stringify(weights));
+        safeSetItem(KEY_LOGS, JSON.stringify(logs));
+        safeSetItem(KEY_SETTINGS, JSON.stringify(settings));
+        safeSetItem(KEY_FAST_STATE, JSON.stringify(fastState));
+        
+        console.log('Données restaurées:', cloudData);
+        
+        // Recalculer la phase si jeûne en cours
+        if (fastState.isFasting && fastState.startTime) {
+            const elapsed = calculateElapsedHours();
+            updatePhase(elapsed);
+            startTimer();
+        } else {
+            updateUINotFasting();
+        }
+        
+        // Mettre à jour l'UI
+        updateLogs();
+        updateFullLogs();
+        checkDailyCheckin();
+        
         showSync('Données restaurées !', true);
+        updateSyncPhaseDisplay();
+        
+        // Retourner à l'accueil pour voir l'état restauré
+        switchTab('main');
+        
     }, 1000);
 }
 
@@ -1465,6 +1581,7 @@ function switchTab(tab) {
     
     if (tab === 'ai') {
         setAIMode(currentAIMode);
+        // Force scroll to bottom après un court délai
         setTimeout(() => {
             const container = document.getElementById('ai-chat-messages');
             if (container) container.scrollTop = container.scrollHeight;
@@ -1477,6 +1594,7 @@ function switchTab(tab) {
     
     if (tab === 'history') {
         updateFullLogs();
+        checkDropboxStatus(); // Mettre à jour l'info de phase
     }
 }
 
@@ -1641,7 +1759,6 @@ async function searchWikipedia(query) {
         return formatWikipediaResult(data);
         
     } catch (error) {
-        // Essayer recherche plus large
         const searchAlt = await fetch(`https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(query)}&format=json&origin=*`);
         const searchData = await searchAlt.json();
         
@@ -1745,7 +1862,6 @@ function sendAIMessage() {
     addAIMessage(text, 'user');
     input.value = '';
     
-    // Simuler délai réflexion
     showTypingIndicator();
     
     setTimeout(() => {
@@ -1768,7 +1884,6 @@ function addAIMessage(text, type) {
     container.appendChild(div);
     container.scrollTop = container.scrollHeight;
     
-    // Sauvegarder conversation
     saveChatHistory();
 }
 
@@ -1859,13 +1974,12 @@ function generateAIReport() {
 function saveChatHistory() {
     const container = document.getElementById('ai-chat-messages');
     if (container) {
-        // Sauvegarder les 50 derniers messages
         const messages = Array.from(container.children).slice(-50).map(el => el.outerHTML);
         safeSetItem(KEY_AI_CHAT, JSON.stringify(messages));
     }
 }
 
-// ========== GESTION DU JEÛNE - CORRIGÉ ==========
+// ========== GESTION DU JEÛNE ==========
 function setMode(mode) {
     settings.mode = mode;
     safeSetItem(KEY_SETTINGS, JSON.stringify(settings));
@@ -1876,7 +1990,6 @@ function setMode(mode) {
     if (btnAuto) btnAuto.classList.toggle('active', mode === 'auto');
     if (btnManual) btnManual.classList.toggle('active', mode === 'manual');
     
-    // Afficher/masquer les boutons appropriés
     const earlyContainer = document.getElementById('early-fast-container');
     const adjustContainer = document.getElementById('adjust-container');
     
@@ -1910,7 +2023,6 @@ function startFast() {
     safeSetItem(KEY_FAST_STATE, JSON.stringify(fastState));
     addLog('JEÛNE', `Début à ${formatTime(now)}`, 'fast');
     
-    // Masquer les boutons secondaires
     const earlyContainer = document.getElementById('early-fast-container');
     if (earlyContainer) earlyContainer.style.display = 'none';
     
@@ -1933,10 +2045,9 @@ function stopFast() {
 }
 
 function startTimer() {
-    // Arrêter l'ancien timer si existe
     if (timerInterval) clearInterval(timerInterval);
     
-    updateTimer(); // Premier appel immédiat
+    updateTimer();
     timerInterval = setInterval(updateTimer, 1000);
 }
 
@@ -1945,8 +2056,8 @@ function updateTimer() {
     
     const start = new Date(fastState.startTime);
     const now = new Date();
-    const elapsed = (now - start) / 1000; // secondes
-    const duration = settings.duration * 3600; // durée totale en secondes
+    const elapsed = (now - start) / 1000;
+    const duration = settings.duration * 3600;
     const remaining = duration - elapsed;
     
     if (remaining <= 0) {
@@ -1955,7 +2066,6 @@ function updateTimer() {
         return;
     }
     
-    // Mettre à jour affichage
     const hours = Math.floor(remaining / 3600);
     const minutes = Math.floor((remaining % 3600) / 60);
     const seconds = Math.floor(remaining % 60);
@@ -1965,7 +2075,6 @@ function updateTimer() {
         countdown.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
     }
     
-    // Mettre à jour anneau - CORRECTION ICI
     const progress = elapsed / duration;
     const circumference = 565;
     const offset = circumference - (progress * circumference);
@@ -1974,7 +2083,6 @@ function updateTimer() {
         ring.style.strokeDashoffset = offset;
     }
     
-    // Mettre à jour phase
     updatePhase(elapsed / 3600);
 }
 
@@ -2008,25 +2116,24 @@ function updatePhase(elapsedHours) {
     }
     if (label) label.textContent = 'Temps restant';
     
-    // Mettre à jour bouton
     const btn = document.getElementById('fast-action-btn');
     if (btn) {
         btn.textContent = 'Arrêter le jeûne';
         btn.className = 'btn-primary btn-stop';
     }
     
-    // Afficher info début
     const startInfo = document.getElementById('fast-start-info');
     const startDisplay = document.getElementById('fast-start-time-display');
     if (startInfo && fastState.startTime) {
         startInfo.style.display = 'flex';
         if (startDisplay) startDisplay.textContent = formatTime(new Date(fastState.startTime));
     }
+    
+    // Mettre à jour l'info de phase pour la synchro si drawer ouvert
+    updateSyncPhaseDisplay();
 }
 
 function updateUINotFasting() {
-    console.log('Mise à jour UI - Pas de jeûne');
-    
     const countdown = document.getElementById('countdown');
     const label = document.getElementById('timer-label');
     const btn = document.getElementById('fast-action-btn');
@@ -2048,7 +2155,7 @@ function updateUINotFasting() {
         badge.classList.remove('active');
     }
     if (ring) {
-        ring.style.strokeDashoffset = 565; // Anneau vide au départ
+        ring.style.strokeDashoffset = 565;
         ring.className = 'ring-fill';
     }
     if (startInfo) startInfo.style.display = 'none';
@@ -2059,7 +2166,6 @@ function updateUINotFasting() {
     
     currentPhase = 0;
     
-    // Restaurer les boutons de mode
     setMode(settings.mode || 'auto');
 }
 
@@ -2080,7 +2186,6 @@ function openAdjustTimeDrawer() {
     const input = document.getElementById('adjust-time-input');
     
     if (fastState.startTime && input) {
-        // Formater pour datetime-local (YYYY-MM-DDThh:mm)
         const date = new Date(fastState.startTime);
         const str = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
         input.value = str;
@@ -2101,7 +2206,6 @@ function saveAdjustedTime() {
     addLog('MODIFICATION', 'Heure de début ajustée', 'adjust');
     closeDrawers();
     
-    // Recalculer immédiatement
     if (timerInterval) {
         clearInterval(timerInterval);
         startTimer();
@@ -2139,7 +2243,6 @@ function toggleSleep() {
     const status = document.getElementById('sleep-status');
     
     if (!sleepState.isSleeping) {
-        // Se coucher
         sleepState.isSleeping = true;
         sleepState.startTime = new Date().toISOString();
         safeSetItem(KEY_SLEEP, JSON.stringify(sleepState));
@@ -2151,7 +2254,6 @@ function toggleSleep() {
         if (status) status.textContent = 'Dodo depuis ' + formatTime(new Date());
         addLog('SOMMEIL', 'Couchage', 'sleep');
     } else {
-        // Se réveiller
         const start = new Date(sleepState.startTime);
         const now = new Date();
         const duration = Math.round((now - start) / (1000 * 60 * 60) * 10) / 10;
@@ -2173,6 +2275,11 @@ function toggleSleep() {
 function openDrawer(type) {
     const drawer = document.getElementById('drawer-' + type);
     const overlay = document.getElementById('overlay');
+    
+    if (type === 'cloud') {
+        checkDropboxStatus(); // Mettre à jour l'info avant ouverture
+    }
+    
     if (drawer) drawer.classList.add('open');
     if (overlay) overlay.classList.add('active');
 }
@@ -2236,7 +2343,6 @@ function initChart() {
     const ctx = document.getElementById('weightChart');
     if (!ctx || weights.length === 0) return;
     
-    // Détruire l'ancien graphique si existe
     if (window.myChart) {
         window.myChart.destroy();
     }
