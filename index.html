@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Hicham Master - Jeûne Intermittent</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -1128,7 +1128,9 @@ const KEY_MODE = 'HICHAM_MODE_v3';
 const KEY_EARLY = 'HICHAM_EARLY_v3';
 const KEY_CHECKIN = 'HICHAM_CHECKIN_v3';
 const KEY_LAST_VISIT = 'HICHAM_LAST_VISIT_v3';
-const KEY_ADJUSTED_START = 'HICHAM_ADJUSTED_START_v3'; // Nouveau: heure ajustée manuellement
+const KEY_ADJUSTED_START = 'HICHAM_ADJUSTED_START_v3';
+const KEY_FAST_START = 'FAST_START_v3';
+const KEY_SLEEP_START = 'SLEEP_START_v3';
 const DB_ACCESS = 'DB_ACCESS_v3';
 const DB_REFRESH = 'DB_REFRESH_v3';
 const DB_EXPIRES = 'DB_EXPIRES_v3';
@@ -1139,7 +1141,8 @@ let logs = [], weights = [], settings = { startHour: 20, startMinute: 0, duratio
 let currentMode = 'auto', isEarly = false, chart = null;
 let dbToken = null, dbRefresh = null, dbExpires = 0;
 let fastStartTime = null;
-let adjustedStartTime = null; // Heure ajustée manuellement
+let updateInterval = null;
+let isInitialized = false;
 
 const PHASES = {
     0: { icon: '🍽️', title: 'Fenêtre alimentaire', desc: 'Profitez de vos repas nutritifs', class: '' },
@@ -1149,31 +1152,93 @@ const PHASES = {
     4: { icon: '✨', title: 'Autophagie', desc: 'Régénération cellulaire', class: 'phase-autophagy' }
 };
 
+// Safe JSON parse
+function safeJSONParse(str, defaultVal) {
+    try {
+        return JSON.parse(str) || defaultVal;
+    } catch (e) {
+        console.warn('JSON parse error:', e);
+        return defaultVal;
+    }
+}
+
+// Safe localStorage get
+function safeGetItem(key, defaultVal = null) {
+    try {
+        return localStorage.getItem(key) || defaultVal;
+    } catch (e) {
+        console.warn('localStorage error:', e);
+        return defaultVal;
+    }
+}
+
+// Safe localStorage set
+function safeSetItem(key, value) {
+    try {
+        localStorage.setItem(key, value);
+        return true;
+    } catch (e) {
+        console.warn('localStorage set error:', e);
+        if (e.name === 'QuotaExceededError') {
+            alert('Stockage plein. Videz l\'historique ou synchronisez avec Dropbox.');
+        }
+        return false;
+    }
+}
+
+// Validation des données chargées
+function validateLogEntry(entry) {
+    return entry && 
+           typeof entry === 'object' && 
+           entry.type && 
+           entry.date && 
+           !isNaN(new Date(entry.date).getTime());
+}
+
+function validateWeightEntry(entry) {
+    return entry && 
+           typeof entry === 'object' && 
+           typeof entry.v === 'number' && 
+           entry.d && 
+           !isNaN(new Date(entry.d).getTime());
+}
+
 // Initialisation
 function init() {
-    // Chargement local
-    logs = JSON.parse(localStorage.getItem(KEY_LOGS)) || [];
-    weights = JSON.parse(localStorage.getItem(KEY_WEIGHTS)) || [];
-    settings = JSON.parse(localStorage.getItem(KEY_SETTINGS)) || settings;
-    currentMode = localStorage.getItem(KEY_MODE) || 'auto';
-    dbToken = localStorage.getItem(DB_ACCESS);
-    dbRefresh = localStorage.getItem(DB_REFRESH);
-    dbExpires = parseInt(localStorage.getItem(DB_EXPIRES)) || 0;
+    if (isInitialized) return;
+    isInitialized = true;
+
+    // Chargement local avec validation
+    logs = safeJSONParse(safeGetItem(KEY_LOGS), []).filter(validateLogEntry);
+    weights = safeJSONParse(safeGetItem(KEY_WEIGHTS), []).filter(validateWeightEntry);
+    settings = { ...settings, ...safeJSONParse(safeGetItem(KEY_SETTINGS), {}) };
     
-    // Charger heure ajustée si existe
-    const adjusted = localStorage.getItem(KEY_ADJUSTED_START);
-    if (adjusted) {
-        adjustedStartTime = new Date(adjusted);
-    }
+    // Validation des settings
+    if (typeof settings.startHour !== 'number' || settings.startHour < 0 || settings.startHour > 23) settings.startHour = 20;
+    if (typeof settings.startMinute !== 'number' || settings.startMinute < 0 || settings.startMinute > 59) settings.startMinute = 0;
+    if (typeof settings.duration !== 'number' || settings.duration < 12 || settings.duration > 23) settings.duration = 16;
+    if (![16, 18, 20].includes(settings.fastType)) settings.fastType = 16;
+
+    currentMode = safeGetItem(KEY_MODE, 'auto');
+    dbToken = safeGetItem(DB_ACCESS);
+    dbRefresh = safeGetItem(DB_REFRESH);
+    dbExpires = parseInt(safeGetItem(DB_EXPIRES, '0')) || 0;
 
     // Vérifier jeûne en cours
     checkFastStatus();
     
     // Interface
-    document.getElementById('fast-start-time').value = 
-        String(settings.startHour).padStart(2, '0') + ':' + 
-        String(settings.startMinute).padStart(2, '0');
-    document.getElementById('fast-duration').value = settings.duration;
+    const timeInput = document.getElementById('fast-start-time');
+    if (timeInput) {
+        timeInput.value = String(settings.startHour).padStart(2, '0') + ':' + 
+                         String(settings.startMinute).padStart(2, '0');
+    }
+    
+    const durationInput = document.getElementById('fast-duration');
+    if (durationInput) {
+        durationInput.value = settings.duration;
+    }
+    
     updateFastTypeUI();
 
     // Check-in
@@ -1189,47 +1254,82 @@ function init() {
     updateGreeting();
     update();
 
-    // Timer
-    setInterval(update, 1000);
+    // Timer - nettoyage préventif
+    if (updateInterval) clearInterval(updateInterval);
+    updateInterval = setInterval(update, 1000);
 
     // Sync auto si connecté
-    if (dbToken && localStorage.getItem(DB_AUTO) === 'true') {
+    if (dbToken && safeGetItem(DB_AUTO) === 'true') {
         setTimeout(() => syncFromDropbox(true), 1500);
     }
+
+    // Gestion du beforeunload pour nettoyer
+    window.addEventListener('beforeunload', () => {
+        if (updateInterval) clearInterval(updateInterval);
+    });
 }
 
-// Vérifier statut du jeûne
+// Vérifier statut du jeûne - CORRIGÉ
 function checkFastStatus() {
-    const early = localStorage.getItem(KEY_EARLY);
-    const manual = localStorage.getItem('FAST_START_v3');
-    const adjusted = localStorage.getItem(KEY_ADJUSTED_START);
+    const early = safeGetItem(KEY_EARLY);
+    const manual = safeGetItem(KEY_FAST_START);
+    const adjusted = safeGetItem(KEY_ADJUSTED_START);
+    
+    isEarly = false;
+    fastStartTime = null;
     
     if (early) {
-        const d = JSON.parse(early);
-        const hoursElapsed = (Date.now() - d.start) / 3600000;
-        if (hoursElapsed < settings.duration) {
-            isEarly = true;
-            fastStartTime = new Date(d.start);
-        } else {
-            localStorage.removeItem(KEY_EARLY);
-            isEarly = false;
-            fastStartTime = null;
+        try {
+            const d = safeJSONParse(early, null);
+            if (d && d.start) {
+                const startTime = new Date(d.start);
+                const now = new Date();
+                const hoursElapsed = (now.getTime() - startTime.getTime()) / 3600000;
+                
+                if (hoursElapsed < settings.duration && hoursElapsed >= 0) {
+                    isEarly = true;
+                    fastStartTime = startTime;
+                } else if (hoursElapsed >= settings.duration) {
+                    // Jeûne terminé, nettoyer
+                    safeSetItem(KEY_EARLY, '');
+                }
+            }
+        } catch (e) {
+            console.error('Error parsing early fast:', e);
+            safeSetItem(KEY_EARLY, '');
         }
     } else if (manual) {
-        fastStartTime = new Date(parseInt(manual));
+        const manualTime = parseInt(manual);
+        if (!isNaN(manualTime)) {
+            fastStartTime = new Date(manualTime);
+            // Vérifier si le jeûne manuel n'a pas dépassé la durée
+            const hoursElapsed = (Date.now() - manualTime) / 3600000;
+            if (hoursElapsed >= settings.duration) {
+                // Jeûne terminé mais on garde l'info pour l'affichage
+            }
+        }
     } else if (adjusted) {
-        // Heure ajustée manuellement en mode auto
-        fastStartTime = new Date(adjusted);
+        try {
+            const adjustedDate = new Date(adjusted);
+            if (!isNaN(adjustedDate.getTime())) {
+                const hoursElapsed = (Date.now() - adjustedDate.getTime()) / 3600000;
+                if (hoursElapsed < settings.duration && hoursElapsed >= 0) {
+                    fastStartTime = adjustedDate;
+                } else if (hoursElapsed >= settings.duration) {
+                    safeSetItem(KEY_ADJUSTED_START, '');
+                }
+            }
+        } catch (e) {
+            safeSetItem(KEY_ADJUSTED_START, '');
+        }
     } else {
         // Mode auto standard - calculer prochain début
         const now = new Date();
-        const targetHour = settings.startHour;
-        const targetMin = settings.startMinute;
-        let target = new Date(now);
-        target.setHours(targetHour, targetMin, 0, 0);
+        const target = new Date(now);
+        target.setHours(settings.startHour, settings.startMinute, 0, 0);
         
         // Si déjà passé aujourd'hui, c'est pour demain
-        if (target < now) {
+        if (target <= now) {
             target.setDate(target.getDate() + 1);
         }
         fastStartTime = target;
@@ -1238,39 +1338,47 @@ function checkFastStatus() {
 
 // Check-in matinal
 function checkMorningCheckin() {
-    const lastVisit = localStorage.getItem(KEY_LAST_VISIT);
+    const lastVisit = safeGetItem(KEY_LAST_VISIT);
     const today = new Date().toDateString();
     const hour = new Date().getHours();
     
+    const checkinCard = document.getElementById('checkin-card');
+    if (!checkinCard) return;
+    
     if (lastVisit !== today && hour >= 5 && hour < 12) {
-        document.getElementById('checkin-card').style.display = 'block';
+        checkinCard.style.display = 'block';
     } else {
-        document.getElementById('checkin-card').style.display = 'none';
+        checkinCard.style.display = 'none';
     }
     
-    localStorage.setItem(KEY_LAST_VISIT, today);
+    safeSetItem(KEY_LAST_VISIT, today);
 }
 
 function saveCheckin(level) {
-    document.querySelectorAll('.energy-btn').forEach((btn, idx) => {
+    const buttons = document.querySelectorAll('.energy-btn');
+    buttons.forEach((btn, idx) => {
         btn.classList.toggle('selected', idx + 1 === level);
     });
 
     const moods = ['Épuisé', 'Fatigué', 'Neutre', 'Bien', 'Énergique'];
     const checkin = {
-        level, mood: moods[level - 1],
+        level, 
+        mood: moods[level - 1],
         date: new Date().toISOString()
     };
     
-    localStorage.setItem(KEY_CHECKIN, JSON.stringify(checkin));
+    safeSetItem(KEY_CHECKIN, JSON.stringify(checkin));
     addLog('HUMEUR', moods[level - 1], 'mood');
     
     setTimeout(() => {
-        document.getElementById('checkin-card').style.opacity = '0';
-        setTimeout(() => document.getElementById('checkin-card').style.display = 'none', 300);
+        const card = document.getElementById('checkin-card');
+        if (card) {
+            card.style.opacity = '0';
+            setTimeout(() => card.style.display = 'none', 300);
+        }
     }, 400);
 
-    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
 function updateGreeting() {
@@ -1281,173 +1389,225 @@ function updateGreeting() {
     else if (hour >= 17 && hour < 22) { text = 'Bonsoir Hicham'; sub = 'Préparez votre jeûne de ce soir'; }
     else if (hour >= 22 || hour < 5) { text = 'Bonne nuit Hicham'; sub = 'Repos bien mérité'; }
     
-    document.getElementById('greeting-text').textContent = text;
-    document.getElementById('greeting-sub').textContent = sub;
+    const greetingText = document.getElementById('greeting-text');
+    const greetingSub = document.getElementById('greeting-sub');
+    
+    if (greetingText) greetingText.textContent = text;
+    if (greetingSub) greetingSub.textContent = sub;
 }
 
-// Mise à jour du timer
+// Mise à jour du timer - CORRIGÉ
 function update() {
     const now = new Date();
     const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
-    document.getElementById('clock').innerText = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+    
+    const clock = document.getElementById('clock');
+    if (clock) {
+        clock.innerText = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+    }
     
     let fasting = false, remaining = 0, progress = 0, phase = 0, elapsed = 0;
     let isAdjusted = false;
+    const durationSeconds = settings.duration * 3600;
     
-    // Calcul selon le mode
-    if (currentMode === 'manual') {
-        const start = localStorage.getItem('FAST_START_v3');
-        if (start) {
-            fasting = true;
-            elapsed = (Date.now() - parseInt(start)) / 1000;
-            remaining = Math.max(0, settings.duration * 3600 - elapsed);
-            progress = Math.min(1, elapsed / (settings.duration * 3600));
-            fastStartTime = new Date(parseInt(start));
-        }
-    } else {
-        // Mode auto avec possibilité d'ajustement
-        const adjusted = localStorage.getItem(KEY_ADJUSTED_START);
-        const early = localStorage.getItem(KEY_EARLY);
-        
-        if (early) {
-            // Jeûne anticipé prioritaire
-            const d = JSON.parse(early);
-            elapsed = (Date.now() - d.start) / 1000;
-            remaining = Math.max(0, settings.duration * 3600 - elapsed);
-            progress = Math.min(1, elapsed / (settings.duration * 3600));
-            fasting = remaining > 0;
-            fastStartTime = new Date(d.start);
-            isEarly = true;
-        } else if (adjusted) {
-            // Heure ajustée manuellement
-            const adjustedDate = new Date(adjusted);
-            const elapsedMs = Date.now() - adjustedDate.getTime();
-            elapsed = elapsedMs / 1000;
-            
-            if (elapsed > 0 && elapsed < settings.duration * 3600) {
-                fasting = true;
-                remaining = settings.duration * 3600 - elapsed;
-                progress = elapsed / (settings.duration * 3600);
-                fastStartTime = adjustedDate;
-                isAdjusted = true;
-            } else if (elapsed >= settings.duration * 3600) {
-                // Jeûne terminé, nettoyer l'ajustement
-                localStorage.removeItem(KEY_ADJUSTED_START);
-                fasting = false;
-                adjustedStartTime = null;
-            } else {
-                // Dans le futur (ne devrait pas arriver)
-                fasting = false;
+    try {
+        // Calcul selon le mode
+        if (currentMode === 'manual') {
+            const start = safeGetItem(KEY_FAST_START);
+            if (start) {
+                const startTime = parseInt(start);
+                if (!isNaN(startTime)) {
+                    fasting = true;
+                    elapsed = (Date.now() - startTime) / 1000;
+                    remaining = Math.max(0, durationSeconds - elapsed);
+                    progress = Math.min(1, Math.max(0, elapsed / durationSeconds));
+                    if (!fastStartTime || fastStartTime.getTime() !== startTime) {
+                        fastStartTime = new Date(startTime);
+                    }
+                }
             }
         } else {
-            // Mode auto standard
-            const fs = settings.startHour * 3600 + settings.startMinute * 60;
-            const fe = (fs + settings.duration * 3600) % 86400;
-            const ts = h * 3600 + m * 60 + s;
+            // Mode auto avec possibilité d'ajustement
+            const early = safeGetItem(KEY_EARLY);
+            const adjusted = safeGetItem(KEY_ADJUSTED_START);
             
-            fasting = fs < fe ? (ts >= fs && ts < fe) : (ts >= fs || ts < fe);
-            if (fasting) {
-                elapsed = ts >= fs ? (ts - fs) : (ts + 86400 - fs);
-                remaining = settings.duration * 3600 - elapsed;
-                progress = elapsed / (settings.duration * 3600);
-                const todayStart = new Date();
-                todayStart.setHours(settings.startHour, settings.startMinute, 0, 0);
-                if (todayStart > now) todayStart.setDate(todayStart.getDate() - 1);
-                fastStartTime = todayStart;
+            if (early) {
+                // Jeûne anticipé prioritaire
+                const d = safeJSONParse(early, null);
+                if (d && d.start) {
+                    const startTime = d.start;
+                    elapsed = (Date.now() - startTime) / 1000;
+                    remaining = Math.max(0, durationSeconds - elapsed);
+                    progress = Math.min(1, Math.max(0, elapsed / durationSeconds));
+                    fasting = remaining > 0;
+                    if (!fastStartTime || fastStartTime.getTime() !== startTime) {
+                        fastStartTime = new Date(startTime);
+                    }
+                    isEarly = true;
+                }
+            } else if (adjusted) {
+                // Heure ajustée manuellement
+                const adjustedTime = new Date(adjusted).getTime();
+                if (!isNaN(adjustedTime)) {
+                    const elapsedMs = Date.now() - adjustedTime;
+                    elapsed = elapsedMs / 1000;
+                    
+                    if (elapsed > 0 && elapsed < durationSeconds) {
+                        fasting = true;
+                        remaining = durationSeconds - elapsed;
+                        progress = elapsed / durationSeconds;
+                        if (!fastStartTime || fastStartTime.getTime() !== adjustedTime) {
+                            fastStartTime = new Date(adjustedTime);
+                        }
+                        isAdjusted = true;
+                    } else if (elapsed >= durationSeconds) {
+                        // Jeûne terminé, nettoyer l'ajustement
+                        safeSetItem(KEY_ADJUSTED_START, '');
+                        fasting = false;
+                    }
+                }
             } else {
-                const nextStart = new Date();
-                nextStart.setHours(settings.startHour, settings.startMinute, 0, 0);
-                if (nextStart < now) nextStart.setDate(nextStart.getDate() + 1);
-                fastStartTime = nextStart;
-                remaining = (nextStart - now) / 1000;
+                // Mode auto standard
+                const fs = settings.startHour * 3600 + settings.startMinute * 60;
+                const fe = (fs + durationSeconds) % 86400;
+                const ts = h * 3600 + m * 60 + s;
+                
+                fasting = fs < fe ? (ts >= fs && ts < fe) : (ts >= fs || ts < fe);
+                if (fasting) {
+                    elapsed = ts >= fs ? (ts - fs) : (ts + 86400 - fs);
+                    remaining = Math.max(0, durationSeconds - elapsed);
+                    progress = Math.min(1, Math.max(0, elapsed / durationSeconds));
+                    const todayStart = new Date();
+                    todayStart.setHours(settings.startHour, settings.startMinute, 0, 0);
+                    if (todayStart > now) todayStart.setDate(todayStart.getDate() - 1);
+                    if (!fastStartTime || fastStartTime.getTime() !== todayStart.getTime()) {
+                        fastStartTime = todayStart;
+                    }
+                } else {
+                    const nextStart = new Date();
+                    nextStart.setHours(settings.startHour, settings.startMinute, 0, 0);
+                    if (nextStart < now) nextStart.setDate(nextStart.getDate() + 1);
+                    if (!fastStartTime || fastStartTime.getTime() !== nextStart.getTime()) {
+                        fastStartTime = nextStart;
+                    }
+                    remaining = (nextStart.getTime() - now.getTime()) / 1000;
+                }
             }
         }
-    }
-    
-    // Déterminer phase
-    if (!fasting) phase = 0;
-    else {
-        const hoursElapsed = elapsed / 3600;
-        if (hoursElapsed < 4) phase = 1;
-        else if (hoursElapsed < 8) phase = 2;
-        else if (hoursElapsed < 12) phase = 3;
-        else phase = 4;
-    }
-    
-    // Mise à jour UI
-    const badge = document.getElementById('fast-badge');
-    const startInfo = document.getElementById('fast-start-info');
-    const startDisplay = document.getElementById('fast-start-time-display');
-    const ring = document.getElementById('ring-fill');
-    const phaseData = PHASES[phase];
-    const adjustContainer = document.getElementById('adjust-container');
-    
-    // Afficher/masquer info début de jeûne et bouton ajuster
-    if (fasting && fastStartTime) {
-        startInfo.style.display = 'flex';
-        startDisplay.innerText = fastStartTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
         
-        // Afficher bouton ajuster uniquement en mode auto (pas early)
-        adjustContainer.style.display = (currentMode === 'auto' && !isEarly) ? 'block' : 'none';
-    } else {
-        startInfo.style.display = 'none';
-        adjustContainer.style.display = 'none';
+        // Déterminer phase
+        if (!fasting) phase = 0;
+        else {
+            const hoursElapsed = elapsed / 3600;
+            if (hoursElapsed < 4) phase = 1;
+            else if (hoursElapsed < 8) phase = 2;
+            else if (hoursElapsed < 12) phase = 3;
+            else phase = 4;
+        }
+        
+        // Mise à jour UI
+        const badge = document.getElementById('fast-badge');
+        const startInfo = document.getElementById('fast-start-info');
+        const startDisplay = document.getElementById('fast-start-time-display');
+        const ring = document.getElementById('ring-fill');
+        const adjustContainer = document.getElementById('adjust-container');
+        
+        if (badge) {
+            badge.classList.toggle('active', fasting);
+            badge.innerText = fasting ? 'Jeûne en cours' : 'Fenêtre repas';
+        }
+        
+        // Afficher/masquer info début de jeûne et bouton ajuster
+        if (startInfo) {
+            if (fasting && fastStartTime) {
+                startInfo.style.display = 'flex';
+                if (startDisplay) {
+                    startDisplay.innerText = fastStartTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+                }
+            } else {
+                startInfo.style.display = 'none';
+            }
+        }
+        
+        if (adjustContainer) {
+            // Afficher bouton ajuster uniquement en mode auto (pas early)
+            adjustContainer.style.display = (fasting && currentMode === 'auto' && !isEarly) ? 'block' : 'none';
+        }
+        
+        // Cercle
+        if (ring) {
+            const circumference = 2 * Math.PI * 90;
+            ring.style.strokeDashoffset = circumference - (progress * circumference);
+            ring.className = `ring-fill ${PHASES[phase].class}`;
+        }
+        
+        // Textes
+        const countdown = document.getElementById('countdown');
+        const timerLabel = document.getElementById('timer-label');
+        
+        if (countdown) countdown.innerText = formatTime(Math.abs(remaining));
+        if (timerLabel) timerLabel.innerText = fasting ? 'Temps restant' : 'Prochain jeûne dans';
+        
+        // Phase
+        const phaseIcon = document.getElementById('phase-icon');
+        const phaseTitle = document.getElementById('phase-title');
+        const phaseDesc = document.getElementById('phase-desc');
+        const phaseData = PHASES[phase];
+        
+        if (phaseIcon) phaseIcon.innerText = phaseData.icon;
+        if (phaseTitle) phaseTitle.innerText = phaseData.title;
+        if (phaseDesc) {
+            phaseDesc.innerText = isAdjusted ? 
+                phaseData.desc + ' (heure ajustée)' : phaseData.desc;
+        }
+        
+        // Bouton principal
+        const btn = document.getElementById('fast-action-btn');
+        if (btn) {
+            if (currentMode === 'manual') {
+                const hasStarted = safeGetItem(KEY_FAST_START);
+                btn.innerText = hasStarted ? 'Arrêter le jeûne' : 'Démarrer le jeûne';
+                btn.className = 'btn-primary ' + (hasStarted ? 'btn-stop' : 'btn-start');
+                btn.style.opacity = '1';
+            } else {
+                btn.innerText = isEarly ? 'Arrêter anticipé' : 'Mode auto';
+                btn.className = 'btn-primary btn-stop';
+                btn.style.opacity = isEarly ? '1' : '0.5';
+            }
+        }
+        
+        // Early start (uniquement si pas déjà en jeûne)
+        const earlyContainer = document.getElementById('early-fast-container');
+        if (earlyContainer) {
+            const showEarly = currentMode === 'auto' && !fasting && !isEarly && !isAdjusted;
+            earlyContainer.style.display = showEarly ? 'block' : 'none';
+        }
+        
+    } catch (e) {
+        console.error('Update error:', e);
     }
-    
-    badge.classList.toggle('active', fasting);
-    badge.innerText = fasting ? 'Jeûne en cours' : 'Fenêtre repas';
-    
-    // Cercle
-    const circumference = 2 * Math.PI * 90;
-    ring.style.strokeDashoffset = circumference - (progress * circumference);
-    ring.className = `ring-fill ${phaseData.class}`;
-    
-    // Textes
-    document.getElementById('countdown').innerText = formatTime(Math.abs(remaining));
-    document.getElementById('timer-label').innerText = fasting ? 'Temps restant' : 'Prochain jeûne dans';
-    
-    // Phase
-    document.getElementById('phase-icon').innerText = phaseData.icon;
-    document.getElementById('phase-title').innerText = phaseData.title;
-    document.getElementById('phase-desc').innerText = isAdjusted ? 
-        phaseData.desc + ' (heure ajustée)' : phaseData.desc;
-    
-    // Bouton principal
-    const btn = document.getElementById('fast-action-btn');
-    if (currentMode === 'manual') {
-        const hasStarted = localStorage.getItem('FAST_START_v3');
-        btn.innerText = hasStarted ? 'Arrêter le jeûne' : 'Démarrer le jeûne';
-        btn.className = 'btn-primary ' + (hasStarted ? 'btn-stop' : 'btn-start');
-        btn.style.opacity = '1';
-    } else {
-        btn.innerText = isEarly ? 'Arrêter anticipé' : 'Mode auto';
-        btn.className = 'btn-primary btn-stop';
-        btn.style.opacity = isEarly ? '1' : '0.5';
-    }
-    
-    // Early start (uniquement si pas déjà en jeûne)
-    const showEarly = currentMode === 'auto' && !fasting && !isEarly && !isAdjusted;
-    document.getElementById('early-fast-container').style.display = showEarly ? 'block' : 'none';
     
     updateSleepStatus();
 }
 
 function formatTime(s) {
-    s = Math.floor(s);
+    s = Math.floor(Math.max(0, s));
     const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
     return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
 }
 
-// Drawer ajustement heure
+// Drawer ajustement heure - CORRIGÉ
 function openAdjustTimeDrawer() {
     const drawer = document.getElementById('drawer-adjust');
     const overlay = document.getElementById('overlay');
+    
+    if (!drawer || !overlay) return;
     
     // Pré-remplir avec l'heure actuelle de début
     const now = new Date();
     let defaultTime, defaultDate;
     
-    if (fastStartTime) {
+    if (fastStartTime && fastStartTime instanceof Date && !isNaN(fastStartTime.getTime())) {
         defaultTime = fastStartTime.toTimeString().slice(0, 5);
         defaultDate = fastStartTime.toISOString().slice(0, 10);
     } else {
@@ -1455,19 +1615,26 @@ function openAdjustTimeDrawer() {
         defaultDate = now.toISOString().slice(0, 10);
     }
     
-    document.getElementById('current-adjust-time').innerText = fastStartTime ? 
-        fastStartTime.toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : 
-        'Non défini';
-    document.getElementById('adjust-time-input').value = defaultTime;
-    document.getElementById('adjust-date-input').value = defaultDate;
+    const currentAdjustTime = document.getElementById('current-adjust-time');
+    const adjustTimeInput = document.getElementById('adjust-time-input');
+    const adjustDateInput = document.getElementById('adjust-date-input');
+    
+    if (currentAdjustTime) {
+        currentAdjustTime.innerText = fastStartTime && !isNaN(fastStartTime.getTime()) ? 
+            fastStartTime.toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : 
+            'Non défini';
+    }
+    
+    if (adjustTimeInput) adjustTimeInput.value = defaultTime;
+    if (adjustDateInput) adjustDateInput.value = defaultDate;
     
     drawer.classList.add('open');
     overlay.classList.add('active');
 }
 
 function saveAdjustedTime() {
-    const timeVal = document.getElementById('adjust-time-input').value;
-    const dateVal = document.getElementById('adjust-date-input').value;
+    const timeVal = document.getElementById('adjust-time-input')?.value;
+    const dateVal = document.getElementById('adjust-date-input')?.value;
     
     if (!timeVal || !dateVal) {
         alert('Veuillez remplir l\'heure et la date');
@@ -1477,22 +1644,28 @@ function saveAdjustedTime() {
     // Créer la date de début ajustée
     const adjustedDate = new Date(dateVal + 'T' + timeVal);
     
-    // Vérifier que c'est dans le passé
-    if (adjustedDate > Date.now()) {
+    // Vérifier que la date est valide
+    if (isNaN(adjustedDate.getTime())) {
+        alert('Date invalide');
+        return;
+    }
+    
+    // Vérifier que c'est dans le passé (comparaison CORRIGÉE - both timestamps)
+    const now = new Date();
+    if (adjustedDate.getTime() > now.getTime()) {
         alert('L\'heure de début doit être dans le passé');
         return;
     }
     
     // Vérifier que ça ne dépasse pas la durée du jeûne
-    const hoursElapsed = (Date.now() - adjustedDate.getTime()) / 3600000;
+    const hoursElapsed = (now.getTime() - adjustedDate.getTime()) / 3600000;
     if (hoursElapsed > settings.duration) {
         alert(`Ce jeûne dépasserait déjà ${settings.duration}h. Vérifiez l'heure.`);
         return;
     }
     
     // Sauvegarder l'ajustement
-    localStorage.setItem(KEY_ADJUSTED_START, adjustedDate.toISOString());
-    adjustedStartTime = adjustedDate;
+    safeSetItem(KEY_ADJUSTED_START, adjustedDate.toISOString());
     fastStartTime = adjustedDate;
     
     // Log l'ajustement
@@ -1502,88 +1675,105 @@ function saveAdjustedTime() {
     closeDrawers();
     update();
     
-    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
 // Actions
 function setMode(m) {
     currentMode = m;
-    localStorage.setItem(KEY_MODE, m);
+    safeSetItem(KEY_MODE, m);
     updateMode();
     checkFastStatus();
     update();
 }
 
 function updateMode() {
-    document.getElementById('mode-auto').classList.toggle('active', currentMode === 'auto');
-    document.getElementById('mode-manual').classList.toggle('active', currentMode === 'manual');
+    const modeAuto = document.getElementById('mode-auto');
+    const modeManual = document.getElementById('mode-manual');
+    
+    if (modeAuto) modeAuto.classList.toggle('active', currentMode === 'auto');
+    if (modeManual) modeManual.classList.toggle('active', currentMode === 'manual');
 }
 
 function startEarlyFast() {
     if (!confirm('Commencer le jeûne maintenant ?')) return;
     const now = Date.now();
-    localStorage.setItem(KEY_EARLY, JSON.stringify({ start: now }));
+    safeSetItem(KEY_EARLY, JSON.stringify({ start: now }));
     isEarly = true;
     fastStartTime = new Date(now);
     addLog('JEÛNE', 'Démarré anticipé', 'primary');
     update();
-    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
 function stopEarlyFast() {
     addLog('JEÛNE', 'Terminé anticipé', 'primary');
-    localStorage.removeItem(KEY_EARLY);
+    safeSetItem(KEY_EARLY, '');
     isEarly = false;
     fastStartTime = null;
     update();
-    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
 function handleFastAction() {
     if (currentMode === 'manual') {
-        const s = localStorage.getItem('FAST_START_v3');
+        const s = safeGetItem(KEY_FAST_START);
         if (s) {
-            localStorage.removeItem('FAST_START_v3');
+            safeSetItem(KEY_FAST_START, '');
             addLog('JEÛNE', 'Terminé', 'primary');
             fastStartTime = null;
         } else {
             const now = Date.now();
-            localStorage.setItem('FAST_START_v3', now);
+            safeSetItem(KEY_FAST_START, now);
             fastStartTime = new Date(now);
             addLog('JEÛNE', 'Démarré', 'primary');
         }
         update();
-        if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+        if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
     } else {
         if (isEarly) stopEarlyFast();
         else alert('Mode auto actif. Utilisez le bouton vert pour démarrer tôt.');
     }
 }
 
-// Sommeil
+// Sommeil - CORRIGÉ
 function toggleSleep() {
-    const s = localStorage.getItem('SLEEP_START_v3');
+    const s = safeGetItem(KEY_SLEEP_START);
+    const btn = document.getElementById('sleep-btn');
+    
     if (!s) {
-        localStorage.setItem('SLEEP_START_v3', Date.now());
+        const now = Date.now();
+        safeSetItem(KEY_SLEEP_START, now);
         addLog('SOMMEIL', 'Couché', 'sleep');
     } else {
-        const hours = ((Date.now() - parseInt(s)) / 3600000).toFixed(1);
-        addLog('SOMMEIL', `Durée: ${hours}h`, 'sleep');
-        localStorage.removeItem('SLEEP_START_v3');
+        const startTime = parseInt(s);
+        if (!isNaN(startTime)) {
+            const hours = ((Date.now() - startTime) / 3600000).toFixed(1);
+            addLog('SOMMEIL', `Durée: ${hours}h`, 'sleep');
+            safeSetItem(KEY_SLEEP_START, '');
+        }
     }
     updateSleepStatus();
-    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
 function updateSleepStatus() {
-    const s = localStorage.getItem('SLEEP_START_v3');
+    const s = safeGetItem(KEY_SLEEP_START);
     const status = document.getElementById('sleep-status');
     const btn = document.getElementById('sleep-btn');
     
+    if (!status || !btn) return;
+    
     if (s) {
-        const hours = ((Date.now() - parseInt(s)) / 3600000).toFixed(1);
-        status.innerHTML = `En cours • <strong>${hours}h</strong>`;
-        btn.innerText = '☀️ Réveil';
+        const startTime = parseInt(s);
+        if (!isNaN(startTime)) {
+            const hours = ((Date.now() - startTime) / 3600000).toFixed(1);
+            status.innerHTML = `En cours • <strong>${hours}h</strong>`;
+            btn.innerText = '☀️ Réveil';
+        } else {
+            status.innerText = 'Donnée invalide';
+            btn.innerText = '🛌 Se coucher';
+        }
     } else {
         status.innerText = 'Aucune donnée cette nuit';
         btn.innerText = '🛌 Se coucher';
@@ -1591,149 +1781,235 @@ function updateSleepStatus() {
 }
 
 function saveManualSleep() {
-    const i = document.getElementById('sleep-in').value;
-    const o = document.getElementById('sleep-out').value;
+    const i = document.getElementById('sleep-in')?.value;
+    const o = document.getElementById('sleep-out')?.value;
+    
     if (!i || !o) return alert('Dates requises');
+    
     const s = new Date(i), e = new Date(o);
-    if (e <= s) return alert('Dates invalides');
+    if (isNaN(s.getTime()) || isNaN(e.getTime())) return alert('Dates invalides');
+    if (e <= s) return alert('Le réveil doit être après le coucher');
+    
     const hours = ((e - s) / 3600000).toFixed(1);
     addLog('SOMMEIL', `Nuit: ${hours}h`, 'sleep');
     closeDrawers();
-    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
-// Logs
+// Logs - CORRIGÉ
 function addLog(type, desc, color) {
     const entry = {
-        type, desc, color,
+        type, 
+        desc, 
+        color,
         date: new Date().toISOString(),
-        id: Date.now()
+        id: Date.now() + Math.random().toString(36).substr(2, 9) // ID plus unique
     };
+    
     logs.unshift(entry);
     if (logs.length > 200) logs = logs.slice(0, 200);
-    localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+    safeSetItem(KEY_LOGS, JSON.stringify(logs));
     renderLogs();
 }
 
 function renderLogs() {
     const today = new Date();
-    document.getElementById('today-date').innerText = today.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+    const todayStr = today.toDateString();
+    
+    const todayDateEl = document.getElementById('today-date');
+    if (todayDateEl) {
+        todayDateEl.innerText = today.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+    }
     
     const formatDate = (d) => {
-        const date = new Date(d);
-        const diffDays = Math.floor((today - date) / 86400000);
-        const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-        
-        if (diffDays === 0) return `Auj. ${timeStr}`;
-        if (diffDays === 1) return `Hier ${timeStr}`;
-        return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+        try {
+            const date = new Date(d);
+            if (isNaN(date.getTime())) return 'Date invalide';
+            
+            const diffDays = Math.floor((today - date) / 86400000);
+            const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            
+            if (diffDays === 0) return `Auj. ${timeStr}`;
+            if (diffDays === 1) return `Hier ${timeStr}`;
+            return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+        } catch (e) {
+            return 'Erreur';
+        }
     };
     
     const createLogHTML = (l) => `
-        <div class="log-item ${l.color}">
+        <div class="log-item ${l.color || 'primary'}">
             <div class="log-content">
-                <h4>${l.type}</h4>
-                <p>${l.desc}</p>
+                <h4>${escapeHtml(l.type)}</h4>
+                <p>${escapeHtml(l.desc)}</p>
             </div>
             <div class="log-time">${formatDate(l.date)}</div>
         </div>
     `;
     
-    // Logs récents (aujourd'hui uniquement)
-    const todayStr = today.toDateString();
-    const todayLogs = logs.filter(l => new Date(l.date).toDateString() === todayStr);
+    // Échappement HTML pour éviter XSS
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
     
+    // Logs récents (aujourd'hui uniquement)
     const recentContainer = document.getElementById('recent-logs');
-    if (todayLogs.length === 0) {
-        recentContainer.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📋</div>
-                <p>Aucune activité aujourd'hui</p>
-            </div>`;
-    } else {
-        recentContainer.innerHTML = todayLogs.slice(0, 5).map(createLogHTML).join('');
+    if (recentContainer) {
+        const todayLogs = logs.filter(l => {
+            try {
+                return new Date(l.date).toDateString() === todayStr;
+            } catch (e) {
+                return false;
+            }
+        });
+        
+        if (todayLogs.length === 0) {
+            recentContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <p>Aucune activité aujourd'hui</p>
+                </div>`;
+        } else {
+            recentContainer.innerHTML = todayLogs.slice(0, 5).map(createLogHTML).join('');
+        }
     }
     
     // Tous les logs
     const fullContainer = document.getElementById('full-logs');
-    if (logs.length === 0) {
-        fullContainer.innerHTML = `
-            <div class="empty-state">
-                <div class="empty-state-icon">📜</div>
-                <p>Aucun historique</p>
-            </div>`;
-    } else {
-        fullContainer.innerHTML = logs.map(createLogHTML).join('');
+    if (fullContainer) {
+        if (logs.length === 0) {
+            fullContainer.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-state-icon">📜</div>
+                    <p>Aucun historique</p>
+                </div>`;
+        } else {
+            fullContainer.innerHTML = logs.map(createLogHTML).join('');
+        }
     }
 }
 
-// Poids
+// Poids - CORRIGÉ
 function saveWeight() {
-    const v = parseFloat(document.getElementById('w-input').value);
-    if (!v || v < 30 || v > 300) return alert('Poids invalide');
+    const input = document.getElementById('w-input');
+    if (!input) return;
+    
+    const v = parseFloat(input.value);
+    if (!v || v < 30 || v > 300 || isNaN(v)) return alert('Poids invalide (30-300 kg)');
+    
+    const now = new Date();
     weights.push({
-        d: new Date().toISOString(),
+        d: now.toISOString(),
         v: v,
-        dateLabel: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
+        dateLabel: now.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
     });
-    localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+    
+    safeSetItem(KEY_WEIGHTS, JSON.stringify(weights));
     addLog('POIDS', `${v} kg`, 'weight');
-    document.getElementById('w-input').value = '';
+    input.value = '';
     closeDrawers();
-    if (document.getElementById('view-stats').classList.contains('active')) renderChart();
-    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    
+    const statsView = document.getElementById('view-stats');
+    if (statsView && statsView.classList.contains('active')) {
+        setTimeout(renderChart, 100);
+    }
+    
+    if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
 function renderChart() {
     const cvs = document.getElementById('weightChart');
     if (!cvs) return;
-    if (chart) chart.destroy();
+    
+    // Vérifier que Chart.js est chargé
+    if (typeof Chart === 'undefined') {
+        cvs.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>Chargement du graphique...</p></div>';
+        return;
+    }
+    
+    if (chart) {
+        try {
+            chart.destroy();
+        } catch (e) {
+            console.warn('Chart destroy error:', e);
+        }
+        chart = null;
+    }
     
     if (weights.length === 0) {
         cvs.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>Aucune donnée</p></div>';
         return;
     }
     
-    const sorted = [...weights].sort((a, b) => new Date(a.d) - new Date(b.d)).slice(-30);
-    chart = new Chart(cvs, {
-        type: 'line',
-        data: {
-            labels: sorted.map(w => w.dateLabel),
-            datasets: [{
-                data: sorted.map(w => w.v),
-                borderColor: '#D4A574',
-                backgroundColor: 'rgba(212, 165, 116, 0.1)',
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true,
-                pointBackgroundColor: '#D4A574',
-                pointBorderColor: '#fff',
-                pointBorderWidth: 2,
-                pointRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: {
-                    grid: { color: 'rgba(139, 115, 85, 0.08)' },
-                    ticks: { color: '#8B8680', font: { size: 11 } }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#8B8680', font: { size: 11 } }
-                }
+    try {
+        const sorted = [...weights]
+            .filter(w => w && typeof w.v === 'number' && w.d)
+            .sort((a, b) => new Date(a.d) - new Date(b.d))
+            .slice(-30);
+            
+        if (sorted.length === 0) {
+            cvs.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>Données invalides</p></div>';
+            return;
+        }
+        
+        // Recréer le canvas si nécessaire (si innerHTML a été écrasé avant)
+        if (!document.getElementById('weightChart')) {
+            const container = document.querySelector('.chart-container');
+            if (container) {
+                container.innerHTML = '<canvas id="weightChart"></canvas>';
             }
         }
-    });
+        
+        const ctx = document.getElementById('weightChart')?.getContext('2d');
+        if (!ctx) return;
+        
+        chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: sorted.map(w => w.dateLabel),
+                datasets: [{
+                    data: sorted.map(w => w.v),
+                    borderColor: '#D4A574',
+                    backgroundColor: 'rgba(212, 165, 116, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#D4A574',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(139, 115, 85, 0.08)' },
+                        ticks: { color: '#8B8680', font: { size: 11 } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8B8680', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        console.error('Chart error:', e);
+        cvs.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Erreur graphique</p></div>';
+    }
 }
 
 function setFastType(hours) {
+    if (![16, 18, 20].includes(hours)) return;
     settings.duration = hours;
     settings.fastType = hours;
-    localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
+    safeSetItem(KEY_SETTINGS, JSON.stringify(settings));
     updateFastTypeUI();
     update();
     showStatus('success', `Type ${hours}:${24-hours} sélectionné`);
@@ -1741,17 +2017,30 @@ function setFastType(hours) {
 
 function updateFastTypeUI() {
     [16, 18, 20].forEach(h => {
-        document.getElementById(`type-${h}`).classList.toggle('active', settings.fastType === h);
+        const btn = document.getElementById(`type-${h}`);
+        if (btn) btn.classList.toggle('active', settings.fastType === h);
     });
-    document.getElementById('duration-label').innerText = `${settings.duration} heures`;
+    
+    const durationLabel = document.getElementById('duration-label');
+    if (durationLabel) {
+        durationLabel.innerText = `${settings.duration} heures`;
+    }
 }
 
 function updateFastSettings() {
-    const [h, m] = document.getElementById('fast-start-time').value.split(':').map(Number);
-    settings.startHour = h;
-    settings.startMinute = m;
-    settings.duration = parseInt(document.getElementById('fast-duration').value) || 16;
-    localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
+    const timeInput = document.getElementById('fast-start-time');
+    const durationInput = document.getElementById('fast-duration');
+    
+    if (!timeInput || !durationInput) return;
+    
+    const [h, m] = (timeInput.value || '20:00').split(':').map(Number);
+    settings.startHour = isNaN(h) ? 20 : h;
+    settings.startMinute = isNaN(m) ? 0 : m;
+    
+    const duration = parseInt(durationInput.value);
+    settings.duration = isNaN(duration) ? 16 : Math.max(12, Math.min(23, duration));
+    
+    safeSetItem(KEY_SETTINGS, JSON.stringify(settings));
     updateFastTypeUI();
     checkFastStatus();
     update();
@@ -1759,65 +2048,117 @@ function updateFastSettings() {
 
 // Navigation
 function switchTab(tab) {
-    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + tab).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('nav-' + tab).classList.add('active');
-    if (tab === 'stats') setTimeout(renderChart, 100);
+    const views = ['main', 'stats', 'history'];
+    
+    views.forEach(v => {
+        const viewEl = document.getElementById('view-' + v);
+        const navEl = document.getElementById('nav-' + v);
+        
+        if (viewEl) viewEl.classList.toggle('active', v === tab);
+        if (navEl) navEl.classList.toggle('active', v === tab);
+    });
+    
+    if (tab === 'stats') {
+        // Attendre que le DOM soit prêt
+        setTimeout(() => {
+            if (typeof Chart !== 'undefined') {
+                renderChart();
+            } else {
+                // Retry après chargement de Chart.js
+                setTimeout(renderChart, 1000);
+            }
+        }, 100);
+    }
     if (tab === 'history') renderLogs();
 }
 
 function openDrawer(id) {
-    document.getElementById('drawer-' + id).classList.add('open');
-    document.getElementById('overlay').classList.add('active');
+    const drawer = document.getElementById('drawer-' + id);
+    const overlay = document.getElementById('overlay');
+    
+    if (!drawer || !overlay) return;
+    
     if (id === 'sleep') {
-        const n = new Date(), y = new Date(n.getTime() - 86400000);
-        const f = d => d.toISOString().slice(0, 16);
-        document.getElementById('sleep-in').value = f(y);
-        document.getElementById('sleep-out').value = f(n);
+        const sleepIn = document.getElementById('sleep-in');
+        const sleepOut = document.getElementById('sleep-out');
+        
+        if (sleepIn && sleepOut) {
+            const n = new Date(), y = new Date(n.getTime() - 86400000);
+            const f = d => {
+                // Format datetime-local: YYYY-MM-DDTHH:mm
+                const iso = d.toISOString();
+                return iso.slice(0, 16);
+            };
+            sleepIn.value = f(y);
+            sleepOut.value = f(n);
+        }
     }
+    
     if (id === 'cloud') updateCloudUI();
+    
+    drawer.classList.add('open');
+    overlay.classList.add('active');
 }
 
 function closeDrawers() {
-    document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
-    document.getElementById('overlay').classList.remove('active');
+    document.querySelectorAll('.drawer').forEach(d => {
+        if (d) d.classList.remove('open');
+    });
+    
+    const overlay = document.getElementById('overlay');
+    if (overlay) overlay.classList.remove('active');
 }
 
 function showStatus(type, msg) {
     const ind = document.getElementById('sync-indicator');
+    if (!ind) return;
+    
     ind.className = 'sync-indicator show';
-    document.getElementById('sync-icon').innerText = type === 'syncing' ? '🔄' : type === 'success' ? '✅' : '❌';
-    document.getElementById('sync-text').innerText = msg;
-    if (type !== 'syncing') setTimeout(() => ind.classList.remove('show'), 2500);
+    
+    const icon = document.getElementById('sync-icon');
+    const text = document.getElementById('sync-text');
+    
+    if (icon) icon.innerText = type === 'syncing' ? '🔄' : type === 'success' ? '✅' : '❌';
+    if (text) text.innerText = msg;
+    
+    if (type !== 'syncing') {
+        setTimeout(() => ind.classList.remove('show'), 2500);
+    }
 }
 
-// ========== DROPBOX SYNC ==========
+// ========== DROPBOX SYNC - CORRIGÉ ==========
 
 async function startOAuth() {
-    const verifier = generateVerifier(64);
-    localStorage.setItem('oauth_verifier', verifier);
-    const challenge = await sha256(verifier);
-    const challengeBase64 = base64URLEncode(challenge);
-    const state = Math.random().toString(36).substring(2, 15);
-    localStorage.setItem('oauth_state', state);
-    
-    const url = `https://www.dropbox.com/oauth2/authorize?` +
-        `client_id=${DROPBOX_CLIENT_ID}` +
-        `&response_type=code` +
-        `&code_challenge_method=S256` +
-        `&code_challenge=${challengeBase64}` +
-        `&state=${state}` +
-        `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-        `&token_access_type=offline`;
-    
-    window.location.href = url;
+    try {
+        const verifier = generateVerifier(64);
+        localStorage.setItem('oauth_verifier', verifier);
+        const challenge = await sha256(verifier);
+        const challengeBase64 = base64URLEncode(challenge);
+        const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        localStorage.setItem('oauth_state', state);
+        
+        const url = `https://www.dropbox.com/oauth2/authorize?` +
+            `client_id=${DROPBOX_CLIENT_ID}` +
+            `&response_type=code` +
+            `&code_challenge_method=S256` +
+            `&code_challenge=${challengeBase64}` +
+            `&state=${state}` +
+            `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+            `&token_access_type=offline`;
+        
+        window.location.href = url;
+    } catch (e) {
+        console.error('OAuth start error:', e);
+        alert('Erreur de démarrage OAuth');
+    }
 }
 
 function generateVerifier(length) {
     const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
     let text = '';
-    for (let i = 0; i < length; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+    for (let i = 0; i < length; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
     return text;
 }
 
@@ -1835,30 +2176,44 @@ function base64URLEncode(str) {
 }
 
 async function handleOAuthReturn() {
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get('code');
-    const state = params.get('state');
-    const error = params.get('error');
-    
-    if (error) {
-        showStatus('error', 'Connexion annulée');
-        window.history.replaceState({}, document.title, window.location.pathname);
-        return;
-    }
-    if (!code) return;
-    
-    const savedState = localStorage.getItem('oauth_state');
-    if (state !== savedState) return;
-    
-    const verifier = localStorage.getItem('oauth_verifier');
-    showStatus('syncing', 'Connexion...');
-    
     try {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        const state = params.get('state');
+        const error = params.get('error');
+        
+        if (error) {
+            showStatus('error', 'Connexion annulée: ' + error);
+            // Nettoyer l'URL sans recharger
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+        
+        if (!code) return;
+        
+        const savedState = localStorage.getItem('oauth_state');
+        if (!savedState || state !== savedState) {
+            console.warn('State mismatch');
+            return;
+        }
+        
+        // Nettoyer les params OAuth de l'URL immédiatement
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        const verifier = localStorage.getItem('oauth_verifier');
+        if (!verifier) {
+            showStatus('error', 'Session invalide');
+            return;
+        }
+        
+        showStatus('syncing', 'Connexion...');
+        
         const response = await fetch('https://api.dropboxapi.com/oauth2/token', {
             method: 'POST',
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: new URLSearchParams({
-                code, grant_type: 'authorization_code',
+                code, 
+                grant_type: 'authorization_code',
                 client_id: DROPBOX_CLIENT_ID,
                 code_verifier: verifier,
                 redirect_uri: REDIRECT_URI
@@ -1866,6 +2221,7 @@ async function handleOAuthReturn() {
         });
         
         const data = await response.json();
+        
         if (data.access_token) {
             saveTokens(data.access_token, data.refresh_token, data.expires_in);
             showStatus('success', 'Connecté !');
@@ -1873,22 +2229,27 @@ async function handleOAuthReturn() {
             closeDrawers();
             setTimeout(() => syncFromDropbox(), 800);
         } else {
-            throw new Error(data.error_description || 'Erreur');
+            throw new Error(data.error_description || 'Erreur d\'authentification');
         }
+        
+        // Nettoyer le localStorage OAuth
+        localStorage.removeItem('oauth_verifier');
+        localStorage.removeItem('oauth_state');
+        
     } catch (e) {
+        console.error('OAuth error:', e);
         showStatus('error', 'Échec connexion');
     }
-    
-    window.history.replaceState({}, document.title, window.location.pathname);
 }
 
 function saveTokens(access, refresh, expiresIn) {
+    if (!access) return;
     dbToken = access;
-    dbRefresh = refresh;
-    dbExpires = Date.now() + (expiresIn * 1000);
-    localStorage.setItem(DB_ACCESS, access);
-    localStorage.setItem(DB_REFRESH, refresh);
-    localStorage.setItem(DB_EXPIRES, dbExpires.toString());
+    dbRefresh = refresh || null;
+    dbExpires = Date.now() + ((expiresIn || 14400) * 1000);
+    safeSetItem(DB_ACCESS, access);
+    if (refresh) safeSetItem(DB_REFRESH, refresh);
+    safeSetItem(DB_EXPIRES, dbExpires.toString());
 }
 
 async function refreshToken() {
@@ -1908,7 +2269,9 @@ async function refreshToken() {
             saveTokens(data.access_token, dbRefresh, data.expires_in);
             return true;
         }
-    } catch (e) { console.error('Refresh failed', e); }
+    } catch (e) { 
+        console.error('Refresh failed', e); 
+    }
     return false;
 }
 
@@ -1939,11 +2302,14 @@ async function syncToDropbox() {
     showStatus('syncing', 'Sauvegarde...');
     
     const data = {
-        logs, weights, settings, mode: currentMode,
-        early: localStorage.getItem(KEY_EARLY),
-        adjustedStart: localStorage.getItem(KEY_ADJUSTED_START),
-        checkin: localStorage.getItem(KEY_CHECKIN),
-        fastStart: localStorage.getItem('FAST_START_v3'),
+        logs, 
+        weights, 
+        settings, 
+        mode: currentMode,
+        early: safeGetItem(KEY_EARLY),
+        adjustedStart: safeGetItem(KEY_ADJUSTED_START),
+        checkin: safeGetItem(KEY_CHECKIN),
+        fastStart: safeGetItem(KEY_FAST_START),
         version: '3.1',
         lastSync: new Date().toISOString()
     };
@@ -1965,10 +2331,12 @@ async function syncToDropbox() {
         if (response.ok) {
             showStatus('success', 'Sauvegardé !');
         } else {
-            throw new Error('Upload échoué');
+            const err = await response.text();
+            throw new Error('Upload échoué: ' + err);
         }
     } catch (e) {
-        showStatus('error', e.message);
+        console.error('Sync error:', e);
+        showStatus('error', e.message || 'Erreur de sauvegarde');
     }
 }
 
@@ -1989,52 +2357,79 @@ async function syncFromDropbox(silent = false) {
             return;
         }
         
+        if (!response.ok) {
+            throw new Error('Download failed: ' + response.status);
+        }
+        
         const text = await response.text();
-        const data = JSON.parse(text);
+        let data;
+        
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error('Données corrompues');
+        }
         
         console.log('Données reçues:', data);
         
-        // Merge logs
+        // Validation des données reçues
+        if (!data || typeof data !== 'object') {
+            throw new Error('Format invalide');
+        }
+        
+        // Merge logs avec validation
         if (data.logs && Array.isArray(data.logs)) {
+            const validLogs = data.logs.filter(validateLogEntry);
             const existingIds = new Set(logs.map(l => l.id));
-            const newLogs = data.logs.filter(l => l.id && !existingIds.has(l.id));
+            const newLogs = validLogs.filter(l => l.id && !existingIds.has(l.id));
+            
             if (newLogs.length > 0) {
                 logs = [...newLogs, ...logs].sort((a, b) => new Date(b.date) - new Date(a.date));
                 logs = logs.slice(0, 200);
-                localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+                safeSetItem(KEY_LOGS, JSON.stringify(logs));
                 console.log(`${newLogs.length} nouveaux logs ajoutés`);
             }
         }
         
-        // Merge poids
+        // Merge poids avec validation
         if (data.weights && Array.isArray(data.weights)) {
+            const validWeights = data.weights.filter(validateWeightEntry);
             const existingDates = new Set(weights.map(w => w.d));
-            const newWeights = data.weights.filter(w => w.d && !existingDates.has(w.d));
+            const newWeights = validWeights.filter(w => w.d && !existingDates.has(w.d));
+            
             if (newWeights.length > 0) {
                 weights = [...newWeights, ...weights].sort((a, b) => new Date(a.d) - new Date(b.d));
-                localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+                safeSetItem(KEY_WEIGHTS, JSON.stringify(weights));
                 console.log(`${newWeights.length} nouveaux poids ajoutés`);
             }
         }
         
-        // Restaurer settings
-        if (data.settings && JSON.stringify(data.settings) !== JSON.stringify(settings)) {
-            settings = { ...settings, ...data.settings };
-            localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
-            document.getElementById('fast-start-time').value = 
-                String(settings.startHour).padStart(2, '0') + ':' + 
-                String(settings.startMinute).padStart(2, '0');
-            document.getElementById('fast-duration').value = settings.duration;
-            updateFastTypeUI();
+        // Restaurer settings avec validation
+        if (data.settings && typeof data.settings === 'object') {
+            const newSettings = { ...settings, ...data.settings };
+            // Validation
+            if (typeof newSettings.startHour === 'number' && newSettings.startHour >= 0 && newSettings.startHour <= 23 &&
+                typeof newSettings.startMinute === 'number' && newSettings.startMinute >= 0 && newSettings.startMinute <= 59 &&
+                typeof newSettings.duration === 'number' && newSettings.duration >= 12 && newSettings.duration <= 23) {
+                settings = newSettings;
+                safeSetItem(KEY_SETTINGS, JSON.stringify(settings));
+                
+                // Mettre à jour les inputs
+                const timeInput = document.getElementById('fast-start-time');
+                const durationInput = document.getElementById('fast-duration');
+                if (timeInput) timeInput.value = String(settings.startHour).padStart(2, '0') + ':' + String(settings.startMinute).padStart(2, '0');
+                if (durationInput) durationInput.value = settings.duration;
+                updateFastTypeUI();
+            }
         }
         
         // Restaurer état
-        if (data.early) localStorage.setItem(KEY_EARLY, data.early);
-        if (data.adjustedStart) localStorage.setItem(KEY_ADJUSTED_START, data.adjustedStart);
-        if (data.fastStart) localStorage.setItem('FAST_START_v3', data.fastStart);
-        if (data.mode) {
+        if (data.early) safeSetItem(KEY_EARLY, data.early);
+        if (data.adjustedStart) safeSetItem(KEY_ADJUSTED_START, data.adjustedStart);
+        if (data.fastStart) safeSetItem(KEY_FAST_START, data.fastStart);
+        if (data.mode && ['auto', 'manual'].includes(data.mode)) {
             currentMode = data.mode;
-            localStorage.setItem(KEY_MODE, currentMode);
+            safeSetItem(KEY_MODE, currentMode);
             updateMode();
         }
         
@@ -2046,50 +2441,74 @@ async function syncFromDropbox(silent = false) {
         if (!silent) showStatus('success', `${data.logs?.length || 0} entrées chargées`);
     } catch (e) {
         console.error('Sync error:', e);
-        if (!silent) showStatus('error', 'Erreur de chargement');
+        if (!silent) showStatus('error', e.message || 'Erreur de chargement');
     }
 }
 
 function updateCloudUI() {
     const connected = !!dbToken && Date.now() < dbExpires;
     
-    document.getElementById('oauth-connect').style.display = connected ? 'none' : 'block';
-    document.getElementById('manual-connect').style.display = 'none';
-    document.getElementById('cloud-connected').style.display = connected ? 'block' : 'none';
+    const oauthConnect = document.getElementById('oauth-connect');
+    const manualConnect = document.getElementById('manual-connect');
+    const cloudConnected = document.getElementById('cloud-connected');
+    
+    if (oauthConnect) oauthConnect.style.display = connected ? 'none' : 'block';
+    if (manualConnect) manualConnect.style.display = 'none';
+    if (cloudConnected) cloudConnected.style.display = connected ? 'block' : 'none';
     
     const statusEl = document.getElementById('cloud-status');
     const textEl = document.getElementById('cloud-status-text');
+    
+    if (!statusEl || !textEl) return;
+    
     const btn = statusEl.querySelector('.sync-btn');
     
     if (connected) {
         statusEl.className = 'cloud-status synced';
         textEl.innerText = 'Connecté';
-        btn.innerText = 'Sync';
-        btn.onclick = () => syncToDropbox();
-        document.getElementById('auto-sync').checked = localStorage.getItem(DB_AUTO) === 'true';
+        if (btn) {
+            btn.innerText = 'Sync';
+            btn.onclick = () => syncToDropbox();
+        }
+        const autoSync = document.getElementById('auto-sync');
+        if (autoSync) autoSync.checked = safeGetItem(DB_AUTO) === 'true';
     } else {
         statusEl.className = 'cloud-status';
         textEl.innerText = 'Non connecté';
-        btn.innerText = 'Connecter';
-        btn.onclick = () => openDrawer('cloud');
+        if (btn) {
+            btn.innerText = 'Connecter';
+            btn.onclick = () => openDrawer('cloud');
+        }
     }
 }
 
 function showManual() {
-    document.getElementById('oauth-connect').style.display = 'none';
-    document.getElementById('manual-connect').style.display = 'block';
+    const oauth = document.getElementById('oauth-connect');
+    const manual = document.getElementById('manual-connect');
+    if (oauth) oauth.style.display = 'none';
+    if (manual) manual.style.display = 'block';
 }
 
 function showOAuth() {
-    document.getElementById('oauth-connect').style.display = 'block';
-    document.getElementById('manual-connect').style.display = 'none';
+    const oauth = document.getElementById('oauth-connect');
+    const manual = document.getElementById('manual-connect');
+    if (oauth) oauth.style.display = 'block';
+    if (manual) manual.style.display = 'none';
 }
 
 function connectManual() {
-    const token = document.getElementById('manual-token').value.trim().replace(/\s/g, '');
+    const input = document.getElementById('manual-token');
+    const errorMsg = document.getElementById('error-msg');
+    
+    if (!input) return;
+    
+    const token = input.value.trim().replace(/\s/g, '');
+    
     if (!token.startsWith('sl.')) {
-        document.getElementById('error-msg').innerText = 'Token invalide (doit commencer par sl.)';
-        document.getElementById('error-msg').style.display = 'block';
+        if (errorMsg) {
+            errorMsg.innerText = 'Token invalide (doit commencer par sl.)';
+            errorMsg.style.display = 'block';
+        }
         return;
     }
     
@@ -2100,37 +2519,46 @@ function connectManual() {
     }).then(r => {
         if (r.ok) {
             dbToken = token;
-            localStorage.setItem(DB_ACCESS, token);
-            localStorage.setItem(DB_EXPIRES, (Date.now() + 14400000).toString());
+            safeSetItem(DB_ACCESS, token);
+            safeSetItem(DB_EXPIRES, (Date.now() + 14400000).toString());
             updateCloudUI();
             closeDrawers();
             showStatus('success', 'Connecté (4h)');
             setTimeout(() => syncFromDropbox(), 500);
         } else {
-            throw new Error('Invalid');
+            throw new Error('Invalid token');
         }
     }).catch(e => {
-        document.getElementById('error-msg').innerText = 'Token invalide';
-        document.getElementById('error-msg').style.display = 'block';
+        if (errorMsg) {
+            errorMsg.innerText = 'Token invalide ou expiré';
+            errorMsg.style.display = 'block';
+        }
     });
 }
 
 function disconnect() {
-    if (!confirm('Déconnecter Dropbox ?')) return;
+    if (!confirm('Déconnecter Dropbox ? Les données locales seront conservées.')) return;
     dbToken = null;
     dbRefresh = null;
-    localStorage.removeItem(DB_ACCESS);
-    localStorage.removeItem(DB_REFRESH);
-    localStorage.removeItem(DB_EXPIRES);
+    safeSetItem(DB_ACCESS, '');
+    safeSetItem(DB_REFRESH, '');
+    safeSetItem(DB_EXPIRES, '0');
     updateCloudUI();
 }
 
 function toggleAuto() {
-    localStorage.setItem(DB_AUTO, document.getElementById('auto-sync').checked ? 'true' : 'false');
+    const checkbox = document.getElementById('auto-sync');
+    if (checkbox) {
+        safeSetItem(DB_AUTO, checkbox.checked ? 'true' : 'false');
+    }
 }
 
-// Démarrage
-document.addEventListener('DOMContentLoaded', init);
+// Démarrage sécurisé
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
 </script>
 
 </body>
