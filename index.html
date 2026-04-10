@@ -3,198 +3,266 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hicham Fasting Master</title>
+    <title>Fasting Pro - Hicham</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --green: #2ecc71; --orange: #f39c12; --dark: #090e1a; --card: #161c2d; --text: #ffffff; }
-        * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
-        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--dark); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        
-        /* HEADER */
-        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(9,14,26,0.95); border-bottom: 1px solid rgba(255,255,255,0.1); z-index: 100; }
-        .profile { display: flex; align-items: center; gap: 12px; }
-        .profile img { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--green); object-fit: cover; }
-        .clock-ui { font-weight: 700; background: rgba(255,255,255,0.1); padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; color: var(--green); }
+        :root {
+            --primary: #2ecc71; --accent: #f39c12; --bg: #090e1a;
+            --card-bg: rgba(22, 28, 45, 0.7); --text: #ffffff;
+        }
 
-        .main { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; align-items: center; gap: 20px; padding-bottom: 30px; }
-        
-        /* TIMER CIRCLE */
-        .timer-box { position: relative; width: 250px; height: 250px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--card); box-shadow: 0 20px 50px rgba(0,0,0,0.6); margin-top: 10px; }
-        #countdown { font-size: 3.2rem; font-weight: 800; margin: 0; letter-spacing: -2px; }
-        .status-badge { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
 
-        /* INTERACTIVE PHASES */
-        .phases-title { align-self: flex-start; font-size: 0.9rem; font-weight: 800; color: #94a3b8; margin-bottom: -10px; }
-        .phases-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; }
-        .ph-btn { background: var(--card); padding: 15px 5px; border-radius: 18px; text-align: center; opacity: 0.4; transition: 0.3s; border: 2px solid transparent; cursor: pointer; }
-        .ph-btn.active { opacity: 1; border-color: var(--green); background: rgba(46, 204, 113, 0.1); }
-        .ph-btn i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
-        .ph-btn span { font-size: 0.55rem; font-weight: 800; color: #64748b; }
+        body {
+            margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text);
+            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+        }
 
-        /* INFO CARD */
-        .info-card { background: var(--card); padding: 20px; border-radius: 25px; border-left: 5px solid var(--green); width: 100%; min-height: 120px; animation: slideIn 0.3s ease-out; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        #info-title { margin: 0; color: var(--green); font-size: 1rem; font-weight: 800; }
-        #info-desc { font-size: 0.85rem; color: #94a3b8; margin: 8px 0 0; line-height: 1.5; }
+        /* GLASSMORPHISM HEADER */
+        .header {
+            padding: 20px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(9, 14, 26, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05);
+            position: sticky; top: 0; z-index: 100;
+        }
 
-        /* DRAWER BOTTOM */
-        .drawer { position: fixed; bottom: 0; width: 100%; background: #0f172a; border-radius: 30px 30px 0 0; height: 75vh; transform: translateY(calc(100% - 65px)); transition: transform 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); z-index: 1000; border-top: 1px solid rgba(255,255,255,0.1); }
+        .profile-area { display: flex; align-items: center; gap: 12px; }
+        .profile-area img { width: 45px; height: 45px; border-radius: 15px; border: 2px solid var(--primary); object-fit: cover; }
+        .streak-badge { background: rgba(243, 156, 18, 0.2); color: var(--accent); padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; }
+
+        .container { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; display: flex; flex-direction: column; gap: 20px; }
+
+        /* CIRCULAR TIMER */
+        .timer-card {
+            background: var(--card-bg); padding: 30px 20px; border-radius: 35px; text-align: center;
+            position: relative; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .progress-ring { position: relative; width: 220px; height: 220px; margin: 0 auto; }
+        .progress-ring svg { transform: rotate(-90deg); width: 220px; height: 220px; }
+        .progress-ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
+        .circle-bg { stroke: rgba(255,255,255,0.05); }
+        .circle-val { stroke: var(--primary); transition: stroke-dashoffset 1s linear; stroke-dasharray: 628; stroke-dashoffset: 628; }
+
+        .timer-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        #countdown { font-size: 2.8rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .status-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary); letter-spacing: 1px; }
+
+        /* QUICK STATS */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-card { background: var(--card-bg); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-card span { display: block; font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
+        .stat-card b { font-size: 1.1rem; color: #fff; }
+
+        /* WATER TRACKER */
+        .water-card { background: linear-gradient(135deg, #3498db, #2980b9); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .water-info h4 { margin: 0; font-size: 1rem; }
+        .water-info p { margin: 2px 0 0; font-size: 0.75rem; opacity: 0.8; }
+        .water-btn { background: white; color: #3498db; border: none; width: 45px; height: 45px; border-radius: 15px; font-size: 1.5rem; font-weight: 800; cursor: pointer; }
+
+        /* PHASES */
+        .section-title { font-size: 0.9rem; font-weight: 800; color: #64748b; margin-bottom: -10px; }
+        .phases-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .ph-box { background: var(--card-bg); padding: 15px 5px; border-radius: 18px; text-align: center; border: 1px solid transparent; opacity: 0.4; transition: 0.3s; }
+        .ph-box.active { opacity: 1; border-color: var(--primary); background: rgba(46, 204, 113, 0.15); }
+        .ph-box span { font-size: 0.55rem; font-weight: 800; display: block; margin-top: 5px; }
+
+        /* BOTTOM NAV */
+        .nav-bar {
+            position: fixed; bottom: 0; width: 100%; background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px); display: flex; justify-content: space-around;
+            padding: 15px 0 30px; border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .nav-item { font-size: 1.5rem; opacity: 0.3; transition: 0.3s; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-5px); }
+
+        /* DRAWER FOR WEIGHT */
+        .drawer {
+            position: fixed; bottom: 0; left:0; width: 100%; background: #0f172a; height: 75vh;
+            border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.5s; z-index: 1000; padding: 25px;
+        }
         .drawer.open { transform: translateY(0); }
-        .handle { width: 45px; height: 5px; background: #334155; border-radius: 10px; margin: 12px auto; cursor: pointer; }
+        .drawer-handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -10px auto 20px; }
 
-        .tabs { display: flex; justify-content: space-around; padding: 5px; }
-        .tab { font-size: 0.8rem; font-weight: 800; opacity: 0.4; color: white; cursor: pointer; padding: 10px; }
-        .tab.active { opacity: 1; color: var(--green); border-bottom: 3px solid var(--green); }
-
-        .section { display: none; padding: 20px; flex-direction: column; }
-        .section.active { display: flex; }
-
-        .input-group { display: flex; gap: 8px; margin-top: 15px; }
-        .input-group input { flex: 1; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; color: white; }
-        .btn-action { background: var(--green); border: none; padding: 15px 25px; border-radius: 15px; font-weight: 800; cursor: pointer; }
-
-        canvas { width: 100% !important; max-height: 250px; margin-top: 20px; }
+        input { width: 100%; background: #1e293b; border: none; border-radius: 15px; padding: 18px; color: white; font-size: 1rem; margin-top: 10px; }
+        .btn-main { background: var(--primary); border: none; width: 100%; padding: 18px; border-radius: 18px; color: white; font-weight: 800; margin-top: 15px; font-size: 1rem; }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div class="profile">
+        <div class="profile-area">
             <img src="votre-photo.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff'">
             <div>
-                <div style="font-weight: 800; font-size: 1.1rem;">HICHAM</div>
-                <div style="font-size: 0.65rem; color: var(--green); font-weight: 800;">PROGRAMME 18/6</div>
+                <div style="font-weight: 800; font-size: 1rem;">Bonjour Hicham</div>
+                <div class="streak-badge">🔥 12 JOURS DE SÉRIE</div>
             </div>
         </div>
-        <div id="clock" class="clock-ui">00:00</div>
+        <div id="top-clock" style="font-weight: 800; opacity: 0.5; font-size: 0.9rem;">00:00</div>
     </div>
 
-    <div class="main">
-        <div class="timer-box">
-            <div id="status-label" class="status-badge">Analyse...</div>
-            <h1 id="countdown">00:00:00</h1>
-            <div id="target-ui" style="font-size: 0.7rem; color: #64748b; margin-top: 8px; font-weight: 700;">FENÊTRE : 10h - 16h</div>
+    <div class="container" id="main-view">
+        <!-- TIMER -->
+        <div class="timer-card">
+            <div class="progress-ring">
+                <svg>
+                    <circle class="circle-bg" cx="110" cy="110" r="100"></circle>
+                    <circle id="circle-progress" class="circle-val" cx="110" cy="110" r="100"></circle>
+                </svg>
+                <div class="timer-content">
+                    <span id="status-label" class="status-label">JEÛNE ACTIF</span>
+                    <h1 id="countdown">00:00:00</h1>
+                </div>
+            </div>
         </div>
 
-        <div class="phases-title">ÉTAPE DU MÉTABOLISME :</div>
+        <!-- STATS -->
+        <div class="stats-grid">
+            <div class="stat-card"><span>Fenêtre Repas</span><b>10h - 16h</b></div>
+            <div class="stat-card"><span>Objectif</span><b>18 Heures</b></div>
+        </div>
+
+        <!-- WATER -->
+        <div class="water-card">
+            <div class="water-info">
+                <h4>Hydratation</h4>
+                <p>Objectif: 2.5L (<span id="water-count">0</span> verres)</p>
+            </div>
+            <button class="water-btn" onclick="addWater()">+</button>
+        </div>
+
+        <!-- PHASES -->
+        <div class="section-title">PHASE ACTUELLE</div>
         <div class="phases-row">
-            <div id="p1" class="ph-btn" onclick="showPhase(1)"><i>🧪</i><span>SUCRE</span></div>
-            <div id="p2" class="ph-btn" onclick="showPhase(2)"><i>📉</i><span>INSULINE</span></div>
-            <div id="p3" class="ph-btn" onclick="showPhase(3)"><i>🔥</i><span>KÉTOSE</span></div>
-            <div id="p4" class="ph-btn" onclick="showPhase(4)"><i>✨</i><span>AUTO-P</span></div>
+            <div id="p1" class="ph-box"><i>🧪</i><span>SUCRE</span></div>
+            <div id="p2" class="ph-box"><i>📉</i><span>INSULINE</span></div>
+            <div id="p3" class="ph-box"><i>🔥</i><span>KÉTOSE</span></div>
+            <div id="p4" class="ph-box"><i>✨</i><span>AUTO-P</span></div>
         </div>
 
-        <div class="info-card" id="info-card">
-            <h4 id="info-title">Cliquez sur une phase</h4>
-            <p id="info-desc">Découvrez ce qui se passe dans votre corps en temps réel.</p>
+        <!-- INFO CARD -->
+        <div id="info-card" style="background:var(--card-bg); padding:20px; border-radius:25px; border-left:4px solid var(--primary);">
+            <h4 id="info-title" style="margin:0; font-size:0.9rem; color:var(--primary);">Analyse en cours...</h4>
+            <p id="info-desc" style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0 0; line-height: 1.4;"></p>
         </div>
-
-        <button onclick="toggleDrawer()" style="width: 100%; padding: 18px; border-radius: 20px; border: none; background: #1e293b; color: white; font-weight: 800; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);">⚖️ MON SUIVI POIDS</button>
     </div>
 
+    <!-- GRAPH VIEW -->
+    <div class="container" id="graph-view" style="display:none;">
+        <h2 style="font-weight:800;">Tes progrès</h2>
+        <div style="background:var(--card-bg); padding:20px; border-radius:25px;">
+            <canvas id="weightChart"></canvas>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <div class="nav-bar">
+        <div class="nav-item active" onclick="showTab('main')">🏠</div>
+        <div class="nav-item" onclick="toggleDrawer()">⚖️</div>
+        <div class="nav-item" onclick="showTab('graph')">📈</div>
+    </div>
+
+    <!-- DRAWER POIDS -->
     <div class="drawer" id="drawer">
-        <div class="handle" onclick="toggleDrawer()"></div>
-        <div class="tabs">
-            <div class="tab active" onclick="setTab(1)">POIDS</div>
-            <div class="tab" onclick="setTab(2)">PROGRÈS</div>
-        </div>
-
-        <div class="section active" id="sec1">
-            <h4 style="margin:0">Enregistrer ton poids (kg)</h4>
-            <div class="input-group">
-                <input type="number" id="w-input" step="0.1" placeholder="Ex: 82.5">
-                <button class="btn-action" onclick="saveW()">OK</button>
-            </div>
-        </div>
-
-        <div class="section" id="sec2">
-            <h4 style="margin:0">Évolution sur 7 jours</h4>
-            <canvas id="wChart"></canvas>
-        </div>
+        <div class="drawer-handle" onclick="toggleDrawer()"></div>
+        <h3 style="margin:0;">Nouveau poids</h3>
+        <p style="color:#64748b; font-size:0.8rem;">Enregistre ta pesée du matin.</p>
+        <input type="number" id="weight-input" placeholder="Ex: 84.5 kg" step="0.1">
+        <button class="btn-main" onclick="saveWeight()">ENREGISTRER</button>
     </div>
 
 <script>
-/* ================= LOGIQUE CORE ================= */
-const START_E = 10; const END_E = 16;
-
-const phaseData = {
-    1: { t: "Phase 1 : Glycémie (0-4h)", d: "Hicham, ton corps termine de traiter le sucre de ton dernier repas. L'insuline est encore présente pour stocker l'énergie." },
-    2: { t: "Phase 2 : Chute d'Insuline (4-12h)", d: "Le taux d'insuline baisse radicalement. Ton corps commence à puiser dans le glycogène (sucre stocké dans le foie)." },
-    3: { t: "Phase 3 : Cétose Active (12-16h)", d: "Brûlage intensif ! Tes graisses sont transformées en cétones. Tu gagnes en énergie et en clarté mentale." },
-    4: { t: "Phase 4 : Autophagie (16h+)", d: "Hicham, c'est l'étape royale. Tes cellules s'auto-nettoient et se régénèrent. C'est le secret de la longévité." }
-};
+/* ================= LOGIQUE CORE 18/6 ================= */
+const E_START = 10; const E_END = 16;
+let verresEau = parseInt(localStorage.getItem('h_eau') || 0);
+document.getElementById('water-count').innerText = verresEau;
 
 function update() {
-    const n = new Date();
-    const h = n.getHours(); const m = n.getMinutes(); const s = n.getSeconds();
-    const totS = h*3600 + m*60 + s;
-    document.getElementById('clock').innerText = n.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+    const now = new Date();
+    const h = now.getHours(); const m = now.getMinutes(); const s = now.getSeconds();
+    const totalS = h*3600 + m*60 + s;
+    document.getElementById('top-clock').innerText = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
-    let isFasting = true; let rem = 0; let fastH = 0;
+    let isFasting = true; let rem = 0; let totalWin = 18*3600;
 
-    if(h >= START_E && h < END_E) {
-        isFasting = false; rem = (END_E*3600) - totS;
-        setUI("FENÊTRE REPAS 🍽️", "var(--orange)");
+    if(h >= E_START && h < E_END) {
+        isFasting = false; rem = (E_END*3600) - totalS; totalWin = 6*3600;
+        setUI("REPAS EN COURS 🍽️", "var(--accent)");
+        updatePhases(-1);
     } else {
-        isFasting = true; rem = h >= END_E ? (86400 - totS + START_E*3600) : (START_E*3600 - totS);
-        setUI("JEÛNE ACTIF 🔥", "var(--green)");
-        // Calcul automatique de la phase actuelle
-        fastH = h >= 16 ? h - 16 : h + 8;
-        autoSelectPhase(fastH);
+        isFasting = true; rem = h >= E_END ? (86400 - totalS + E_START*3600) : (E_START*3600 - totalS);
+        setUI("JEÛNE ACTIF 🔥", "var(--primary)");
+        let fH = h >= 16 ? h - 16 : h + 8;
+        updatePhases(fH);
     }
 
     const hr = Math.floor(rem/3600); const mn = Math.floor((rem%3600)/60); const sc = rem%60;
     document.getElementById('countdown').innerText = `${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
+
+    // Update Progress Ring
+    const circle = document.getElementById('circle-progress');
+    const offset = 628 - (rem / totalWin) * 628;
+    circle.style.strokeDashoffset = offset;
+    circle.style.stroke = isFasting ? "var(--primary)" : "var(--accent)";
 }
 
-function setUI(t, c) {
-    const s = document.getElementById('status-label');
-    s.innerText = t; s.style.color = c;
-    document.getElementById('countdown').style.color = c;
-    document.getElementById('info-card').style.borderColor = c;
+function setUI(txt, col) {
+    document.getElementById('status-label').innerText = txt;
+    document.getElementById('status-label').style.color = col;
+    document.getElementById('countdown').style.color = col;
 }
 
-function autoSelectPhase(h) {
-    let p = 1;
-    if(h >= 16) p = 4;
-    else if(h >= 12) p = 3;
-    else if(h >= 4) p = 2;
-    showPhase(p, true); // true = mode auto (ne pas forcer si l'utilisateur a cliqué ailleurs)
-}
-
-let manualClick = false;
-function showPhase(id, auto = false) {
-    if(auto && manualClick) return; // Si l'utilisateur a cliqué, on ne change pas automatiquement
-    if(!auto) manualClick = true;
-
-    document.querySelectorAll('.ph-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('p'+id).classList.add('active');
+function updatePhases(h) {
+    document.querySelectorAll('.ph-box').forEach(b => b.classList.remove('active'));
+    const t = document.getElementById('info-title'); const d = document.getElementById('info-desc');
     
-    document.getElementById('info-title').innerText = phaseData[id].t;
-    document.getElementById('info-desc').innerText = phaseData[id].d;
+    if(h < 0) {
+        t.innerText = "Recharge Nutritive"; d.innerText = "Focus sur les protéines et les fibres Hicham. Prépare ton corps pour le prochain jeûne.";
+    } else if(h < 4) {
+        document.getElementById('p1').classList.add('active');
+        t.innerText = "Stabilisation du Sucre"; d.innerText = "Ton sang se nettoie. Le corps termine sa digestion.";
+    } else if(h < 12) {
+        document.getElementById('p2').classList.add('active');
+        t.innerText = "Baisse d'Insuline"; d.innerText = "Phase cruciale: ton insuline baisse, ouvrant la porte aux graisses stockées.";
+    } else if(h < 16) {
+        document.getElementById('p3').classList.add('active');
+        t.innerText = "Mode Kétose"; d.innerText = "Énergie maximale ! Ton corps brûle tes graisses pour fonctionner.";
+    } else {
+        document.getElementById('p4').classList.add('active');
+        t.innerText = "Autophagie Cellulaire"; d.innerText = "Régénération profonde. Tes cellules s'auto-nettoient. Un boost de santé incroyable.";
+    }
 }
 
-/* ================= UTILS ================= */
+/* ================= ACTIONS ================= */
+function addWater() {
+    verresEau++;
+    localStorage.setItem('h_eau', verresEau);
+    document.getElementById('water-count').innerText = verresEau;
+}
+
 function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
-function setTab(n) {
-    document.querySelectorAll('.tab, .section').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tab')[n-1].classList.add('active');
-    document.getElementById('sec'+n).classList.add('active');
-    if(n==2) loadChart();
+
+function showTab(name) {
+    document.getElementById('main-view').style.display = name === 'main' ? 'flex' : 'none';
+    document.getElementById('graph-view').style.display = name === 'graph' ? 'flex' : 'none';
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+    if(name === 'graph') loadChart();
 }
 
-let weights = JSON.parse(localStorage.getItem('h_w') || '[]');
-function saveW() {
-    const v = document.getElementById('w-input').value; if(!v) return;
-    weights.push({d: new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}), v: parseFloat(v)});
-    localStorage.setItem('h_w', JSON.stringify(weights));
-    document.getElementById('w-input').value = ""; alert("Poids enregistré !");
+let weights = JSON.parse(localStorage.getItem('h_w_pro') || '[]');
+function saveWeight() {
+    const val = document.getElementById('weight-input').value;
+    if(!val) return;
+    weights.push({d: new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}), v: parseFloat(val)});
+    localStorage.setItem('h_w_pro', JSON.stringify(weights));
+    toggleDrawer();
+    alert("Poids enregistré !");
 }
 
 let chart = null;
 function loadChart() {
-    const ctx = document.getElementById('wChart').getContext('2d');
+    const ctx = document.getElementById('weightChart').getContext('2d');
     if(chart) chart.destroy();
     chart = new Chart(ctx, {
         type: 'line',
