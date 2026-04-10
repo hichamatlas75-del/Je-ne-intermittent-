@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hicham Fasting - Pro Clone</title>
+    <title>Hicham Fasting Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -14,83 +14,54 @@
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        body {
-            margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text);
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
-        }
-
-        /* HEADER PREMIUM */
-        .header {
-            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(9, 14, 26, 0.9); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05);
-            z-index: 1000;
-        }
-
+        /* HEADER */
+        .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(9, 14, 26, 0.95); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 1000; }
         .profile-info { display: flex; align-items: center; gap: 12px; }
         .profile-info img { width: 45px; height: 45px; border-radius: 15px; border: 2px solid var(--primary); object-fit: cover; }
-        .streak { background: rgba(243, 156, 18, 0.2); color: var(--accent); padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+        
+        /* SCROLL CONTAINER */
+        .app-main { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 150px; }
 
-        /* SCROLLABLE MAIN */
-        .app-main {
-            flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch;
-            padding: 20px; display: flex; flex-direction: column; gap: 25px;
-            padding-bottom: 150px; /* Espace pour la navigation */
-        }
-
-        /* TIMER FASTIC STYLE */
-        .timer-card {
-            background: var(--card-bg); padding: 30px 20px; border-radius: 40px; text-align: center;
-            border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-        }
-
-        .ring-container { position: relative; width: 220px; height: 220px; margin: 0 auto; }
-        .ring-container svg { transform: rotate(-90deg); width: 220px; height: 220px; }
+        /* TIMER */
+        .timer-card { background: var(--card-bg); padding: 30px 20px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .ring-container { position: relative; width: 210px; height: 210px; margin: 0 auto; }
+        .ring-container svg { transform: rotate(-90deg); width: 210px; height: 210px; }
         .ring-container circle { fill: none; stroke-width: 14; stroke-linecap: round; }
         .ring-bg { stroke: rgba(255,255,255,0.05); }
-        .ring-fill { stroke: var(--primary); transition: stroke-dashoffset 1s ease; stroke-dasharray: 628; stroke-dashoffset: 628; }
-
+        .ring-fill { stroke: var(--primary); transition: stroke-dashoffset 1s ease; stroke-dasharray: 596; stroke-dashoffset: 596; }
         .timer-inner { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 100%; }
-        #countdown { font-size: 2.8rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
-        #live-phase { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-top: 5px; display: block; }
+        #countdown { font-size: 2.8rem; font-weight: 800; margin: 0; }
+        #live-phase { font-size: 0.75rem; font-weight: 800; color: var(--primary); text-transform: uppercase; display: block; }
 
-        /* INTERACTIVE PHASES */
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: -10px; }
-        .section-header h3 { font-size: 0.9rem; font-weight: 800; color: #64748b; margin: 0; }
-        .live-tag { font-size: 0.6rem; background: var(--primary); color: #000; padding: 2px 6px; border-radius: 5px; font-weight: 800; }
-
+        /* PHASES INTERACTIVES */
         .phases-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .phase-btn { 
-            background: var(--card-bg); padding: 15px 5px; border-radius: 20px; text-align: center; 
-            border: 2px solid transparent; opacity: 0.4; transition: 0.3s; cursor: pointer;
-        }
+        .phase-btn { background: var(--card-bg); padding: 15px 5px; border-radius: 20px; text-align: center; border: 2px solid transparent; opacity: 0.3; transition: 0.3s; cursor: pointer; }
         .phase-btn.active { opacity: 1; border-color: var(--primary); background: rgba(46, 204, 113, 0.1); }
-        .phase-btn i { font-size: 1.4rem; display: block; margin-bottom: 5px; }
-        .phase-btn span { font-size: 0.55rem; font-weight: 800; color: #94a3b8; }
+        .phase-btn i { font-size: 1.3rem; display: block; margin-bottom: 4px; }
+        .phase-btn span { font-size: 0.5rem; font-weight: 800; color: #94a3b8; }
 
-        /* INFO CARD */
-        .info-card { background: var(--card-bg); padding: 25px; border-radius: 30px; border-left: 6px solid var(--primary); min-height: 140px; }
-        #info-title { margin: 0; color: var(--primary); font-size: 1.1rem; font-weight: 800; }
-        #info-desc { font-size: 0.9rem; color: #cbd5e1; margin-top: 10px; line-height: 1.6; }
+        /* CARTE INFO */
+        .info-card { background: var(--card-bg); padding: 20px; border-radius: 25px; border-left: 5px solid var(--primary); min-height: 120px; }
+        #info-title { margin: 0; color: var(--primary); font-size: 1rem; font-weight: 800; }
+        #info-desc { font-size: 0.85rem; color: #cbd5e1; margin-top: 8px; line-height: 1.5; }
 
         /* WATER TRACKER */
         .water-widget { background: linear-gradient(135deg, #3498db, #2980b9); padding: 20px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .water-btn { background: white; color: #3498db; border: none; width: 45px; height: 45px; border-radius: 15px; font-size: 1.5rem; font-weight: 800; }
+        .water-btn { background: white; color: #3498db; border: none; width: 45px; height: 45px; border-radius: 15px; font-size: 1.5rem; font-weight: 800; cursor: pointer; }
 
         /* NAV BAR */
-        .nav-bar {
-            position: fixed; bottom: 0; width: 100%; background: rgba(15, 23, 42, 0.98);
-            backdrop-filter: blur(20px); display: flex; justify-content: space-around;
-            padding: 15px 0 35px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2000;
-        }
-        .nav-item { font-size: 1.6rem; opacity: 0.3; cursor: pointer; transition: 0.3s; }
-        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-5px); }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); display: flex; justify-content: space-around; padding: 12px 0 35px; border-top: 1px solid rgba(255,255,255,0.05); z-index: 2000; }
+        .nav-item { font-size: 1.5rem; opacity: 0.3; transition: 0.3s; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--primary); }
 
-        /* DRAWER */
-        .drawer { position: fixed; bottom: 0; width: 100%; background: #0f172a; border-radius: 40px 40px 0 0; transform: translateY(100%); transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); z-index: 3000; padding: 30px; }
+        /* DRAWER & BACKUP */
+        .drawer { position: fixed; bottom: 0; width: 100%; background: #0f172a; border-radius: 40px 40px 0 0; transform: translateY(100%); transition: 0.5s; z-index: 3000; padding: 30px; }
         .drawer.open { transform: translateY(0); }
         .handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -15px auto 25px; }
-        .btn-save { background: var(--primary); border: none; width: 100%; padding: 18px; border-radius: 20px; color: white; font-weight: 800; margin-top: 20px; }
+        .btn-save { background: var(--primary); border: none; width: 100%; padding: 18px; border-radius: 20px; color: white; font-weight: 800; margin-top: 15px; cursor: pointer; }
+        .btn-backup { background: #1e293b; color: #94a3b8; border: 1px solid #334155; width: 100%; padding: 12px; border-radius: 15px; font-size: 0.8rem; margin-top: 20px; cursor: pointer; }
 
         canvas { width: 100% !important; max-height: 250px; }
     </style>
@@ -100,95 +71,82 @@
     <div class="header">
         <div class="profile-info">
             <img src="votre-photo.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff'">
-            <div style="font-weight: 800; font-size: 1rem;">Hicham</div>
+            <div style="font-weight: 800; font-size: 0.9rem;">Hicham Fasting Pro</div>
         </div>
-        <div class="streak">🔥 12 JOURS</div>
+        <div id="top-clock" style="font-weight: 800; opacity: 0.5; font-size: 0.8rem;">00:00</div>
     </div>
 
     <div class="app-main" id="main-view">
-        
-        <!-- TIMER -->
         <div class="timer-card">
             <div class="ring-container">
-                <svg viewBox="0 0 220 220">
-                    <circle class="ring-bg" cx="110" cy="110" r="100"></circle>
-                    <circle id="ring-fill" class="ring-fill" cx="110" cy="110" r="100"></circle>
+                <svg viewBox="0 0 210 210">
+                    <circle class="ring-bg" cx="105" cy="105" r="95"></circle>
+                    <circle id="ring-fill" class="ring-fill" cx="105" cy="105" r="95" stroke-dasharray="596" stroke-dashoffset="596"></circle>
                 </svg>
                 <div class="timer-inner">
-                    <span id="label-top" style="font-size:0.65rem; font-weight:800; opacity:0.6;">TEMPS RESTANT</span>
+                    <span id="label-top" style="font-size:0.6rem; font-weight:800; opacity:0.6;">RESTANT</span>
                     <h1 id="countdown">00:00:00</h1>
                     <span id="live-phase">ANALYSE...</span>
                 </div>
             </div>
         </div>
 
-        <!-- PHASES INTERACTIVES -->
-        <div class="section-header">
-            <h3>MÉTABOLISME</h3>
-            <span class="live-tag">LIVE</span>
-        </div>
         <div class="phases-grid">
-            <div id="p1" class="phase-btn" onclick="manualSelect(1)"><i>🧪</i><span>SUCRE</span></div>
-            <div id="p2" class="phase-btn" onclick="manualSelect(2)"><i>📉</i><span>INSULINE</span></div>
-            <div id="p3" class="phase-btn" onclick="manualSelect(3)"><i>🔥</i><span>KÉTOSE</span></div>
-            <div id="p4" class="phase-btn" onclick="manualSelect(4)"><i>✨</i><span>AUTO-P</span></div>
+            <div id="p1" class="phase-btn" onclick="manualPhase(1)"><i>🧪</i><span>SUCRE</span></div>
+            <div id="p2" class="phase-btn" onclick="manualPhase(2)"><i>📉</i><span>INSULINE</span></div>
+            <div id="p3" class="phase-btn" onclick="manualPhase(3)"><i>🔥</i><span>KÉTOSE</span></div>
+            <div id="p4" class="phase-btn" onclick="manualPhase(4)"><i>✨</i><span>AUTO-P</span></div>
         </div>
 
-        <!-- INFO CARD DYNAMIQUE -->
         <div class="info-card" id="info-card">
-            <h4 id="info-title">Cliquez sur une phase</h4>
-            <p id="info-desc">Apprenez ce que votre corps fait en ce moment précis.</p>
+            <h4 id="info-title">Calcul...</h4>
+            <p id="info-desc">Mise à jour des données.</p>
         </div>
 
-        <!-- WATER TRACKER -->
         <div class="water-widget">
-            <div style="color:white;">
-                <h4 style="margin:0; font-size:1rem;">Hydratation</h4>
-                <p style="margin:0; font-size:0.8rem; opacity:0.8;"><span id="w-count">0</span> verres bus aujourd'hui</p>
+            <div>
+                <h4 style="margin:0;">Hydratation</h4>
+                <p style="margin:0; font-size:0.8rem; opacity:0.8;"><span id="w-count">0</span> verres bus</p>
             </div>
             <button class="water-btn" onclick="addWater()">+</button>
         </div>
-
     </div>
 
-    <!-- GRAPH VIEW -->
     <div class="app-main" id="graph-view" style="display:none;">
-        <h2 style="font-weight:800; margin-bottom:20px;">Statistiques Poids</h2>
-        <div style="background:var(--card-bg); padding:20px; border-radius:35px; border: 1px solid rgba(255,255,255,0.05);">
-            <canvas id="weightChart"></canvas>
-        </div>
+        <h2 style="font-weight:800;">Statistiques</h2>
+        <div style="background:var(--card-bg); padding:20px; border-radius:35px;"><canvas id="weightChart"></canvas></div>
+        <button class="btn-backup" onclick="exportData()">💾 SAUVEGARDER MES DONNÉES (EXPORT)</button>
+        <button class="btn-backup" style="margin-top:10px" onclick="importData()">📂 RESTAURER MES DONNÉES (IMPORT)</button>
     </div>
 
-    <!-- NAV BAR -->
     <div class="nav-bar">
         <div class="nav-item active" id="nav-home" onclick="showTab('main')">🏠</div>
         <div class="nav-item" onclick="toggleDrawer()">⚖️</div>
-        <div class="nav-item" id="nav-graph" onclick="showTab('graph')">📈</div>
+        <div class="nav-item" id="nav-graph" onclick="showTab('graph')">📊</div>
     </div>
 
-    <!-- DRAWER POIDS -->
     <div class="drawer" id="drawer">
         <div class="handle" onclick="toggleDrawer()"></div>
-        <h3 style="margin:0;">Nouvelle pesée</h3>
-        <p style="color:#64748b; font-size:0.85rem;">Enregistrez votre poids pour suivre votre progression.</p>
-        <input type="number" id="w-input" placeholder="Poids en kg (ex: 82.5)" step="0.1" style="width:100%; background:#1e293b; border:none; border-radius:15px; padding:20px; color:white; font-size:1rem; margin-top:15px;">
+        <h3 style="margin:0;">Nouveau poids</h3>
+        <input type="number" id="w-input" placeholder="Poids en kg" step="0.1" style="width:100%; background:#1e293b; border:none; border-radius:15px; padding:20px; color:white; margin-top:15px;">
         <button class="btn-save" onclick="saveW()">ENREGISTRER</button>
     </div>
 
 <script>
-/* ================= LOGIQUE SCIENTIFIQUE ================= */
+/* ================= PERSISTANCE STABLE ================= */
+const KEY_WATER = 'HICHAM_DATA_WATER';
+const KEY_WEIGHTS = 'HICHAM_DATA_WEIGHTS';
 const E_START = 10; const E_END = 16;
-let waterCount = parseInt(localStorage.getItem('h_w_count') || 0);
+
+let waterCount = parseInt(localStorage.getItem(KEY_WATER) || 0);
 document.getElementById('w-count').innerText = waterCount;
 
-const phasesInfo = {
-    1: { n: "Pic de Glycémie", t: "Digestion active", d: "Pendant les 4 premières heures après le repas, Hicham, ton corps décompose les glucides en glucose. Ton insuline est à son maximum pour distribuer l'énergie à tes cellules et stocker le surplus dans ton foie." },
-    2: { n: "Baisse d'Insuline", t: "Épuisement du sucre", d: "Entre 4h et 12h, ton taux d'insuline chute. Ton corps commence à puiser dans le glycogène hépatique. C'est la phase de transition où tu peux ressentir de légères fringales : bois de l'eau !" },
-    3: { n: "Entrée en Kétose", t: "Brûlage des graisses", d: "Phase capitale (12h-16h) ! Tes réserves de sucre sont basses. Ton foie commence à produire des corps cétoniques à partir de tes graisses corporelles. Ton cerveau devient plus vif et tes graisses fondent." },
-    4: { n: "Autophagie", t: "Régénération cellulaire", d: "Hicham, après 16h de jeûne, tes cellules activent le mode 'nettoyage'. Elles recyclent les protéines endommagées et éliminent les déchets. C'est l'étape ultime de la longévité et de la santé." }
+const phases = {
+    1: ["Digestion", "Ton corps traite ton dernier repas. L'insuline est au plus haut."],
+    2: ["Baisse d'insuline", "Ton corps commence à puiser dans le glycogène hépatique."],
+    3: ["Cétose Active", "Tu brûles tes graisses ! Ton foie produit des cétones énergétiques."],
+    4: ["Autophagie", "Tes cellules se nettoient. C'est la phase de régénération ultime."]
 };
-
-let isManual = false;
 
 function update() {
     const n = new Date();
@@ -197,61 +155,53 @@ function update() {
     document.getElementById('top-clock').innerText = n.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
     let isF = true; let rem = 0; let totWin = 18*3600;
-
     if(h >= E_START && h < E_END) {
         isF = false; rem = (E_END*3600) - totS; totWin = 6*3600;
-        setUI("FENÊTRE REPAS 🍽️", "var(--accent)", "ALIMENTATION");
+        setUI("REPAS 🍽️", "var(--accent)", "ALIMENTATION");
         autoPhase(-1);
     } else {
         isF = true; rem = h >= E_END ? (86400 - totS + E_START*3600) : (E_START*3600 - totS);
-        setUI("JEÛNE ACTIF 🔥", "var(--primary)", "");
+        setUI("JEÛNE 🔥", "var(--primary)", "");
         let fH = h >= 16 ? h - 16 : h + 8;
         autoPhase(fH);
     }
-
     const hr = Math.floor(rem/3600); const mn = Math.floor((rem%3600)/60); const sc = rem%60;
     document.getElementById('countdown').innerText = `${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
-
     const ring = document.getElementById('ring-fill');
-    const offset = 628 - (rem / totWin) * 628;
-    ring.style.strokeDashoffset = offset;
+    ring.style.strokeDashoffset = 596 - (rem / totWin) * 596;
     ring.style.stroke = isF ? "var(--primary)" : "var(--accent)";
 }
 
-function setUI(l, c, pName) {
+function setUI(l, c, pN) {
     document.getElementById('countdown').style.color = c;
-    if(pName) document.getElementById('live-phase').innerText = pName;
-    document.getElementById('live-phase').style.color = c;
+    if(pN) document.getElementById('live-phase').innerText = pN;
     document.getElementById('info-card').style.borderColor = c;
 }
 
+let manual = false;
 function autoPhase(h) {
-    if(isManual) return;
+    if(manual) return;
     document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
-    if(h < 0) { 
-        setCard("Alimentation", "Focus sur les protéines Hicham. Profite de tes repas pour bien nourrir tes muscles.");
-        return; 
-    }
+    if(h < 0) { setCard("Repas", "Nourris tes muscles Hicham !"); return; }
     let p = 1;
     if(h >= 16) p = 4; else if(h >= 12) p = 3; else if(h >= 4) p = 2;
     document.getElementById('p'+p).classList.add('active');
-    document.getElementById('live-phase').innerText = phasesInfo[p].n;
-    setCard(phasesInfo[p].t, phasesInfo[p].d);
+    document.getElementById('live-phase').innerText = phases[p][0].toUpperCase();
+    setCard(phases[p][0], phases[p][1]);
 }
 
-function manualSelect(id) {
-    isManual = true;
+function manualPhase(id) {
+    manual = true;
     document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('p'+id).classList.add('active');
-    setCard(phasesInfo[id].t, phasesInfo[id].d);
-    // Revient en mode auto après 15 secondes
-    setTimeout(() => { isManual = false; }, 15000);
+    setCard(phases[id][0], phases[id][1]);
+    setTimeout(() => { manual = false; }, 10000);
 }
 
 function setCard(t, d) { document.getElementById('info-title').innerText = t; document.getElementById('info-desc').innerText = d; }
 
-/* ================= ACTIONS & NAV ================= */
-function addWater() { waterCount++; localStorage.setItem('h_w_count', waterCount); document.getElementById('w-count').innerText = waterCount; }
+/* ================= ACTIONS & BACKUP ================= */
+function addWater() { waterCount++; localStorage.setItem(KEY_WATER, waterCount); document.getElementById('w-count').innerText = waterCount; }
 function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
 function showTab(t) {
     document.getElementById('main-view').style.display = t === 'main' ? 'flex' : 'none';
@@ -261,12 +211,37 @@ function showTab(t) {
     if(t === 'graph') loadChart();
 }
 
-let wLogs = JSON.parse(localStorage.getItem('h_w_pro_v3') || '[]');
+let weightLogs = JSON.parse(localStorage.getItem(KEY_WEIGHTS) || '[]');
 function saveW() {
     const v = document.getElementById('w-input').value; if(!v) return;
-    wLogs.push({d: new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}), v: parseFloat(v)});
-    localStorage.setItem('h_w_pro_v3', JSON.stringify(wLogs));
+    weightLogs.push({d: new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}), v: parseFloat(v)});
+    localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weightLogs));
     toggleDrawer(); alert("Enregistré !");
+}
+
+function exportData() {
+    const data = { water: waterCount, weights: weightLogs };
+    const blob = new Blob([JSON.stringify(data)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'hicham_fasting_backup.json'; a.click();
+}
+
+function importData() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.onchange = e => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = event => {
+            const data = JSON.parse(event.target.result);
+            localStorage.setItem(KEY_WATER, data.water);
+            localStorage.setItem(KEY_WEIGHTS, JSON.stringify(data.weights));
+            location.reload();
+        };
+        reader.readAsText(file);
+    };
+    input.click();
 }
 
 let chObj = null;
@@ -275,7 +250,7 @@ function loadChart() {
     if(chObj) chObj.destroy();
     chObj = new Chart(ctx, {
         type: 'line',
-        data: { labels: wLogs.slice(-7).map(x=>x.d), datasets: [{label:'kg', data:wLogs.slice(-7).map(x=>x.v), borderColor:'#2ecc71', tension:0.4, fill:true, backgroundColor:'rgba(46,204,113,0.1)'}]},
+        data: { labels: weightLogs.slice(-7).map(x=>x.d), datasets: [{label:'kg', data:weightLogs.slice(-7).map(x=>x.v), borderColor:'#2ecc71', tension:0.4, fill:true, backgroundColor:'rgba(46,204,113,0.1)'}]},
         options: { responsive:true, maintainAspectRatio:false, plugins: { legend: { display: false } } }
     });
 }
