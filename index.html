@@ -5,245 +5,2132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Hicham Master - Fasting Dropbox</title>
+    <title>Hicham Master - Jeûne Intermittent</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #F7F3EF;
             --bg-secondary: #FFFFFF;
+            --bg-card: rgba(255, 255, 255, 0.9);
             --accent-primary: #D4A574;
+            --accent-secondary: #8B7355;
             --accent-success: #6B8E6B;
+            --accent-sleep: #7B8CDE;
+            --accent-warning: #E6A75C;
             --text-primary: #2D2A26;
             --text-secondary: #8B8680;
-            --dropbox-blue: #0061FF;
-            --btn-height: 60px;
+            --text-light: #A8A29E;
+            --shadow-soft: 0 4px 20px rgba(139, 115, 85, 0.08);
+            --shadow-medium: 0 8px 32px rgba(139, 115, 85, 0.12);
+            --phase-digest: #E6A75C;
+            --phase-fat: #6B8E6B;
+            --phase-ketosis: #7B8CDE;
+            --phase-autophagy: #9B7ED4;
+            --dropbox: #0061FF;
         }
         
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
-        body { margin: 0; background: var(--bg-primary); color: var(--text-primary); height: 100dvh; overflow: hidden; position: fixed; width: 100%; }
-        .app-container { display: flex; flex-direction: column; height: 100%; width: 100%; }
-
-        /* Header */
-        .header { 
-            padding: 16px 20px; padding-top: max(16px, env(safe-area-inset-top));
-            display: flex; justify-content: space-between; align-items: center; 
-            background: var(--bg-secondary); border-bottom: 1px solid rgba(139, 115, 85, 0.08);
+        * { 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent; 
+            outline: none;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        html, body { 
+            margin: 0; 
+            padding: 0;
+            background: var(--bg-primary); 
+            color: var(--text-primary); 
+            height: 100%; 
+            width: 100%;
+            overflow: hidden;
+            position: fixed;
         }
 
-        /* Views */
-        .app-view { flex: 1; overflow-y: auto; padding: 16px 20px 100px; display: none; flex-direction: column; gap: 16px; }
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            height: 100dvh;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header { 
+            padding: 16px 20px; 
+            padding-top: max(16px, env(safe-area-inset-top));
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: var(--bg-secondary);
+            border-bottom: 1px solid rgba(139, 115, 85, 0.08);
+            flex-shrink: 0;
+            z-index: 100;
+        }
+        
+        .greeting h1 {
+            margin: 0;
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .greeting span {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .profile { 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+        }
+        
+        .profile img { 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 14px; 
+            border: 2px solid var(--accent-primary);
+            object-fit: cover;
+        }
+
+        .app-view { 
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 16px 20px;
+            padding-bottom: 100px;
+            display: none; 
+            flex-direction: column; 
+            gap: 16px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
         .app-view.active { display: flex; }
 
-        /* Timer Card */
-        .timer-card { background: white; padding: 24px; border-radius: 32px; text-align: center; box-shadow: 0 4px 20px rgba(139, 115, 85, 0.08); }
-        .ring-container { position: relative; width: 220px; height: 220px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; }
-        svg { transform: rotate(-90deg); width: 100%; height: 100%; }
-        .ring-bg { fill: none; stroke: rgba(139, 115, 85, 0.1); stroke-width: 10; }
-        .ring-fill { fill: none; stroke: var(--accent-primary); stroke-width: 10; stroke-linecap: round; stroke-dasharray: 565; stroke-dashoffset: 565; transition: all 0.5s ease; }
+        .timer-card { 
+            background: var(--bg-card); 
+            padding: 20px; 
+            border-radius: 28px; 
+            text-align: center; 
+            border: 1px solid rgba(139, 115, 85, 0.08);
+            box-shadow: var(--shadow-medium);
+            flex-shrink: 0;
+        }
 
-        /* Buttons */
-        .btn-primary { height: var(--btn-height); width: 100%; max-width: 280px; border-radius: 20px; border: none; font-weight: 700; cursor: pointer; color: white; background: var(--accent-success); }
-        .btn-dropbox { background: var(--dropbox-blue); color: white; border: none; padding: 12px; border-radius: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
+        .fast-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .fast-badge {
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: rgba(212, 165, 116, 0.15);
+            color: var(--accent-secondary);
+        }
+        
+        .fast-badge.active {
+            background: rgba(107, 142, 107, 0.15);
+            color: var(--accent-success);
+        }
 
-        /* Sync Status */
-        .sync-indicator { position: fixed; top: 75px; right: 20px; padding: 8px 12px; border-radius: 20px; background: white; font-size: 0.75rem; display: none; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; }
-        .sync-indicator.active { display: flex; }
+        /* Info début de jeûne avec bouton édit */
+        .fast-start-info {
+            background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), rgba(139, 115, 85, 0.05));
+            padding: 12px 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            position: relative;
+        }
+        
+        .fast-start-info .label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .fast-start-info .value {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-edit-time {
+            background: rgba(212, 165, 116, 0.2);
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            color: var(--accent-secondary);
+        }
+        
+        .btn-edit-time:active {
+            transform: scale(0.9);
+            background: rgba(212, 165, 116, 0.3);
+        }
 
-        /* Nav */
-        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.05); }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 0.7rem; gap: 4px; cursor: pointer; }
-        .nav-item.active { color: var(--accent-primary); font-weight: 700; }
+        .ring-container { 
+            position: relative; 
+            width: 200px; 
+            height: 200px; 
+            margin: 0 auto 16px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .ring-container svg { 
+            position: absolute; 
+            transform: rotate(-90deg); 
+            width: 100%; 
+            height: 100%;
+        }
+        
+        .ring-bg { 
+            fill: none; 
+            stroke: rgba(139, 115, 85, 0.1); 
+            stroke-width: 10; 
+            stroke-linecap: round; 
+        }
+        
+        .ring-fill { 
+            fill: none; 
+            stroke: var(--accent-primary); 
+            stroke-width: 10; 
+            stroke-linecap: round; 
+            stroke-dasharray: 565; 
+            stroke-dashoffset: 565; 
+            transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+        }
+        
+        .ring-fill.phase-digest { stroke: var(--phase-digest); }
+        .ring-fill.phase-fat { stroke: var(--phase-fat); }
+        .ring-fill.phase-ketosis { stroke: var(--phase-ketosis); }
+        .ring-fill.phase-autophagy { stroke: var(--phase-autophagy); }
+
+        .timer-ui { 
+            z-index: 10; 
+            position: relative;
+        }
+        
+        #countdown { 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            margin-bottom: 4px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .btn-primary {
+            height: 56px;
+            padding: 0 28px;
+            border-radius: 18px;
+            border: none;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            max-width: 280px;
+        }
+        
+        .btn-primary:active { transform: scale(0.96); }
+        
+        .btn-stop { 
+            background: linear-gradient(135deg, #E07A5F, #D4A574); 
+            color: white; 
+        }
+        
+        .btn-start { 
+            background: linear-gradient(135deg, var(--accent-success), #8FBC8F); 
+            color: white; 
+        }
+        
+        .btn-early { 
+            background: transparent;
+            color: var(--accent-secondary);
+            border: 2px solid var(--accent-primary);
+            height: 48px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            max-width: 280px;
+        }
+        
+        .btn-adjust {
+            background: rgba(107, 142, 107, 0.1);
+            color: var(--accent-success);
+            border: 2px solid var(--accent-success);
+            height: 48px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+            max-width: 280px;
+        }
+
+        .phase-indicator {
+            background: var(--bg-primary);
+            padding: 12px 16px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-align: left;
+            margin-top: 16px;
+        }
+        
+        .phase-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            background: white;
+            box-shadow: var(--shadow-soft);
+            flex-shrink: 0;
+        }
+        
+        .phase-info h4 {
+            margin: 0 0 2px 0;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+        
+        .phase-info p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
+
+        .mode-selector { 
+            background: var(--bg-primary); 
+            padding: 4px; 
+            border-radius: 16px; 
+            margin-bottom: 16px; 
+            display: flex; 
+            gap: 4px;
+        }
+        
+        .mode-btn { 
+            flex: 1;
+            background: transparent; 
+            border: none; 
+            color: var(--text-secondary); 
+            padding: 10px; 
+            border-radius: 12px; 
+            cursor: pointer; 
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .mode-btn.active { 
+            background: white; 
+            color: var(--text-primary);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .sleep-card { 
+            background: linear-gradient(135deg, #E8E4F0, #F0E8F4); 
+            padding: 20px; 
+            border-radius: 24px;
+            flex-shrink: 0;
+        }
+        
+        .sleep-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        
+        .sleep-info h3 {
+            margin: 0 0 4px 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        
+        .sleep-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .btn-sleep { 
+            background: white; 
+            color: var(--accent-sleep); 
+            border: none; 
+            padding: 14px 20px; 
+            border-radius: 16px; 
+            font-weight: 700; 
+            font-size: 0.85rem;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+            height: 48px;
+        }
+
+        .checkin-card {
+            background: linear-gradient(135deg, #FFF9F0, #FFF5E6);
+            padding: 20px;
+            border-radius: 24px;
+            border: 1px solid rgba(230, 167, 92, 0.2);
+            flex-shrink: 0;
+            animation: slideIn 0.4s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .checkin-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .checkin-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--accent-warning);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        
+        .checkin-title h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+        
+        .checkin-title p {
+            margin: 2px 0 0 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .energy-scale {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+        
+        .energy-btn {
+            flex: 1;
+            height: 52px;
+            border: 2px solid rgba(139, 115, 85, 0.15);
+            background: white;
+            border-radius: 16px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .energy-btn span {
+            font-size: 0.65rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+        
+        .energy-btn.selected {
+            background: var(--accent-warning);
+            border-color: var(--accent-warning);
+            transform: scale(1.05);
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+        
+        .logs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .log-item { 
+            background: var(--bg-card); 
+            padding: 14px 16px; 
+            border-radius: 18px; 
+            border-left: 4px solid var(--accent-primary);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            box-shadow: var(--shadow-soft);
+            flex-shrink: 0;
+        }
+        
+        .log-item.sleep { border-left-color: var(--accent-sleep); }
+        .log-item.weight { border-left-color: var(--accent-secondary); }
+        .log-item.mood { border-left-color: var(--accent-warning); }
+        .log-item.adjust { border-left-color: var(--accent-success); }
+        
+        .log-content h4 {
+            margin: 0 0 2px 0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .log-content p {
+            margin: 0;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .log-time {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .nav-bar { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98); 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 12px 0 max(12px, env(safe-area-inset-bottom)); 
+            border-top: 1px solid rgba(139, 115, 85, 0.08);
+            z-index: 500;
+            backdrop-filter: blur(20px);
+        }
+        
+        .nav-item { 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 1.4rem; 
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 6px 16px;
+            border-radius: 14px;
+        }
+        
+        .nav-item span {
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+        
+        .nav-item.active { 
+            color: var(--accent-primary);
+            background: rgba(212, 165, 116, 0.1);
+        }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(45, 42, 38, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 900;
+            backdrop-filter: blur(4px);
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .drawer { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary); 
+            border-radius: 28px 28px 0 0; 
+            transform: translateY(100%); 
+            transition: transform 0.3s ease;
+            z-index: 1000; 
+            padding: 20px 20px 40px; 
+            max-height: 80vh; 
+            overflow-y: auto;
+        }
+        
+        .drawer.open { transform: translateY(0); }
+        
+        .handle { 
+            width: 36px; 
+            height: 4px; 
+            background: rgba(139, 115, 85, 0.2); 
+            border-radius: 10px; 
+            margin: 0 auto 20px; 
+        }
+
+        input { 
+            width: 100%; 
+            background: var(--bg-primary); 
+            border: 2px solid transparent; 
+            padding: 16px; 
+            color: var(--text-primary); 
+            border-radius: 16px; 
+            margin-bottom: 12px; 
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        input:focus {
+            border-color: var(--accent-primary);
+            background: white;
+        }
+        
+        .btn-full { 
+            width: 100%; 
+            height: 56px;
+            border-radius: 18px; 
+            border: none; 
+            font-weight: 700; 
+            cursor: pointer; 
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .bg-green { 
+            background: linear-gradient(135deg, var(--accent-success), #8FBC8F); 
+            color: white; 
+        }
+        
+        .bg-dark { 
+            background: var(--bg-primary); 
+            color: var(--text-secondary);
+            border: 2px solid rgba(139, 115, 85, 0.15);
+        }
+        
+        .bg-dropbox { 
+            background: var(--dropbox); 
+            color: white;
+        }
+
+        .cloud-status { 
+            background: var(--bg-card); 
+            padding: 16px; 
+            border-radius: 18px; 
+            display: flex; 
+            align-items: center; 
+            gap: 14px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 16px;
+        }
+        
+        .cloud-status.synced { 
+            border-left: 4px solid var(--accent-success); 
+        }
+        
+        .cloud-icon {
+            width: 44px;
+            height: 44px;
+            background: var(--bg-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+        
+        .cloud-info h4 {
+            margin: 0 0 2px 0;
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+        
+        .cloud-info p {
+            margin: 0;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+        }
+        
+        .sync-btn { 
+            background: var(--dropbox); 
+            color: white; 
+            border: none; 
+            padding: 10px 16px; 
+            border-radius: 12px; 
+            font-weight: 700; 
+            font-size: 0.8rem;
+            cursor: pointer;
+            height: 40px;
+        }
+
+        .sync-indicator { 
+            position: fixed; 
+            top: 70px; 
+            right: 16px; 
+            background: var(--bg-secondary); 
+            padding: 12px 16px; 
+            border-radius: 14px; 
+            font-size: 0.85rem; 
+            display: none; 
+            align-items: center; 
+            gap: 8px; 
+            z-index: 200; 
+            box-shadow: var(--shadow-medium);
+            font-weight: 600;
+        }
+        
+        .sync-indicator.show { display: flex; }
+
+        .chart-container { 
+            background: var(--bg-card); 
+            padding: 20px; 
+            border-radius: 24px; 
+            height: 280px; 
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .settings-card {
+            background: var(--bg-card);
+            padding: 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(139, 115, 85, 0.08);
+        }
+        
+        .setting-row:last-child { border-bottom: none; }
+        
+        .setting-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .setting-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .fast-types {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 16px 0;
+        }
+        
+        .fast-type-btn {
+            background: var(--bg-card);
+            border: 2px solid transparent;
+            padding: 16px 10px;
+            border-radius: 18px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: var(--shadow-soft);
+        }
+        
+        .fast-type-btn.active {
+            border-color: var(--accent-primary);
+            background: white;
+        }
+        
+        .fast-type-btn h4 {
+            margin: 0 0 4px 0;
+            font-size: 1.1rem;
+            font-weight: 800;
+        }
+        
+        .fast-type-btn p {
+            margin: 0;
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        .oauth-box { 
+            background: linear-gradient(135deg, rgba(0, 97, 255, 0.05), rgba(0, 97, 255, 0.1)); 
+            border: 2px solid var(--dropbox); 
+            padding: 28px 20px; 
+            border-radius: 22px; 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        
+        .oauth-btn { 
+            background: var(--dropbox); 
+            color: white; 
+            border: none; 
+            padding: 16px 28px; 
+            border-radius: 16px; 
+            font-weight: 700; 
+            font-size: 0.95rem; 
+            cursor: pointer; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 8px;
+            height: 56px;
+        }
+
+        .error-box { 
+            background: rgba(224, 122, 95, 0.1); 
+            border: 1px solid #E07A5F; 
+            padding: 12px; 
+            border-radius: 12px; 
+            font-size: 0.8rem; 
+            color: #E07A5F; 
+            margin-top: 10px; 
+            display: none;
+        }
+        
+        /* Drawer ajustement heure */
+        .adjust-info {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 16px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .adjust-info strong {
+            color: var(--accent-primary);
+        }
     </style>
 </head>
 <body>
 
-<div class="sync-indicator" id="sync-ui">🔄 <span id="sync-text">Synchro...</span></div>
-
 <div class="app-container">
     <div class="header">
-        <div><h1 style="margin:0; font-size:1.1rem;">Hicham Master</h1><span style="font-size:0.8rem; color:var(--text-secondary);" id="clock-display">--:--</span></div>
-        <div id="db-status-icon" style="font-size: 1.2rem;">☁️</div>
+        <div class="greeting">
+            <h1 id="greeting-text">Bonjour Hicham</h1>
+            <span id="greeting-sub">Prêt pour votre jeûne ?</span>
+        </div>
+        <div class="profile">
+            <img src="https://ui-avatars.com/api/?name=Hicham&background=D4A574&color=fff" alt="Profile">
+        </div>
     </div>
 
-    <div class="app-view active" id="view-home">
-        <div class="timer-card">
-            <div id="timer-info" style="margin-bottom:15px; font-size:0.9rem; font-weight:600;"></div>
-            <div class="ring-container">
+    <div class="app-view active" id="view-main">
+        <!-- Check-in Matinal -->
+        <div id="checkin-card" class="checkin-card" style="display: none;">
+            <div class="checkin-header">
+                <div class="checkin-icon">🌅</div>
+                <div class="checkin-title">
+                    <h3>Comment vous sentez-vous ?</h3>
+                    <p>Votre énergie ce matin</p>
+                </div>
+            </div>
+            <div class="energy-scale">
+                <button class="energy-btn" onclick="saveCheckin(1)">😫<span>Fatigué</span></button>
+                <button class="energy-btn" onclick="saveCheckin(2)">😕<span>Moyen</span></button>
+                <button class="energy-btn" onclick="saveCheckin(3)">😐<span>Neutre</span></button>
+                <button class="energy-btn" onclick="saveCheckin(4)">🙂<span>Bien</span></button>
+                <button class="energy-btn" onclick="saveCheckin(5)">🤩<span>Top!</span></button>
+            </div>
+        </div>
+
+        <div class="timer-card" id="timer-card">
+            <div class="fast-header">
+                <span class="fast-badge" id="fast-badge">Fenêtre de repas</span>
+                <span id="clock" style="font-weight: 600; color: var(--text-secondary); font-size: 0.85rem;">00:00</span>
+            </div>
+            
+            <div class="mode-selector">
+                <button class="mode-btn active" id="mode-auto" onclick="setMode('auto')">⏰ Auto</button>
+                <button class="mode-btn" id="mode-manual" onclick="setMode('manual')">👤 Manuel</button>
+            </div>
+
+            <!-- Info début de jeûne avec bouton édit -->
+            <div class="fast-start-info" id="fast-start-info" style="display: none;">
+                <span class="label">Début du jeûne</span>
+                <span class="value">
+                    <span id="fast-start-time-display">--:--</span>
+                    <button class="btn-edit-time" onclick="openAdjustTimeDrawer()" title="Ajuster l'heure">✏️</button>
+                </span>
+            </div>
+
+            <div class="ring-container" id="ring-container">
                 <svg viewBox="0 0 200 200">
                     <circle cx="100" cy="100" r="90" class="ring-bg"></circle>
                     <circle id="ring-fill" class="ring-fill" cx="100" cy="100" r="90"></circle>
                 </svg>
-                <div style="position:absolute;">
-                    <div id="countdown" style="font-size:2.2rem; font-weight:800;">00:00:00</div>
-                    <button id="main-btn" class="btn-primary" onclick="handleAction()" style="margin-top:15px;">Démarrer</button>
+                <div class="timer-ui">
+                    <div id="countdown">00:00:00</div>
+                    <div class="timer-label" id="timer-label">Prochain jeûne dans</div>
+                    <button id="fast-action-btn" class="btn-primary btn-start" onclick="handleFastAction()">Démarrer le jeûne</button>
                 </div>
             </div>
+
+            <div class="phase-indicator" id="phase-indicator">
+                <div class="phase-icon" id="phase-icon">🍽️</div>
+                <div class="phase-info">
+                    <h4 id="phase-title">Fenêtre alimentaire</h4>
+                    <p id="phase-desc">Profitez de vos repas nutritifs</p>
+                </div>
+            </div>
+
+            <div id="early-fast-container" style="display:none; text-align: center;">
+                <button class="btn-primary btn-early" onclick="startEarlyFast()">⚡ Commencer maintenant</button>
+            </div>
+            
+            <!-- Bouton ajuster visible uniquement en jeûne auto -->
+            <div id="adjust-container" style="display:none; text-align: center;">
+                <button class="btn-primary btn-adjust" onclick="openAdjustTimeDrawer()">🕐 Ajuster l'heure de début</button>
+            </div>
+        </div>
+
+        <div class="sleep-card">
+            <div class="sleep-row">
+                <div class="sleep-info">
+                    <h3>Sommeil</h3>
+                    <p id="sleep-status">Aucune donnée</p>
+                </div>
+                <button class="btn-sleep" onclick="toggleSleep()" id="sleep-btn">🛌 Se coucher</button>
+            </div>
+        </div>
+
+        <h3 class="section-title">
+            <span>Aujourd'hui</span>
+            <span style="font-size: 0.75rem; color: var(--text-light);" id="today-date">--</span>
+        </h3>
+        <div class="logs-container" id="recent-logs">
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>Aucune activité aujourd'hui</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-view" id="view-stats">
+        <h2 style="margin: 0 0 16px 0; font-size: 1.3rem;">Statistiques</h2>
+        
+        <div class="chart-container">
+            <canvas id="weightChart"></canvas>
         </div>
         
-        <div style="background:white; padding:20px; border-radius:24px; border: 1px solid rgba(0,97,255,0.2);">
-            <h3 style="margin:0 0 8px 0; font-size:1rem;">Cloud Sync</h3>
-            <p style="margin:0 0 15px 0; font-size:0.8rem; color:var(--text-secondary);">Sauvegardez vos données sur Dropbox automatiquement.</p>
-            <button id="db-connect-btn" class="btn-dropbox" onclick="connectDropbox()">Connecter Dropbox</button>
+        <button class="btn-full bg-green" onclick="openDrawer('poids')">⚖️ Noter mon poids</button>
+
+        <h3 style="margin: 24px 0 12px 0; font-size: 1rem;">Type de jeûne</h3>
+        <div class="fast-types">
+            <div class="fast-type-btn active" onclick="setFastType(16)" id="type-16">
+                <h4>16:8</h4>
+                <p>Débutant</p>
+            </div>
+            <div class="fast-type-btn" onclick="setFastType(18)" id="type-18">
+                <h4>18:6</h4>
+                <p>Intermédiaire</p>
+            </div>
+            <div class="fast-type-btn" onclick="setFastType(20)" id="type-20">
+                <h4>20:4</h4>
+                <p>Avancé</p>
+            </div>
+        </div>
+
+        <div class="settings-card">
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">Début du jeûne</div>
+                    <div class="setting-desc">Heure de début auto</div>
+                </div>
+                <input type="time" id="fast-start-time" value="20:00" style="width: auto; margin: 0;" onchange="updateFastSettings()">
+            </div>
+            <div class="setting-row">
+                <div>
+                    <div class="setting-label">Durée</div>
+                    <div class="setting-desc" id="duration-label">16 heures</div>
+                </div>
+                <input type="number" id="fast-duration" value="16" min="12" max="23" style="width: 70px; margin: 0;" onchange="updateFastSettings()">
+            </div>
         </div>
     </div>
 
     <div class="app-view" id="view-history">
-        <h2 style="font-size:1.1rem;">Historique Cloud</h2>
-        <div id="history-list"></div>
+        <h2 style="margin: 0 0 16px 0; font-size: 1.3rem;">Historique complet</h2>
+        
+        <div class="cloud-status" id="cloud-status">
+            <div class="cloud-icon">☁️</div>
+            <div class="cloud-info">
+                <h4>Dropbox</h4>
+                <p id="cloud-status-text">Non connecté</p>
+            </div>
+            <button class="sync-btn" onclick="openDrawer('cloud')">Connecter</button>
+        </div>
+        
+        <div class="logs-container" id="full-logs">
+            <div class="empty-state">
+                <div class="empty-state-icon">📜</div>
+                <p>Aucun historique</p>
+            </div>
+        </div>
     </div>
 
     <div class="nav-bar">
-        <div class="nav-item active" onclick="switchTab('home')">🏠<span>Accueil</span></div>
-        <div class="nav-item" onclick="switchTab('history')">📜<span>Historique</span></div>
+        <div class="nav-item active" id="nav-main" onclick="switchTab('main')">🏠<span>Accueil</span></div>
+        <div class="nav-item" id="nav-stats" onclick="switchTab('stats')">📈<span>Stats</span></div>
+        <div class="nav-item" id="nav-history" onclick="switchTab('history')">📜<span>Historique</span></div>
+    </div>
+
+    <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
+    <div class="sync-indicator" id="sync-indicator"><span id="sync-icon">🔄</span><span id="sync-text">...</span></div>
+
+    <!-- Drawers -->
+    <div class="drawer" id="drawer-poids">
+        <div class="handle" onclick="closeDrawers()"></div>
+        <h3 style="margin: 0 0 16px 0; font-size: 1.2rem;">Nouvelle pesée</h3>
+        <input type="number" id="w-input" step="0.1" placeholder="72.5" min="30" max="300" inputmode="decimal">
+        <div style="text-align: center; color: var(--text-light); margin-bottom: 16px; font-size: 0.85rem;">kg</div>
+        <button class="btn-full bg-green" onclick="saveWeight()">Enregistrer</button>
+    </div>
+
+    <div class="drawer" id="drawer-sleep">
+        <div class="handle" onclick="closeDrawers()"></div>
+        <h3 style="margin: 0 0 16px 0; font-size: 1.2rem;">Saisie manuelle</h3>
+        <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-secondary);">Couché</label>
+        <input type="datetime-local" id="sleep-in">
+        <label style="display: block; margin: 12px 0 6px 0; font-size: 0.85rem; color: var(--text-secondary);">Réveil</label>
+        <input type="datetime-local" id="sleep-out">
+        <button class="btn-full bg-green" onclick="saveManualSleep()">Valider</button>
+    </div>
+
+    <!-- Drawer ajustement heure de jeûne -->
+    <div class="drawer" id="drawer-adjust">
+        <div class="handle" onclick="closeDrawers()"></div>
+        <h3 style="margin: 0 0 16px 0; font-size: 1.2rem;">Ajuster l'heure</h3>
+        
+        <div class="adjust-info">
+            Vous avez oublié de noter le début de votre jeûne ?<br>
+            Ajustez l'heure pour recalculer votre progression.<br>
+            <strong>Heure actuelle : <span id="current-adjust-time">--:--</span></strong>
+        </div>
+        
+        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600;">Nouvelle heure de début</label>
+        <input type="time" id="adjust-time-input" style="text-align: center; font-size: 1.2rem;">
+        
+        <label style="display: block; margin: 16px 0 8px 0; font-size: 0.9rem; font-weight: 600;">Date</label>
+        <input type="date" id="adjust-date-input">
+        
+        <button class="btn-full bg-green" onclick="saveAdjustedTime()" style="margin-top: 8px;">Valider l'ajustement</button>
+        <button class="btn-full bg-dark" onclick="closeDrawers()">Annuler</button>
+    </div>
+
+    <div class="drawer" id="drawer-cloud">
+        <div class="handle" onclick="closeDrawers()"></div>
+        <h3 style="margin: 0 0 20px 0; font-size: 1.2rem;">Synchronisation</h3>
+        
+        <div id="oauth-connect">
+            <div class="oauth-box">
+                <div style="font-size: 3rem; margin-bottom: 12px;">☁️</div>
+                <h3 style="margin: 0 0 10px 0; font-size: 1.1rem;">Dropbox Connect</h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin: 0 0 16px 0;">
+                    Synchronisation automatique<br>
+                    <small>Vos données restent privées</small>
+                </p>
+                <button class="oauth-btn" onclick="startOAuth()"><span>🔐</span> Se connecter</button>
+            </div>
+            <div style="text-align: center; font-size: 0.8rem; color: var(--text-light);">
+                Problème ? <span style="color: var(--dropbox); text-decoration: underline; cursor: pointer;" onclick="showManual()">Token manuel</span>
+            </div>
+        </div>
+
+        <div id="manual-connect" style="display: none;">
+            <h4 style="margin: 0 0 12px 0; font-size: 1rem;">Token temporaire</h4>
+            <input type="text" id="manual-token" placeholder="sl.xxxxx" style="font-family: monospace; font-size: 0.85rem;">
+            <div id="error-msg" class="error-box"></div>
+            <button class="btn-full bg-dropbox" onclick="connectManual()">Connecter</button>
+            <button class="btn-full bg-dark" onclick="showOAuth()" style="margin-top: 8px;">Retour</button>
+        </div>
+
+        <div id="cloud-connected" style="display: none;">
+            <div class="cloud-status synced" style="margin-bottom: 20px;">
+                <div style="color: var(--accent-success); font-size: 1.4rem;">✅</div>
+                <div class="cloud-info">
+                    <h4 style="color: var(--accent-success);">Connecté</h4>
+                    <p>Sync active</p>
+                </div>
+            </div>
+            
+            <button class="btn-full bg-dropbox" onclick="syncToDropbox()">⬆️ Sauvegarder</button>
+            <button class="btn-full bg-green" onclick="syncFromDropbox()">⬇️ Restaurer</button>
+            
+            <div style="margin: 16px 0; display: flex; align-items: center; gap: 10px; background: var(--bg-primary); padding: 14px; border-radius: 14px;">
+                <input type="checkbox" id="auto-sync" onchange="toggleAuto()" style="width: 20px; height: 20px; margin: 0;">
+                <label for="auto-sync" style="margin: 0; font-size: 0.9rem; font-weight: 500;">Sync auto</label>
+            </div>
+            
+            <button class="btn-full bg-dark" onclick="disconnect()" style="color: #E07A5F;">Se déconnecter</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // --- CONFIG DROPBOX ---
-    const DB_CLIENT_ID = 'hey2nvnz07mjq05'; 
-    const DB_REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
-    const KEY_START = 'HICHAM_FAST_START';
-    const KEY_DB_TOKEN = 'HICHAM_DB_TOKEN';
+// Configuration
+const DROPBOX_CLIENT_ID = 'hey2nvnz07mjq05';
+const REDIRECT_URI = window.location.origin + window.location.pathname;
 
-    let dbToken = localStorage.getItem(KEY_DB_TOKEN);
-    let duration = 16;
+// Clés stockage
+const KEY_LOGS = 'HICHAM_LOGS_v3';
+const KEY_WEIGHTS = 'HICHAM_WEIGHTS_v3';
+const KEY_SETTINGS = 'HICHAM_SETTINGS_v3';
+const KEY_MODE = 'HICHAM_MODE_v3';
+const KEY_EARLY = 'HICHAM_EARLY_v3';
+const KEY_CHECKIN = 'HICHAM_CHECKIN_v3';
+const KEY_LAST_VISIT = 'HICHAM_LAST_VISIT_v3';
+const KEY_ADJUSTED_START = 'HICHAM_ADJUSTED_START_v3'; // Nouveau: heure ajustée manuellement
+const DB_ACCESS = 'DB_ACCESS_v3';
+const DB_REFRESH = 'DB_REFRESH_v3';
+const DB_EXPIRES = 'DB_EXPIRES_v3';
+const DB_AUTO = 'DB_AUTO_v3';
 
-    // --- INITIALISATION ---
-    function init() {
-        handleDropboxAuth();
-        setInterval(update, 1000);
-        update();
-        if(dbToken) {
-            document.getElementById('db-connect-btn').innerText = "✅ Dropbox Connecté";
-            document.getElementById('db-status-icon').innerText = "☁️✅";
-            syncFromDropbox(); // Charger les données au démarrage
-        }
+// Données
+let logs = [], weights = [], settings = { startHour: 20, startMinute: 0, duration: 16, fastType: 16 };
+let currentMode = 'auto', isEarly = false, chart = null;
+let dbToken = null, dbRefresh = null, dbExpires = 0;
+let fastStartTime = null;
+let adjustedStartTime = null; // Heure ajustée manuellement
+
+const PHASES = {
+    0: { icon: '🍽️', title: 'Fenêtre alimentaire', desc: 'Profitez de vos repas nutritifs', class: '' },
+    1: { icon: '🔄', title: 'Digestion', desc: 'Votre corps traite les nutriments', class: 'phase-digest' },
+    2: { icon: '📉', title: 'Chute insuline', desc: 'Le corps passe en mode brûlage', class: 'phase-fat' },
+    3: { icon: '🔥', title: 'Cétose', desc: 'Brûlage optimal des graisses', class: 'phase-ketosis' },
+    4: { icon: '✨', title: 'Autophagie', desc: 'Régénération cellulaire', class: 'phase-autophagy' }
+};
+
+// Initialisation
+function init() {
+    // Chargement local
+    logs = JSON.parse(localStorage.getItem(KEY_LOGS)) || [];
+    weights = JSON.parse(localStorage.getItem(KEY_WEIGHTS)) || [];
+    settings = JSON.parse(localStorage.getItem(KEY_SETTINGS)) || settings;
+    currentMode = localStorage.getItem(KEY_MODE) || 'auto';
+    dbToken = localStorage.getItem(DB_ACCESS);
+    dbRefresh = localStorage.getItem(DB_REFRESH);
+    dbExpires = parseInt(localStorage.getItem(DB_EXPIRES)) || 0;
+    
+    // Charger heure ajustée si existe
+    const adjusted = localStorage.getItem(KEY_ADJUSTED_START);
+    if (adjusted) {
+        adjustedStartTime = new Date(adjusted);
     }
 
-    // --- LOGIQUE TIMER ---
-    function update() {
-        const start = localStorage.getItem(KEY_START);
-        const ring = document.getElementById('ring-fill');
-        const circum = 565;
+    // Vérifier jeûne en cours
+    checkFastStatus();
+    
+    // Interface
+    document.getElementById('fast-start-time').value = 
+        String(settings.startHour).padStart(2, '0') + ':' + 
+        String(settings.startMinute).padStart(2, '0');
+    document.getElementById('fast-duration').value = settings.duration;
+    updateFastTypeUI();
 
-        if (start) {
-            const elapsed = (Date.now() - parseInt(start)) / 1000;
-            const remaining = Math.max(0, (duration * 3600) - elapsed);
-            const progress = Math.min(1, elapsed / (duration * 3600));
+    // Check-in
+    checkMorningCheckin();
+    
+    // OAuth
+    handleOAuthReturn();
 
-            document.getElementById('countdown').innerText = formatTime(remaining);
-            document.getElementById('main-btn').innerText = "Arrêter";
-            document.getElementById('main-btn').style.background = "#E07A5F";
-            ring.style.strokeDashoffset = circum - (progress * circum);
+    // Premier render avant sync
+    updateMode();
+    updateCloudUI();
+    renderLogs();
+    updateGreeting();
+    update();
+
+    // Timer
+    setInterval(update, 1000);
+
+    // Sync auto si connecté
+    if (dbToken && localStorage.getItem(DB_AUTO) === 'true') {
+        setTimeout(() => syncFromDropbox(true), 1500);
+    }
+}
+
+// Vérifier statut du jeûne
+function checkFastStatus() {
+    const early = localStorage.getItem(KEY_EARLY);
+    const manual = localStorage.getItem('FAST_START_v3');
+    const adjusted = localStorage.getItem(KEY_ADJUSTED_START);
+    
+    if (early) {
+        const d = JSON.parse(early);
+        const hoursElapsed = (Date.now() - d.start) / 3600000;
+        if (hoursElapsed < settings.duration) {
+            isEarly = true;
+            fastStartTime = new Date(d.start);
         } else {
-            document.getElementById('countdown').innerText = "00:00:00";
-            document.getElementById('main-btn').innerText = "Démarrer";
-            document.getElementById('main-btn').style.background = "#6B8E6B";
-            ring.style.strokeDashoffset = circum;
+            localStorage.removeItem(KEY_EARLY);
+            isEarly = false;
+            fastStartTime = null;
         }
-        document.getElementById('clock-display').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    }
-
-    function handleAction() {
-        if (localStorage.getItem(KEY_START)) {
-            if(confirm("Terminer le jeûne ?")) {
-                localStorage.removeItem(KEY_START);
-                if(dbToken) syncToDropbox();
-            }
-        } else {
-            localStorage.setItem(KEY_START, Date.now());
-            if(dbToken) syncToDropbox();
-        }
-        update();
-    }
-
-    // --- LOGIQUE DROPBOX ---
-    function connectDropbox() {
-        const authUrl = `https://www.dropbox.com/oauth2/authorize?client_id=${DB_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(DB_REDIRECT_URI)}`;
-        window.location.href = authUrl;
-    }
-
-    function handleDropboxAuth() {
-        const hash = window.location.hash;
-        if (hash && hash.includes('access_token=')) {
-            const token = hash.split('access_token=')[1].split('&')[0];
-            localStorage.setItem(KEY_DB_TOKEN, token);
-            dbToken = token;
-            window.location.hash = ''; // Nettoyer l'URL
-            showSyncStatus("Connecté !");
-        }
-    }
-
-    async function syncToDropbox() {
-        if (!dbToken) return;
-        showSyncStatus("Sauvegarde...");
+    } else if (manual) {
+        fastStartTime = new Date(parseInt(manual));
+    } else if (adjusted) {
+        // Heure ajustée manuellement en mode auto
+        fastStartTime = new Date(adjusted);
+    } else {
+        // Mode auto standard - calculer prochain début
+        const now = new Date();
+        const targetHour = settings.startHour;
+        const targetMin = settings.startMinute;
+        let target = new Date(now);
+        target.setHours(targetHour, targetMin, 0, 0);
         
-        const data = {
-            lastStart: localStorage.getItem(KEY_START),
-            syncDate: new Date().toISOString()
-        };
+        // Si déjà passé aujourd'hui, c'est pour demain
+        if (target < now) {
+            target.setDate(target.getDate() + 1);
+        }
+        fastStartTime = target;
+    }
+}
 
-        try {
-            const response = await fetch('https://content.dropboxapi.com/2/files/upload', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${dbToken}`,
-                    'Dropbox-API-Arg': JSON.stringify({
-                        path: '/fasting_data.json',
-                        mode: 'overwrite'
-                    }),
-                    'Content-Type': 'application/octet-stream'
-                },
-                body: JSON.stringify(data)
-            });
-            if (response.ok) showSyncStatus("Cloud à jour ✅");
-        } catch (e) {
-            showSyncStatus("Erreur Cloud ❌");
+// Check-in matinal
+function checkMorningCheckin() {
+    const lastVisit = localStorage.getItem(KEY_LAST_VISIT);
+    const today = new Date().toDateString();
+    const hour = new Date().getHours();
+    
+    if (lastVisit !== today && hour >= 5 && hour < 12) {
+        document.getElementById('checkin-card').style.display = 'block';
+    } else {
+        document.getElementById('checkin-card').style.display = 'none';
+    }
+    
+    localStorage.setItem(KEY_LAST_VISIT, today);
+}
+
+function saveCheckin(level) {
+    document.querySelectorAll('.energy-btn').forEach((btn, idx) => {
+        btn.classList.toggle('selected', idx + 1 === level);
+    });
+
+    const moods = ['Épuisé', 'Fatigué', 'Neutre', 'Bien', 'Énergique'];
+    const checkin = {
+        level, mood: moods[level - 1],
+        date: new Date().toISOString()
+    };
+    
+    localStorage.setItem(KEY_CHECKIN, JSON.stringify(checkin));
+    addLog('HUMEUR', moods[level - 1], 'mood');
+    
+    setTimeout(() => {
+        document.getElementById('checkin-card').style.opacity = '0';
+        setTimeout(() => document.getElementById('checkin-card').style.display = 'none', 300);
+    }, 400);
+
+    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+}
+
+function updateGreeting() {
+    const hour = new Date().getHours();
+    let text = 'Bonjour Hicham', sub = 'Prêt pour votre jeûne ?';
+    
+    if (hour >= 12 && hour < 17) { text = 'Bonjour Hicham'; sub = 'Comment se passe votre journée ?'; }
+    else if (hour >= 17 && hour < 22) { text = 'Bonsoir Hicham'; sub = 'Préparez votre jeûne de ce soir'; }
+    else if (hour >= 22 || hour < 5) { text = 'Bonne nuit Hicham'; sub = 'Repos bien mérité'; }
+    
+    document.getElementById('greeting-text').textContent = text;
+    document.getElementById('greeting-sub').textContent = sub;
+}
+
+// Mise à jour du timer
+function update() {
+    const now = new Date();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
+    document.getElementById('clock').innerText = String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+    
+    let fasting = false, remaining = 0, progress = 0, phase = 0, elapsed = 0;
+    let isAdjusted = false;
+    
+    // Calcul selon le mode
+    if (currentMode === 'manual') {
+        const start = localStorage.getItem('FAST_START_v3');
+        if (start) {
+            fasting = true;
+            elapsed = (Date.now() - parseInt(start)) / 1000;
+            remaining = Math.max(0, settings.duration * 3600 - elapsed);
+            progress = Math.min(1, elapsed / (settings.duration * 3600));
+            fastStartTime = new Date(parseInt(start));
+        }
+    } else {
+        // Mode auto avec possibilité d'ajustement
+        const adjusted = localStorage.getItem(KEY_ADJUSTED_START);
+        const early = localStorage.getItem(KEY_EARLY);
+        
+        if (early) {
+            // Jeûne anticipé prioritaire
+            const d = JSON.parse(early);
+            elapsed = (Date.now() - d.start) / 1000;
+            remaining = Math.max(0, settings.duration * 3600 - elapsed);
+            progress = Math.min(1, elapsed / (settings.duration * 3600));
+            fasting = remaining > 0;
+            fastStartTime = new Date(d.start);
+            isEarly = true;
+        } else if (adjusted) {
+            // Heure ajustée manuellement
+            const adjustedDate = new Date(adjusted);
+            const elapsedMs = Date.now() - adjustedDate.getTime();
+            elapsed = elapsedMs / 1000;
+            
+            if (elapsed > 0 && elapsed < settings.duration * 3600) {
+                fasting = true;
+                remaining = settings.duration * 3600 - elapsed;
+                progress = elapsed / (settings.duration * 3600);
+                fastStartTime = adjustedDate;
+                isAdjusted = true;
+            } else if (elapsed >= settings.duration * 3600) {
+                // Jeûne terminé, nettoyer l'ajustement
+                localStorage.removeItem(KEY_ADJUSTED_START);
+                fasting = false;
+                adjustedStartTime = null;
+            } else {
+                // Dans le futur (ne devrait pas arriver)
+                fasting = false;
+            }
+        } else {
+            // Mode auto standard
+            const fs = settings.startHour * 3600 + settings.startMinute * 60;
+            const fe = (fs + settings.duration * 3600) % 86400;
+            const ts = h * 3600 + m * 60 + s;
+            
+            fasting = fs < fe ? (ts >= fs && ts < fe) : (ts >= fs || ts < fe);
+            if (fasting) {
+                elapsed = ts >= fs ? (ts - fs) : (ts + 86400 - fs);
+                remaining = settings.duration * 3600 - elapsed;
+                progress = elapsed / (settings.duration * 3600);
+                const todayStart = new Date();
+                todayStart.setHours(settings.startHour, settings.startMinute, 0, 0);
+                if (todayStart > now) todayStart.setDate(todayStart.getDate() - 1);
+                fastStartTime = todayStart;
+            } else {
+                const nextStart = new Date();
+                nextStart.setHours(settings.startHour, settings.startMinute, 0, 0);
+                if (nextStart < now) nextStart.setDate(nextStart.getDate() + 1);
+                fastStartTime = nextStart;
+                remaining = (nextStart - now) / 1000;
+            }
         }
     }
+    
+    // Déterminer phase
+    if (!fasting) phase = 0;
+    else {
+        const hoursElapsed = elapsed / 3600;
+        if (hoursElapsed < 4) phase = 1;
+        else if (hoursElapsed < 8) phase = 2;
+        else if (hoursElapsed < 12) phase = 3;
+        else phase = 4;
+    }
+    
+    // Mise à jour UI
+    const badge = document.getElementById('fast-badge');
+    const startInfo = document.getElementById('fast-start-info');
+    const startDisplay = document.getElementById('fast-start-time-display');
+    const ring = document.getElementById('ring-fill');
+    const phaseData = PHASES[phase];
+    const adjustContainer = document.getElementById('adjust-container');
+    
+    // Afficher/masquer info début de jeûne et bouton ajuster
+    if (fasting && fastStartTime) {
+        startInfo.style.display = 'flex';
+        startDisplay.innerText = fastStartTime.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        
+        // Afficher bouton ajuster uniquement en mode auto (pas early)
+        adjustContainer.style.display = (currentMode === 'auto' && !isEarly) ? 'block' : 'none';
+    } else {
+        startInfo.style.display = 'none';
+        adjustContainer.style.display = 'none';
+    }
+    
+    badge.classList.toggle('active', fasting);
+    badge.innerText = fasting ? 'Jeûne en cours' : 'Fenêtre repas';
+    
+    // Cercle
+    const circumference = 2 * Math.PI * 90;
+    ring.style.strokeDashoffset = circumference - (progress * circumference);
+    ring.className = `ring-fill ${phaseData.class}`;
+    
+    // Textes
+    document.getElementById('countdown').innerText = formatTime(Math.abs(remaining));
+    document.getElementById('timer-label').innerText = fasting ? 'Temps restant' : 'Prochain jeûne dans';
+    
+    // Phase
+    document.getElementById('phase-icon').innerText = phaseData.icon;
+    document.getElementById('phase-title').innerText = phaseData.title;
+    document.getElementById('phase-desc').innerText = isAdjusted ? 
+        phaseData.desc + ' (heure ajustée)' : phaseData.desc;
+    
+    // Bouton principal
+    const btn = document.getElementById('fast-action-btn');
+    if (currentMode === 'manual') {
+        const hasStarted = localStorage.getItem('FAST_START_v3');
+        btn.innerText = hasStarted ? 'Arrêter le jeûne' : 'Démarrer le jeûne';
+        btn.className = 'btn-primary ' + (hasStarted ? 'btn-stop' : 'btn-start');
+        btn.style.opacity = '1';
+    } else {
+        btn.innerText = isEarly ? 'Arrêter anticipé' : 'Mode auto';
+        btn.className = 'btn-primary btn-stop';
+        btn.style.opacity = isEarly ? '1' : '0.5';
+    }
+    
+    // Early start (uniquement si pas déjà en jeûne)
+    const showEarly = currentMode === 'auto' && !fasting && !isEarly && !isAdjusted;
+    document.getElementById('early-fast-container').style.display = showEarly ? 'block' : 'none';
+    
+    updateSleepStatus();
+}
 
-    async function syncFromDropbox() {
-        if (!dbToken) return;
-        try {
-            const response = await fetch('https://content.dropboxapi.com/2/files/download', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${dbToken}`,
-                    'Dropbox-API-Arg': JSON.stringify({ path: '/fasting_data.json' })
-                }
-            });
-            if (response.ok) {
-                const data = await response.json();
-                if (data.lastStart) {
-                    localStorage.setItem(KEY_START, data.lastStart);
-                    update();
+function formatTime(s) {
+    s = Math.floor(s);
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
+}
+
+// Drawer ajustement heure
+function openAdjustTimeDrawer() {
+    const drawer = document.getElementById('drawer-adjust');
+    const overlay = document.getElementById('overlay');
+    
+    // Pré-remplir avec l'heure actuelle de début
+    const now = new Date();
+    let defaultTime, defaultDate;
+    
+    if (fastStartTime) {
+        defaultTime = fastStartTime.toTimeString().slice(0, 5);
+        defaultDate = fastStartTime.toISOString().slice(0, 10);
+    } else {
+        defaultTime = now.toTimeString().slice(0, 5);
+        defaultDate = now.toISOString().slice(0, 10);
+    }
+    
+    document.getElementById('current-adjust-time').innerText = fastStartTime ? 
+        fastStartTime.toLocaleString('fr-FR', { hour: '2-digit', minute: '2-digit', day: 'numeric', month: 'short' }) : 
+        'Non défini';
+    document.getElementById('adjust-time-input').value = defaultTime;
+    document.getElementById('adjust-date-input').value = defaultDate;
+    
+    drawer.classList.add('open');
+    overlay.classList.add('active');
+}
+
+function saveAdjustedTime() {
+    const timeVal = document.getElementById('adjust-time-input').value;
+    const dateVal = document.getElementById('adjust-date-input').value;
+    
+    if (!timeVal || !dateVal) {
+        alert('Veuillez remplir l\'heure et la date');
+        return;
+    }
+    
+    // Créer la date de début ajustée
+    const adjustedDate = new Date(dateVal + 'T' + timeVal);
+    
+    // Vérifier que c'est dans le passé
+    if (adjustedDate > Date.now()) {
+        alert('L\'heure de début doit être dans le passé');
+        return;
+    }
+    
+    // Vérifier que ça ne dépasse pas la durée du jeûne
+    const hoursElapsed = (Date.now() - adjustedDate.getTime()) / 3600000;
+    if (hoursElapsed > settings.duration) {
+        alert(`Ce jeûne dépasserait déjà ${settings.duration}h. Vérifiez l'heure.`);
+        return;
+    }
+    
+    // Sauvegarder l'ajustement
+    localStorage.setItem(KEY_ADJUSTED_START, adjustedDate.toISOString());
+    adjustedStartTime = adjustedDate;
+    fastStartTime = adjustedDate;
+    
+    // Log l'ajustement
+    const timeStr = adjustedDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    addLog('AJUSTEMENT', `Heure de début: ${timeStr}`, 'adjust');
+    
+    closeDrawers();
+    update();
+    
+    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+}
+
+// Actions
+function setMode(m) {
+    currentMode = m;
+    localStorage.setItem(KEY_MODE, m);
+    updateMode();
+    checkFastStatus();
+    update();
+}
+
+function updateMode() {
+    document.getElementById('mode-auto').classList.toggle('active', currentMode === 'auto');
+    document.getElementById('mode-manual').classList.toggle('active', currentMode === 'manual');
+}
+
+function startEarlyFast() {
+    if (!confirm('Commencer le jeûne maintenant ?')) return;
+    const now = Date.now();
+    localStorage.setItem(KEY_EARLY, JSON.stringify({ start: now }));
+    isEarly = true;
+    fastStartTime = new Date(now);
+    addLog('JEÛNE', 'Démarré anticipé', 'primary');
+    update();
+    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+}
+
+function stopEarlyFast() {
+    addLog('JEÛNE', 'Terminé anticipé', 'primary');
+    localStorage.removeItem(KEY_EARLY);
+    isEarly = false;
+    fastStartTime = null;
+    update();
+    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+}
+
+function handleFastAction() {
+    if (currentMode === 'manual') {
+        const s = localStorage.getItem('FAST_START_v3');
+        if (s) {
+            localStorage.removeItem('FAST_START_v3');
+            addLog('JEÛNE', 'Terminé', 'primary');
+            fastStartTime = null;
+        } else {
+            const now = Date.now();
+            localStorage.setItem('FAST_START_v3', now);
+            fastStartTime = new Date(now);
+            addLog('JEÛNE', 'Démarré', 'primary');
+        }
+        update();
+        if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+    } else {
+        if (isEarly) stopEarlyFast();
+        else alert('Mode auto actif. Utilisez le bouton vert pour démarrer tôt.');
+    }
+}
+
+// Sommeil
+function toggleSleep() {
+    const s = localStorage.getItem('SLEEP_START_v3');
+    if (!s) {
+        localStorage.setItem('SLEEP_START_v3', Date.now());
+        addLog('SOMMEIL', 'Couché', 'sleep');
+    } else {
+        const hours = ((Date.now() - parseInt(s)) / 3600000).toFixed(1);
+        addLog('SOMMEIL', `Durée: ${hours}h`, 'sleep');
+        localStorage.removeItem('SLEEP_START_v3');
+    }
+    updateSleepStatus();
+    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+}
+
+function updateSleepStatus() {
+    const s = localStorage.getItem('SLEEP_START_v3');
+    const status = document.getElementById('sleep-status');
+    const btn = document.getElementById('sleep-btn');
+    
+    if (s) {
+        const hours = ((Date.now() - parseInt(s)) / 3600000).toFixed(1);
+        status.innerHTML = `En cours • <strong>${hours}h</strong>`;
+        btn.innerText = '☀️ Réveil';
+    } else {
+        status.innerText = 'Aucune donnée cette nuit';
+        btn.innerText = '🛌 Se coucher';
+    }
+}
+
+function saveManualSleep() {
+    const i = document.getElementById('sleep-in').value;
+    const o = document.getElementById('sleep-out').value;
+    if (!i || !o) return alert('Dates requises');
+    const s = new Date(i), e = new Date(o);
+    if (e <= s) return alert('Dates invalides');
+    const hours = ((e - s) / 3600000).toFixed(1);
+    addLog('SOMMEIL', `Nuit: ${hours}h`, 'sleep');
+    closeDrawers();
+    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+}
+
+// Logs
+function addLog(type, desc, color) {
+    const entry = {
+        type, desc, color,
+        date: new Date().toISOString(),
+        id: Date.now()
+    };
+    logs.unshift(entry);
+    if (logs.length > 200) logs = logs.slice(0, 200);
+    localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+    renderLogs();
+}
+
+function renderLogs() {
+    const today = new Date();
+    document.getElementById('today-date').innerText = today.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+    
+    const formatDate = (d) => {
+        const date = new Date(d);
+        const diffDays = Math.floor((today - date) / 86400000);
+        const timeStr = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+        
+        if (diffDays === 0) return `Auj. ${timeStr}`;
+        if (diffDays === 1) return `Hier ${timeStr}`;
+        return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+    };
+    
+    const createLogHTML = (l) => `
+        <div class="log-item ${l.color}">
+            <div class="log-content">
+                <h4>${l.type}</h4>
+                <p>${l.desc}</p>
+            </div>
+            <div class="log-time">${formatDate(l.date)}</div>
+        </div>
+    `;
+    
+    // Logs récents (aujourd'hui uniquement)
+    const todayStr = today.toDateString();
+    const todayLogs = logs.filter(l => new Date(l.date).toDateString() === todayStr);
+    
+    const recentContainer = document.getElementById('recent-logs');
+    if (todayLogs.length === 0) {
+        recentContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <p>Aucune activité aujourd'hui</p>
+            </div>`;
+    } else {
+        recentContainer.innerHTML = todayLogs.slice(0, 5).map(createLogHTML).join('');
+    }
+    
+    // Tous les logs
+    const fullContainer = document.getElementById('full-logs');
+    if (logs.length === 0) {
+        fullContainer.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📜</div>
+                <p>Aucun historique</p>
+            </div>`;
+    } else {
+        fullContainer.innerHTML = logs.map(createLogHTML).join('');
+    }
+}
+
+// Poids
+function saveWeight() {
+    const v = parseFloat(document.getElementById('w-input').value);
+    if (!v || v < 30 || v > 300) return alert('Poids invalide');
+    weights.push({
+        d: new Date().toISOString(),
+        v: v,
+        dateLabel: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })
+    });
+    localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+    addLog('POIDS', `${v} kg`, 'weight');
+    document.getElementById('w-input').value = '';
+    closeDrawers();
+    if (document.getElementById('view-stats').classList.contains('active')) renderChart();
+    if (localStorage.getItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
+}
+
+function renderChart() {
+    const cvs = document.getElementById('weightChart');
+    if (!cvs) return;
+    if (chart) chart.destroy();
+    
+    if (weights.length === 0) {
+        cvs.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>Aucune donnée</p></div>';
+        return;
+    }
+    
+    const sorted = [...weights].sort((a, b) => new Date(a.d) - new Date(b.d)).slice(-30);
+    chart = new Chart(cvs, {
+        type: 'line',
+        data: {
+            labels: sorted.map(w => w.dateLabel),
+            datasets: [{
+                data: sorted.map(w => w.v),
+                borderColor: '#D4A574',
+                backgroundColor: 'rgba(212, 165, 116, 0.1)',
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#D4A574',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: {
+                    grid: { color: 'rgba(139, 115, 85, 0.08)' },
+                    ticks: { color: '#8B8680', font: { size: 11 } }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#8B8680', font: { size: 11 } }
                 }
             }
-        } catch (e) { console.error("Sync down failed", e); }
-    }
+        }
+    });
+}
 
-    // --- UTILITAIRES ---
-    function switchTab(id) {
-        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-        document.getElementById('view-' + id).classList.add('active');
-    }
+function setFastType(hours) {
+    settings.duration = hours;
+    settings.fastType = hours;
+    localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
+    updateFastTypeUI();
+    update();
+    showStatus('success', `Type ${hours}:${24-hours} sélectionné`);
+}
 
-    function showSyncStatus(msg) {
-        const ui = document.getElementById('sync-ui');
-        document.getElementById('sync-text').innerText = msg;
-        ui.classList.add('active');
-        setTimeout(() => ui.classList.remove('active'), 3000);
-    }
+function updateFastTypeUI() {
+    [16, 18, 20].forEach(h => {
+        document.getElementById(`type-${h}`).classList.toggle('active', settings.fastType === h);
+    });
+    document.getElementById('duration-label').innerText = `${settings.duration} heures`;
+}
 
-    function formatTime(s) {
-        const h = Math.floor(s / 3600);
-        const m = Math.floor((s % 3600) / 60);
-        const sec = Math.floor(s % 60);
-        return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-    }
+function updateFastSettings() {
+    const [h, m] = document.getElementById('fast-start-time').value.split(':').map(Number);
+    settings.startHour = h;
+    settings.startMinute = m;
+    settings.duration = parseInt(document.getElementById('fast-duration').value) || 16;
+    localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
+    updateFastTypeUI();
+    checkFastStatus();
+    update();
+}
 
-    init();
+// Navigation
+function switchTab(tab) {
+    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + tab).classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.getElementById('nav-' + tab).classList.add('active');
+    if (tab === 'stats') setTimeout(renderChart, 100);
+    if (tab === 'history') renderLogs();
+}
+
+function openDrawer(id) {
+    document.getElementById('drawer-' + id).classList.add('open');
+    document.getElementById('overlay').classList.add('active');
+    if (id === 'sleep') {
+        const n = new Date(), y = new Date(n.getTime() - 86400000);
+        const f = d => d.toISOString().slice(0, 16);
+        document.getElementById('sleep-in').value = f(y);
+        document.getElementById('sleep-out').value = f(n);
+    }
+    if (id === 'cloud') updateCloudUI();
+}
+
+function closeDrawers() {
+    document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
+    document.getElementById('overlay').classList.remove('active');
+}
+
+function showStatus(type, msg) {
+    const ind = document.getElementById('sync-indicator');
+    ind.className = 'sync-indicator show';
+    document.getElementById('sync-icon').innerText = type === 'syncing' ? '🔄' : type === 'success' ? '✅' : '❌';
+    document.getElementById('sync-text').innerText = msg;
+    if (type !== 'syncing') setTimeout(() => ind.classList.remove('show'), 2500);
+}
+
+// ========== DROPBOX SYNC ==========
+
+async function startOAuth() {
+    const verifier = generateVerifier(64);
+    localStorage.setItem('oauth_verifier', verifier);
+    const challenge = await sha256(verifier);
+    const challengeBase64 = base64URLEncode(challenge);
+    const state = Math.random().toString(36).substring(2, 15);
+    localStorage.setItem('oauth_state', state);
+    
+    const url = `https://www.dropbox.com/oauth2/authorize?` +
+        `client_id=${DROPBOX_CLIENT_ID}` +
+        `&response_type=code` +
+        `&code_challenge_method=S256` +
+        `&code_challenge=${challengeBase64}` +
+        `&state=${state}` +
+        `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+        `&token_access_type=offline`;
+    
+    window.location.href = url;
+}
+
+function generateVerifier(length) {
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
+    let text = '';
+    for (let i = 0; i < length; i++) text += possible.charAt(Math.floor(Math.random() * possible.length));
+    return text;
+}
+
+async function sha256(plain) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(plain);
+    return await crypto.subtle.digest('SHA-256', data);
+}
+
+function base64URLEncode(str) {
+    return btoa(String.fromCharCode.apply(null, new Uint8Array(str)))
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+}
+
+async function handleOAuthReturn() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    const state = params.get('state');
+    const error = params.get('error');
+    
+    if (error) {
+        showStatus('error', 'Connexion annulée');
+        window.history.replaceState({}, document.title, window.location.pathname);
+        return;
+    }
+    if (!code) return;
+    
+    const savedState = localStorage.getItem('oauth_state');
+    if (state !== savedState) return;
+    
+    const verifier = localStorage.getItem('oauth_verifier');
+    showStatus('syncing', 'Connexion...');
+    
+    try {
+        const response = await fetch('https://api.dropboxapi.com/oauth2/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                code, grant_type: 'authorization_code',
+                client_id: DROPBOX_CLIENT_ID,
+                code_verifier: verifier,
+                redirect_uri: REDIRECT_URI
+            })
+        });
+        
+        const data = await response.json();
+        if (data.access_token) {
+            saveTokens(data.access_token, data.refresh_token, data.expires_in);
+            showStatus('success', 'Connecté !');
+            updateCloudUI();
+            closeDrawers();
+            setTimeout(() => syncFromDropbox(), 800);
+        } else {
+            throw new Error(data.error_description || 'Erreur');
+        }
+    } catch (e) {
+        showStatus('error', 'Échec connexion');
+    }
+    
+    window.history.replaceState({}, document.title, window.location.pathname);
+}
+
+function saveTokens(access, refresh, expiresIn) {
+    dbToken = access;
+    dbRefresh = refresh;
+    dbExpires = Date.now() + (expiresIn * 1000);
+    localStorage.setItem(DB_ACCESS, access);
+    localStorage.setItem(DB_REFRESH, refresh);
+    localStorage.setItem(DB_EXPIRES, dbExpires.toString());
+}
+
+async function refreshToken() {
+    if (!dbRefresh) return false;
+    try {
+        const response = await fetch('https://api.dropboxapi.com/oauth2/token', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                grant_type: 'refresh_token',
+                refresh_token: dbRefresh,
+                client_id: DROPBOX_CLIENT_ID
+            })
+        });
+        const data = await response.json();
+        if (data.access_token) {
+            saveTokens(data.access_token, dbRefresh, data.expires_in);
+            return true;
+        }
+    } catch (e) { console.error('Refresh failed', e); }
+    return false;
+}
+
+async function dbApi(url, options = {}) {
+    if (Date.now() > dbExpires - 300000) {
+        const ok = await refreshToken();
+        if (!ok) throw new Error('Session expirée');
+    }
+    
+    const headers = { 'Authorization': 'Bearer ' + dbToken, ...options.headers };
+    const response = await fetch(url, { ...options, headers });
+    
+    if (response.status === 401) {
+        const ok = await refreshToken();
+        if (ok) {
+            headers['Authorization'] = 'Bearer ' + dbToken;
+            return fetch(url, { ...options, headers });
+        } else {
+            disconnect();
+            throw new Error('Déconnecté');
+        }
+    }
+    return response;
+}
+
+async function syncToDropbox() {
+    if (!dbToken) return;
+    showStatus('syncing', 'Sauvegarde...');
+    
+    const data = {
+        logs, weights, settings, mode: currentMode,
+        early: localStorage.getItem(KEY_EARLY),
+        adjustedStart: localStorage.getItem(KEY_ADJUSTED_START),
+        checkin: localStorage.getItem(KEY_CHECKIN),
+        fastStart: localStorage.getItem('FAST_START_v3'),
+        version: '3.1',
+        lastSync: new Date().toISOString()
+    };
+    
+    try {
+        const response = await dbApi('https://content.dropboxapi.com/2/files/upload', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/octet-stream',
+                'Dropbox-API-Arg': JSON.stringify({
+                    path: '/hicham-fasting-data.json',
+                    mode: 'overwrite',
+                    autorename: false
+                })
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (response.ok) {
+            showStatus('success', 'Sauvegardé !');
+        } else {
+            throw new Error('Upload échoué');
+        }
+    } catch (e) {
+        showStatus('error', e.message);
+    }
+}
+
+async function syncFromDropbox(silent = false) {
+    if (!dbToken) return;
+    if (!silent) showStatus('syncing', 'Chargement...');
+    
+    try {
+        const response = await dbApi('https://content.dropboxapi.com/2/files/download', {
+            method: 'POST',
+            headers: {
+                'Dropbox-API-Arg': JSON.stringify({ path: '/hicham-fasting-data.json' })
+            }
+        });
+        
+        if (response.status === 409) {
+            if (!silent) showStatus('error', 'Aucune sauvegarde trouvée');
+            return;
+        }
+        
+        const text = await response.text();
+        const data = JSON.parse(text);
+        
+        console.log('Données reçues:', data);
+        
+        // Merge logs
+        if (data.logs && Array.isArray(data.logs)) {
+            const existingIds = new Set(logs.map(l => l.id));
+            const newLogs = data.logs.filter(l => l.id && !existingIds.has(l.id));
+            if (newLogs.length > 0) {
+                logs = [...newLogs, ...logs].sort((a, b) => new Date(b.date) - new Date(a.date));
+                logs = logs.slice(0, 200);
+                localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+                console.log(`${newLogs.length} nouveaux logs ajoutés`);
+            }
+        }
+        
+        // Merge poids
+        if (data.weights && Array.isArray(data.weights)) {
+            const existingDates = new Set(weights.map(w => w.d));
+            const newWeights = data.weights.filter(w => w.d && !existingDates.has(w.d));
+            if (newWeights.length > 0) {
+                weights = [...newWeights, ...weights].sort((a, b) => new Date(a.d) - new Date(b.d));
+                localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+                console.log(`${newWeights.length} nouveaux poids ajoutés`);
+            }
+        }
+        
+        // Restaurer settings
+        if (data.settings && JSON.stringify(data.settings) !== JSON.stringify(settings)) {
+            settings = { ...settings, ...data.settings };
+            localStorage.setItem(KEY_SETTINGS, JSON.stringify(settings));
+            document.getElementById('fast-start-time').value = 
+                String(settings.startHour).padStart(2, '0') + ':' + 
+                String(settings.startMinute).padStart(2, '0');
+            document.getElementById('fast-duration').value = settings.duration;
+            updateFastTypeUI();
+        }
+        
+        // Restaurer état
+        if (data.early) localStorage.setItem(KEY_EARLY, data.early);
+        if (data.adjustedStart) localStorage.setItem(KEY_ADJUSTED_START, data.adjustedStart);
+        if (data.fastStart) localStorage.setItem('FAST_START_v3', data.fastStart);
+        if (data.mode) {
+            currentMode = data.mode;
+            localStorage.setItem(KEY_MODE, currentMode);
+            updateMode();
+        }
+        
+        // Refresh UI
+        checkFastStatus();
+        renderLogs();
+        update();
+        
+        if (!silent) showStatus('success', `${data.logs?.length || 0} entrées chargées`);
+    } catch (e) {
+        console.error('Sync error:', e);
+        if (!silent) showStatus('error', 'Erreur de chargement');
+    }
+}
+
+function updateCloudUI() {
+    const connected = !!dbToken && Date.now() < dbExpires;
+    
+    document.getElementById('oauth-connect').style.display = connected ? 'none' : 'block';
+    document.getElementById('manual-connect').style.display = 'none';
+    document.getElementById('cloud-connected').style.display = connected ? 'block' : 'none';
+    
+    const statusEl = document.getElementById('cloud-status');
+    const textEl = document.getElementById('cloud-status-text');
+    const btn = statusEl.querySelector('.sync-btn');
+    
+    if (connected) {
+        statusEl.className = 'cloud-status synced';
+        textEl.innerText = 'Connecté';
+        btn.innerText = 'Sync';
+        btn.onclick = () => syncToDropbox();
+        document.getElementById('auto-sync').checked = localStorage.getItem(DB_AUTO) === 'true';
+    } else {
+        statusEl.className = 'cloud-status';
+        textEl.innerText = 'Non connecté';
+        btn.innerText = 'Connecter';
+        btn.onclick = () => openDrawer('cloud');
+    }
+}
+
+function showManual() {
+    document.getElementById('oauth-connect').style.display = 'none';
+    document.getElementById('manual-connect').style.display = 'block';
+}
+
+function showOAuth() {
+    document.getElementById('oauth-connect').style.display = 'block';
+    document.getElementById('manual-connect').style.display = 'none';
+}
+
+function connectManual() {
+    const token = document.getElementById('manual-token').value.trim().replace(/\s/g, '');
+    if (!token.startsWith('sl.')) {
+        document.getElementById('error-msg').innerText = 'Token invalide (doit commencer par sl.)';
+        document.getElementById('error-msg').style.display = 'block';
+        return;
+    }
+    
+    fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: 'null'
+    }).then(r => {
+        if (r.ok) {
+            dbToken = token;
+            localStorage.setItem(DB_ACCESS, token);
+            localStorage.setItem(DB_EXPIRES, (Date.now() + 14400000).toString());
+            updateCloudUI();
+            closeDrawers();
+            showStatus('success', 'Connecté (4h)');
+            setTimeout(() => syncFromDropbox(), 500);
+        } else {
+            throw new Error('Invalid');
+        }
+    }).catch(e => {
+        document.getElementById('error-msg').innerText = 'Token invalide';
+        document.getElementById('error-msg').style.display = 'block';
+    });
+}
+
+function disconnect() {
+    if (!confirm('Déconnecter Dropbox ?')) return;
+    dbToken = null;
+    dbRefresh = null;
+    localStorage.removeItem(DB_ACCESS);
+    localStorage.removeItem(DB_REFRESH);
+    localStorage.removeItem(DB_EXPIRES);
+    updateCloudUI();
+}
+
+function toggleAuto() {
+    localStorage.setItem(DB_AUTO, document.getElementById('auto-sync').checked ? 'true' : 'false');
+}
+
+// Démarrage
+document.addEventListener('DOMContentLoaded', init);
 </script>
 
 </body>
