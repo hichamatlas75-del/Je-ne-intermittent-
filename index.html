@@ -3,19 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#09101d">
-    <meta name="description" content="Hicham Ultimate - Tracker de jeûne intermittent, sommeil et poids">
-    <title>Hicham Ultimate V4 - PWA</title>
-    
-    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiSGljaGFtIFVsdGltYXRlIiwic2hvcnRfbmFtZSI6IkhpY2hhbSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDkxMDFkIiwidGhlbWVfY29sb3IiOiIjMmVjYzcxIiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vdWktYXZhdGFycy5jb20vYXBpLz9uYW1lPUgmaGFja2dyb3VuZD0yZWNjNzEmY29sb3I9ZmZmJnNpemU9MTkyIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <title>Hicham Fasting - CSV Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2ecc71; --accent: #f39c12; --bg: #09101d;
             --card: #1a2235; --sleep: #6366f1; --text: #ffffff;
-            --danger: #e74c3c; --warning: #f1c40f; --info: #3498db;
+            --danger: #e74c3c;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
@@ -33,22 +28,6 @@
         .profile { display: flex; align-items: center; gap: 10px; }
         .profile img { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--primary); object-fit: cover; }
 
-        .offline-banner {
-            background: var(--warning);
-            color: #000;
-            text-align: center;
-            padding: 8px;
-            font-weight: 700;
-            font-size: 0.8rem;
-            display: none;
-            animation: slideDown 0.3s ease;
-        }
-        .offline-banner.show { display: block; }
-        @keyframes slideDown {
-            from { transform: translateY(-100%); }
-            to { transform: translateY(0); }
-        }
-
         .app-view { 
             flex: 1; overflow-y: auto; padding: 20px; 
             display: none; flex-direction: column; gap: 20px; 
@@ -59,19 +38,6 @@
         .timer-card { 
             background: var(--card); padding: 25px; border-radius: 40px; 
             text-align: center; border: 1px solid rgba(255,255,255,0.05); 
-            position: relative;
-            overflow: hidden;
-        }
-        .timer-card::before {
-            content: '';
-            position: absolute;
-            top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle, rgba(46,204,113,0.1) 0%, transparent 70%);
-            animation: pulse 4s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.1); opacity: 0.8; }
         }
         .ring-container { 
             position: relative; width: 220px; height: 220px; margin: 0 auto; 
@@ -82,37 +48,44 @@
         
         .timer-ui { z-index: 10; position: relative; }
         #countdown { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+        
         .btn-stop { 
             background: var(--danger); color: white; border: none; padding: 12px 25px; 
             border-radius: 15px; font-weight: 800; cursor: pointer; position: relative; z-index: 20;
             transition: transform 0.2s, opacity 0.2s;
         }
         .btn-stop:active { transform: scale(0.95); }
-        .btn-stop:hover { opacity: 0.9; }
-        .btn-stop:disabled {
-            background: #666;
-            cursor: not-allowed;
-            opacity: 0.6;
+        
+        .btn-start {
+            background: var(--primary); color: white; border: none; padding: 12px 25px; 
+            border-radius: 15px; font-weight: 800; cursor: pointer; position: relative; z-index: 20;
+            transition: transform 0.2s, opacity 0.2s;
         }
+        .btn-start:active { transform: scale(0.95); }
 
-        .quick-actions {
+        .mode-selector {
+            background: rgba(255,255,255,0.05);
+            padding: 10px;
+            border-radius: 15px;
+            margin-bottom: 15px;
             display: flex;
             gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
+            justify-content: center;
         }
-        .quick-btn {
-            background: var(--card);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            white-space: nowrap;
+        .mode-btn {
+            background: transparent;
+            border: 1px solid #334155;
+            color: #94a3b8;
+            padding: 8px 16px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.3s;
+            font-size: 0.85rem;
         }
-        .quick-btn:hover {
-            background: rgba(255,255,255,0.1);
+        .mode-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
         }
 
         .sleep-card { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px; border-radius: 30px; }
@@ -120,29 +93,6 @@
         .btn-sleep { background: white; color: var(--sleep); border: none; padding: 12px 20px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
         .btn-sleep:active { transform: scale(0.95); }
         .btn-link { background: none; border: none; color: white; font-size: 0.75rem; text-decoration: underline; margin-top: 10px; opacity: 0.8; cursor: pointer; }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .stat-box {
-            background: var(--card);
-            padding: 15px;
-            border-radius: 20px;
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--primary);
-        }
-        .stat-label {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            margin-top: 5px;
-        }
 
         .log-item { background: var(--card); padding: 15px; border-radius: 20px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; animation: slideIn 0.3s ease; }
         .log-item.sleep { border-left-color: var(--sleep); }
@@ -170,14 +120,19 @@
         .drawer.open { transform: translateY(0); }
         .handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -15px auto 25px; cursor: pointer; }
 
-        input, select { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 15px; color: white; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; transition: border-color 0.3s; }
-        input:focus, select:focus { border-color: var(--primary); }
+        input, textarea { 
+            width: 100%; background: #1e293b; border: 1px solid #334155; 
+            padding: 15px; color: white; border-radius: 15px; margin-bottom: 10px; 
+            font-size: 1rem; transition: border-color 0.3s; font-family: inherit;
+        }
+        input:focus, textarea:focus { border-color: var(--primary); }
+        textarea { min-height: 200px; resize: vertical; font-family: monospace; font-size: 0.9rem; }
+
         .btn-full { width: 100%; padding: 18px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
         .btn-full:active { transform: scale(0.98); }
         .bg-green { background: var(--primary); color: white; }
         .bg-dark { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
         .bg-sleep { background: var(--sleep); color: white; }
-        .bg-info { background: var(--info); color: white; }
         .bg-accent { background: var(--accent); color: white; }
         
         .chart-container {
@@ -218,51 +173,47 @@
             opacity: 1;
             pointer-events: all;
         }
-
-        .toast {
-            position: fixed;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%) translateY(-100px);
-            background: var(--card);
-            color: white;
-            padding: 15px 25px;
+        
+        .csv-info {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid var(--primary);
+            padding: 15px;
             border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.1);
-            z-index: 2000;
-            opacity: 0;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-            opacity: 1;
-        }
-        .toast.success { border-left: 4px solid var(--primary); }
-        .toast.error { border-left: 4px solid var(--danger); }
-        .toast.info { border-left: 4px solid var(--info); }
-
-        .form-group {
             margin-bottom: 15px;
+            font-size: 0.85rem;
         }
-        .form-group label {
+        .csv-info code {
+            background: rgba(0,0,0,0.3);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+        .file-input-label {
             display: block;
-            font-size: 0.8rem;
-            color: #94a3b8;
-            margin-bottom: 5px;
+            padding: 18px;
+            background: var(--accent);
+            color: white;
+            border-radius: 18px;
+            text-align: center;
+            font-weight: 800;
+            cursor: pointer;
+            transition: transform 0.2s;
         }
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
+        .file-input-label:active { transform: scale(0.98); }
     </style>
 </head>
 <body>
-
-    <div class="offline-banner" id="offline-banner">
-        ⚠️ Mode hors ligne - Les données seront synchronisées automatiquement
-    </div>
 
     <div class="header">
         <div class="profile">
@@ -276,6 +227,12 @@
     <div class="app-view active" id="view-main">
         <div class="timer-card">
             <span id="fast-status" style="font-size:0.75rem; font-weight:800; color:var(--primary);">JEÛNE EN COURS 🔥</span>
+            
+            <div class="mode-selector">
+                <button class="mode-btn active" id="mode-auto" onclick="setMode('auto')">⏰ Auto</button>
+                <button class="mode-btn" id="mode-manual" onclick="setMode('manual')">👤 Manuel</button>
+            </div>
+            
             <div class="ring-container">
                 <svg viewBox="0 0 220 220">
                     <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
@@ -283,16 +240,11 @@
                 </svg>
                 <div class="timer-ui">
                     <div id="countdown">00:00:00</div>
-                    <button class="btn-stop" id="btn-stop" onclick="stopFasting()">STOP JEÛNE</button>
+                    <button id="fast-action-btn" class="btn-stop" onclick="handleFastAction()">STOP JEÛNE</button>
                 </div>
             </div>
             <p id="phase-txt" style="margin-top:15px; font-size:0.8rem; color:#94a3b8; font-weight:700;">Phase : Analyse...</p>
-        </div>
-
-        <div class="quick-actions">
-            <button class="quick-btn" onclick="openDrawer('fast-manual')">➕ Ajouter jeûne</button>
-            <button class="quick-btn" onclick="openDrawer('poids')">⚖️ Poids</button>
-            <button class="quick-btn" onclick="requestNotification()">🔔 Rappels</button>
+            <p id="fast-info" style="margin-top:5px; font-size:0.7rem; color:#64748b;"></p>
         </div>
 
         <div class="sleep-card">
@@ -313,36 +265,41 @@
     <!-- VUE HISTORIQUE -->
     <div class="app-view" id="view-history">
         <h2 style="margin-bottom:20px;">Journal de bord</h2>
-        <div class="quick-actions" style="margin-bottom:20px;">
-            <button class="quick-btn" onclick="exportData('json')">📥 JSON</button>
-            <button class="quick-btn" onclick="exportData('csv')">📊 CSV</button>
-        </div>
         <div id="full-logs"></div>
-        <button class="btn-full bg-dark" onclick="clearAllData()" style="margin-top:20px; color:var(--danger);">🗑️ EFFACER TOUTES LES DONNÉES</button>
+        
+        <h3 style="margin-top:30px;">📁 Gestion CSV</h3>
+        
+        <div class="csv-info">
+            <strong>Format CSV supporté :</strong><br>
+            <code>date,type,valeur,notes</code><br><br>
+            Exemples:<br>
+            <code>2026-04-10,POIDS,82.5,Pesée matinale</code><br>
+            <code>2026-04-10,JEUNE,18,Durée en heures</code><br>
+            <code>2026-04-09,SOMMEIL,7.5,Nuit complète</code>
+        </div>
+        
+        <button class="btn-full bg-green" onclick="exportCSV()" style="margin-bottom:10px;">
+            💾 EXPORTER CSV
+        </button>
+        
+        <div class="file-input-wrapper">
+            <input type="file" id="csv-file-input" accept=".csv" onchange="importCSV(this)">
+            <label for="csv-file-input" class="file-input-label">
+                📂 IMPORTER CSV (Fichier)
+            </label>
+        </div>
+        
+        <button class="btn-full bg-accent" onclick="showCSVEditor()" style="margin-top:10px;">
+            ✏️ ÉDITEUR CSV (Texte)
+        </button>
+        
+        <button class="btn-full bg-dark" onclick="clearAllData()" style="margin-top:20px; color:var(--danger);">
+            🗑️ EFFACER TOUTES LES DONNÉES
+        </button>
     </div>
 
     <!-- VUE STATS -->
     <div class="app-view" id="view-stats">
-        <h3>Statistiques</h3>
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-value" id="stat-avg-fast">--</div>
-                <div class="stat-label">Moy. jeûne (h)</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="stat-avg-sleep">--</div>
-                <div class="stat-label">Moy. sommeil (h)</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="stat-total-fast">--</div>
-                <div class="stat-label">Total jeûnes</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-value" id="stat-weight-change">--</div>
-                <div class="stat-label">Variation poids</div>
-            </div>
-        </div>
-
         <h3>Graphique Poids</h3>
         <div class="chart-container">
             <canvas id="weightChart"></canvas>
@@ -351,16 +308,12 @@
         
         <h3 style="margin-top:30px;">Paramètres Jeûne</h3>
         <div class="settings-row">
-            <span>Début du jeûne</span>
+            <span>Début du jeûne (mode auto)</span>
             <input type="time" id="fast-start-time" value="16:00" style="width:auto; margin:0;" onchange="updateFastSettings()">
         </div>
         <div class="settings-row">
             <span>Durée (heures)</span>
             <input type="number" id="fast-duration" value="18" min="12" max="23" style="width:80px; margin:0;" onchange="updateFastSettings()">
-        </div>
-        <div class="settings-row">
-            <span>Notifications</span>
-            <button class="btn-full bg-info" onclick="requestNotification()" style="width:auto; padding:10px 20px;">Activer</button>
         </div>
     </div>
 
@@ -374,10 +327,7 @@
     <!-- OVERLAY -->
     <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
 
-    <!-- TOAST -->
-    <div class="toast" id="toast"></div>
-
-    <!-- DRAWER POIDS -->
+    <!-- DRAWERS -->
     <div class="drawer" id="drawer-poids">
         <div class="handle" onclick="closeDrawers()"></div>
         <h3>Pesée du jour</h3>
@@ -385,7 +335,6 @@
         <button class="btn-full bg-green" onclick="saveWeight()">OK</button>
     </div>
 
-    <!-- DRAWER SOMMEIL -->
     <div class="drawer" id="drawer-sleep">
         <div class="handle" onclick="closeDrawers()"></div>
         <h3>Oubli Sommeil</h3>
@@ -395,108 +344,53 @@
         <input type="datetime-local" id="sleep-out">
         <button class="btn-full bg-sleep" onclick="saveManualSleep()">VALIDER</button>
     </div>
-
-    <!-- DRAWER AJOUTER JEÛNE MANUEL -->
-    <div class="drawer" id="drawer-fast-manual">
+    
+    <!-- DRAWER ÉDITEUR CSV -->
+    <div class="drawer" id="drawer-csv-editor">
         <div class="handle" onclick="closeDrawers()"></div>
-        <h3>Ajouter un jeûne manuellement</h3>
-        <p style="font-size:0.8rem; color:#94a3b8; margin-bottom:15px;">
-            Utilisez cette fonction si vous avez oublié d'arrêter votre jeûne ou pour ajouter un jeûne passé.
-        </p>
-        
-        <div class="form-group">
-            <label>Date et heure de début</label>
-            <input type="datetime-local" id="fast-manual-start">
+        <h3>✏️ Éditeur CSV</h3>
+        <div class="csv-info" style="font-size:0.75rem;">
+            Modifiez vos données au format CSV.<br>
+            <strong>Format:</strong> date,type,valeur,notes<br>
+            <strong>Types:</strong> POIDS, JEUNE, SOMMEIL
         </div>
-        
-        <div class="form-group">
-            <label>Date et heure de fin</label>
-            <input type="datetime-local" id="fast-manual-end">
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group" style="margin-bottom:0;">
-                <label>Durée (h)</label>
-                <input type="number" id="fast-manual-duration" step="0.1" placeholder="18" min="1" max="48" onchange="calculateFastEnd()">
-            </div>
-            <div class="form-group" style="margin-bottom:0;">
-                <label>OU calcul auto</label>
-                <button class="btn-full bg-dark" onclick="calculateFastEnd()" style="padding:15px; font-size:0.8rem;">Calculer fin</button>
-            </div>
-        </div>
-        
-        <button class="btn-full bg-green" onclick="saveManualFast()" style="margin-top:15px;">✅ ENREGISTRER LE JEÛNE</button>
-        <button class="btn-full bg-dark" onclick="closeDrawers()" style="margin-top:10px;">Annuler</button>
+        <textarea id="csv-textarea" placeholder="2026-04-10,POIDS,82.5,Pesée du matin"></textarea>
+        <button class="btn-full bg-green" onclick="saveCSVFromEditor()">💾 SAUVEGARDER</button>
+        <button class="btn-full bg-dark" onclick="closeDrawers()" style="margin-top:10px;">ANNULER</button>
     </div>
 
 <script>
 /* ================= DONNÉES UNIFIÉES ================= */
-const KEY_LOGS = 'HICHAM_V4_LOGS';
-const KEY_WEIGHTS = 'HICHAM_V4_WEIGHTS';
-const KEY_SLEEP_START = 'HICHAM_V4_SLEEP_START';
-const KEY_FAST_START = 'HICHAM_V4_FAST_START';
-const KEY_FAST_SETTINGS = 'HICHAM_V4_FAST_SETTINGS';
-const KEY_SYNC_QUEUE = 'HICHAM_V4_SYNC_QUEUE';
+const KEY_LOGS = 'HICHAM_V3_LOGS';
+const KEY_WEIGHTS = 'HICHAM_V3_WEIGHTS';
+const KEY_SLEEP_START = 'HICHAM_V3_SLEEP_START';
+const KEY_FAST_START = 'HICHAM_V3_FAST_START';
+const KEY_FAST_SETTINGS = 'HICHAM_V3_FAST_SETTINGS';
+const KEY_FAST_MODE = 'HICHAM_V3_FAST_MODE';
 
 const DEFAULT_FAST_SETTINGS = {
     startHour: 16,
     startMinute: 0,
-    duration: 18,
-    notifications: false
+    duration: 18
 };
 
 let logs = [];
 let weights = [];
 let fastSettings = DEFAULT_FAST_SETTINGS;
 let chartInstance = null;
-let isOnline = navigator.onLine;
-let syncQueue = [];
-let currentFastStart = null;
-
-/* ================= GESTION ROBUSTE LOCALSTORAGE ================= */
-function safeStorage(operation, key, data) {
-    try {
-        if (operation === 'set') {
-            localStorage.setItem(key, JSON.stringify(data));
-            return true;
-        } else if (operation === 'get') {
-            const item = localStorage.getItem(key);
-            return item ? JSON.parse(item) : null;
-        } else if (operation === 'remove') {
-            localStorage.removeItem(key);
-            return true;
-        }
-    } catch (e) {
-        if (e.name === 'QuotaExceededError') {
-            showToast('Stockage plein ! Exportez vos données.', 'error');
-            cleanupOldData();
-        } else {
-            console.error('Storage error:', e);
-            showToast('Erreur de sauvegarde', 'error');
-        }
-        return false;
-    }
-}
-
-function cleanupOldData() {
-    if (logs.length > 50) {
-        logs = logs.slice(0, 50);
-        safeStorage('set', KEY_LOGS, logs);
-        showToast('Anciennes données nettoyées automatiquement', 'info');
-    }
-}
+let currentMode = 'auto';
 
 /* ================= INITIALISATION ================= */
 function init() {
-    logs = safeStorage('get', KEY_LOGS) || [];
-    weights = safeStorage('get', KEY_WEIGHTS) || [];
-    fastSettings = safeStorage('get', KEY_FAST_SETTINGS) || DEFAULT_FAST_SETTINGS;
-    syncQueue = safeStorage('get', KEY_SYNC_QUEUE) || [];
-    
-    // Charger le jeûne en cours s'il existe
-    const savedFastStart = localStorage.getItem(KEY_FAST_START);
-    if (savedFastStart) {
-        currentFastStart = parseInt(savedFastStart);
+    try {
+        logs = JSON.parse(localStorage.getItem(KEY_LOGS)) || [];
+        weights = JSON.parse(localStorage.getItem(KEY_WEIGHTS)) || [];
+        fastSettings = JSON.parse(localStorage.getItem(KEY_FAST_SETTINGS)) || DEFAULT_FAST_SETTINGS;
+        currentMode = localStorage.getItem(KEY_FAST_MODE) || 'auto';
+    } catch (e) {
+        console.error('Erreur chargement:', e);
+        logs = [];
+        weights = [];
     }
     
     document.getElementById('fast-start-time').value = 
@@ -504,239 +398,83 @@ function init() {
         String(fastSettings.startMinute).padStart(2, '0');
     document.getElementById('fast-duration').value = fastSettings.duration;
     
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    
-    updateOnlineStatus();
+    updateModeDisplay();
     renderLogs();
     update();
-    updateStats();
-    
     setInterval(update, 1000);
-    registerSW();
-    checkReminders();
-    
-    // Initialiser les valeurs par défaut pour le jeûne manuel
-    initManualFastInputs();
 }
 
-function initManualFastInputs() {
-    const now = new Date();
-    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-    const formatDateTime = (d) => d.toISOString().slice(0, 16);
-    
-    document.getElementById('fast-manual-start').value = formatDateTime(yesterday);
-    document.getElementById('fast-manual-end').value = formatDateTime(now);
+/* ================= GESTION DES MODES ================= */
+function setMode(mode) {
+    currentMode = mode;
+    localStorage.setItem(KEY_FAST_MODE, mode);
+    updateModeDisplay();
+    update();
 }
 
-/* ================= GESTION OFFLINE/ONLINE ================= */
-function updateOnlineStatus() {
-    const banner = document.getElementById('offline-banner');
-    if (navigator.onLine) {
-        banner.classList.remove('show');
-        isOnline = true;
-    } else {
-        banner.classList.add('show');
-        isOnline = false;
-        showToast('Mode hors ligne activé', 'info');
-    }
+function updateModeDisplay() {
+    document.getElementById('mode-auto').classList.toggle('active', currentMode === 'auto');
+    document.getElementById('mode-manual').classList.toggle('active', currentMode === 'manual');
 }
 
-function handleOnline() {
-    updateOnlineStatus();
-    showToast('Connexion rétablie !', 'success');
-    processSyncQueue();
-}
-
-function handleOffline() {
-    updateOnlineStatus();
-}
-
-function queueForSync(action, data) {
-    syncQueue.push({
-        action,
-        data,
-        timestamp: new Date().toISOString()
-    });
-    safeStorage('set', KEY_SYNC_QUEUE, syncQueue);
-}
-
-function processSyncQueue() {
-    if (syncQueue.length === 0) return;
-    showToast(`Synchronisation de ${syncQueue.length} actions...`, 'info');
-    syncQueue.forEach(item => console.log('Syncing:', item));
-    syncQueue = [];
-    safeStorage('set', KEY_SYNC_QUEUE, syncQueue);
-}
-
-/* ================= SERVICE WORKER ================= */
-function registerSW() {
-    if ('serviceWorker' in navigator) {
-        const swCode = `
-            const CACHE_NAME = 'hicham-v4-cache-v1';
-            const urlsToCache = [
-                '/',
-                'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
-                'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap'
-            ];
-            
-            self.addEventListener('install', event => {
-                event.waitUntil(
-                    caches.open(CACHE_NAME)
-                        .then(cache => cache.addAll(urlsToCache))
-                );
-                self.skipWaiting();
-            });
-            
-            self.addEventListener('activate', event => {
-                event.waitUntil(
-                    caches.keys().then(cacheNames => {
-                        return Promise.all(
-                            cacheNames
-                                .filter(name => name !== CACHE_NAME)
-                                .map(name => caches.delete(name))
-                        );
-                    })
-                );
-                self.clients.claim();
-            });
-            
-            self.addEventListener('fetch', event => {
-                event.respondWith(
-                    caches.match(event.request)
-                        .then(response => {
-                            if (response) return response;
-                            return fetch(event.request).catch(() => {
-                                if (event.request.mode === 'navigate') {
-                                    return new Response('Offline');
-                                }
-                            });
-                        })
-                );
-            });
-        `;
-        
-        const blob = new Blob([swCode], { type: 'application/javascript' });
-        const swUrl = URL.createObjectURL(blob);
-        
-        navigator.serviceWorker.register(swUrl)
-            .then(reg => console.log('SW registered:', reg))
-            .catch(err => console.log('SW registration failed:', err));
-    }
-}
-
-/* ================= NOTIFICATIONS ================= */
-function requestNotification() {
-    if (!('Notification' in window)) {
-        showToast('Notifications non supportées', 'error');
-        return;
-    }
-    
-    Notification.requestPermission().then(permission => {
-        if (permission === 'granted') {
-            fastSettings.notifications = true;
-            safeStorage('set', KEY_FAST_SETTINGS, fastSettings);
-            showToast('Notifications activées !', 'success');
-            scheduleFastReminder();
+/* ================= GESTION DU BOUTON JEÛNE ================= */
+function handleFastAction() {
+    if (currentMode === 'manual') {
+        const isFasting = localStorage.getItem(KEY_FAST_START);
+        if (isFasting) {
+            stopManualFasting();
         } else {
-            showToast('Notifications refusées', 'error');
+            startManualFasting();
         }
-    });
-}
-
-function scheduleFastReminder() {
-    if (!fastSettings.notifications) return;
-    
-    setInterval(() => {
-        const now = new Date();
-        const fastStartSeconds = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
-        const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60;
-        
-        const fastEndSeconds = (fastStartSeconds + fastSettings.duration * 3600) % 86400;
-        const oneHourBefore = (fastEndSeconds - 3600 + 86400) % 86400;
-        
-        if (Math.abs(currentSeconds - oneHourBefore) < 60) {
-            new Notification('Hicham Ultimate', {
-                body: 'Fin du jeûne dans 1 heure ! Préparez votre repas 🍽️',
-                icon: 'https://ui-avatars.com/api/?name=H&background=2ecc71&color=fff'
-            });
-        }
-    }, 60000);
-}
-
-function checkReminders() {
-    const lastWeight = weights[weights.length - 1];
-    if (lastWeight) {
-        const lastDate = new Date(lastWeight.d);
-        const daysSince = (new Date() - lastDate) / (1000 * 60 * 60 * 24);
-        if (daysSince > 2) {
-            showToast(`Dernière pesée il y a ${Math.floor(daysSince)} jours`, 'info');
-        }
+    } else {
+        alert('En mode Auto, le jeûne suit l\'horaire défini dans les paramètres.');
     }
+}
+
+function startManualFasting() {
+    if(!confirm("Démarrer un jeûne maintenant ?")) return;
+    localStorage.setItem(KEY_FAST_START, Date.now());
+    addLog('JEÛNE', 'Démarré manuellement', 'primary');
+    update();
+}
+
+function stopManualFasting() {
+    const start = localStorage.getItem(KEY_FAST_START);
+    if (!start) return;
+    const duration = ((Date.now() - parseInt(start)) / 3600000).toFixed(1);
+    if(!confirm("Arrêter le jeûne après " + duration + " heures ?")) return;
+    addLog('JEÛNE', 'Terminé après ' + duration + 'h', 'primary');
+    localStorage.removeItem(KEY_FAST_START);
+    update();
 }
 
 /* ================= MISE À JOUR PRINCIPALE ================= */
 function update() {
     const now = new Date();
-    const h = now.getHours();
-    const m = now.getMinutes();
-    const s = now.getSeconds();
+    const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
     const totS = h * 3600 + m * 60 + s;
     
     document.getElementById('clock').innerText = 
         String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 
-    const fastStartSeconds = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
-    const fastDurationSeconds = fastSettings.duration * 3600;
-    const eatDurationSeconds = (24 - fastSettings.duration) * 3600;
-    const fastEndSeconds = (fastStartSeconds + fastDurationSeconds) % 86400;
+    let isFasting = false, remainingSeconds = 0, progress = 0;
     
-    let isFasting = false;
-    let remainingSeconds = 0;
-    let totalWindowSeconds = 0;
-    
-    // Vérifier si on a un jeûne manuel en cours
-    const hasActiveFast = currentFastStart !== null;
-    
-    if (fastStartSeconds < fastEndSeconds) {
-        isFasting = totS >= fastStartSeconds && totS < fastEndSeconds;
-        if (isFasting) {
-            remainingSeconds = fastEndSeconds - totS;
-            totalWindowSeconds = fastDurationSeconds;
-        } else {
-            if (totS < fastStartSeconds) {
-                remainingSeconds = fastStartSeconds - totS;
-            } else {
-                remainingSeconds = (86400 - totS) + fastStartSeconds;
-            }
-            totalWindowSeconds = eatDurationSeconds;
+    if (currentMode === 'manual') {
+        const manualStart = localStorage.getItem(KEY_FAST_START);
+        if (manualStart) {
+            isFasting = true;
+            const elapsed = (Date.now() - parseInt(manualStart)) / 1000;
+            const target = fastSettings.duration * 3600;
+            remainingSeconds = Math.max(0, target - elapsed);
+            progress = Math.min(1, elapsed / target);
         }
     } else {
-        isFasting = totS >= fastStartSeconds || totS < fastEndSeconds;
+        const fastStart = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
+        const fastEnd = (fastStart + fastSettings.duration * 3600) % 86400;
+        isFasting = fastStart < fastEnd ? (totS >= fastStart && totS < fastEnd) : (totS >= fastStart || totS < fastEnd);
         if (isFasting) {
-            if (totS >= fastStartSeconds) {
-                remainingSeconds = (86400 - totS) + fastEndSeconds;
-            } else {
-                remainingSeconds = fastEndSeconds - totS;
-            }
-            totalWindowSeconds = fastDurationSeconds;
-        } else {
-            remainingSeconds = fastStartSeconds - totS;
-            totalWindowSeconds = eatDurationSeconds;
-        }
-    }
-
-    // Mettre à jour le bouton Stop selon l'état
-    const btnStop = document.getElementById('btn-stop');
-    if (btnStop) {
-        if (isFasting || hasActiveFast) {
-            btnStop.disabled = false;
-            btnStop.style.opacity = '1';
-            btnStop.innerText = hasActiveFast ? 'STOP JEÛNE (Manuel)' : 'STOP JEÛNE';
-        } else {
-            btnStop.disabled = true;
-            btnStop.style.opacity = '0.5';
-            btnStop.innerText = 'PAS DE JEÛNE ACTIF';
+            remainingSeconds = totS >= fastStart ? (fastEnd - totS + (totS < fastStart ? 86400 : 0)) : (fastEnd - totS);
+            progress = 1 - (remainingSeconds / (fastSettings.duration * 3600));
         }
     }
 
@@ -744,177 +482,56 @@ function update() {
     document.getElementById('fast-status').innerText = isFasting ? "JEÛNE EN COURS 🔥" : "FENÊTRE REPAS 🍽️";
     document.getElementById('fast-status').style.color = isFasting ? "var(--primary)" : "var(--accent)";
     
+    const btn = document.getElementById('fast-action-btn');
+    if (currentMode === 'manual') {
+        if (localStorage.getItem(KEY_FAST_START)) {
+            btn.innerText = "STOP JEÛNE"; btn.className = "btn-stop";
+        } else {
+            btn.innerText = "DÉMARRER JEÛNE"; btn.className = "btn-start";
+        }
+    } else {
+        btn.innerText = "MODE AUTO"; btn.className = "btn-stop";
+    }
+    
     const ring = document.getElementById('ring-fill');
     ring.style.stroke = isFasting ? "var(--primary)" : "var(--accent)";
-    const progress = 1 - (remainingSeconds / totalWindowSeconds);
     ring.style.strokeDashoffset = 628 - (progress * 628);
 
-    updatePhaseInfo(isFasting, totS, fastStartSeconds, fastDurationSeconds);
+    updatePhaseInfo(isFasting);
     updateSleepStatus();
 }
 
-function updatePhaseInfo(isFasting, currentSeconds, fastStartSeconds, fastDurationSeconds) {
+function updatePhaseInfo(isFasting) {
     if (!isFasting) {
-        document.getElementById('phase-txt').innerText = "Phase : Alimentation - Profitez de vos repas !";
+        document.getElementById('phase-txt').innerText = "Phase : Fenêtre alimentaire";
         return;
     }
-    
-    let fastedHours = 0;
-    if (currentSeconds >= fastStartSeconds) {
-        fastedHours = (currentSeconds - fastStartSeconds) / 3600;
+    let hours = 0;
+    if (currentMode === 'manual') {
+        const start = localStorage.getItem(KEY_FAST_START);
+        if (start) hours = (Date.now() - parseInt(start)) / 3600000;
     } else {
-        fastedHours = ((86400 - fastStartSeconds) + currentSeconds) / 3600;
+        const now = new Date();
+        const start = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
+        const current = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+        hours = current >= start ? (current - start) / 3600 : ((86400 - start) + current) / 3600;
     }
-    
-    let phase = "";
-    if (fastedHours < 4) phase = "Phase digestive - Éviter les grignotages";
-    else if (fastedHours < 8) phase = "Chute d'insuline - Brûlage de sucre";
-    else if (fastedHours < 12) phase = "Cétose légère - Début brûlage graisse";
-    else if (fastedHours < 16) phase = "Cétose profonde - Autophagie";
-    else phase = "Autophagie maximale - Régénération cellulaire";
-    
-    document.getElementById('phase-txt').innerText = "Phase : " + phase;
+    let phase = hours < 4 ? "Digestion" : hours < 8 ? "Chute insuline" : hours < 12 ? "Cétose légère" : hours < 16 ? "Cétose profonde" : "Autophagie max";
+    document.getElementById('phase-txt').innerText = "Phase : " + phase + " (" + Math.floor(hours) + "h)";
 }
 
-function formatTime(totalSeconds) {
-    const hours = Math.floor(totalSeconds / 3600);
-    const minutes = Math.floor((totalSeconds % 3600) / 60);
-    const seconds = totalSeconds % 60;
-    return String(hours).padStart(2, '0') + ':' + 
-           String(minutes).padStart(2, '0') + ':' + 
-           String(seconds).padStart(2, '0');
+function formatTime(s) {
+    const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = Math.floor(s % 60);
+    return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
 }
 
-/* ================= ACTIONS JEÛNE ================= */
-function stopFasting() {
-    if (!confirm("Hicham, confirmer la fin du jeûne ?")) return;
-    
-    const now = new Date();
-    let duration = fastSettings.duration;
-    let startTime = null;
-    
-    // Si on a un jeûne manuel en cours, utiliser cette date
-    if (currentFastStart) {
-        startTime = new Date(currentFastStart);
-        duration = ((now - startTime) / 3600000).toFixed(1);
-    } else {
-        // Sinon calculer depuis l'heure de début configurée aujourd'hui
-        const today = new Date();
-        today.setHours(fastSettings.startHour, fastSettings.startMinute, 0, 0);
-        startTime = today;
-        duration = ((now - today) / 3600000).toFixed(1);
-    }
-    
-    // Validation : le jeûne doit durer au moins 1 heure
-    if (duration < 0.5) {
-        showToast('Le jeûne est trop court pour être enregistré', 'error');
-        return;
-    }
-    
-    addLog('JEÛNE', `Validé après ${duration}h (Début: ${startTime.toLocaleTimeString('fr-FR')})`, 'primary');
-    
-    if (!isOnline) {
-        queueForSync('fast_end', { duration, timestamp: now.toISOString() });
-    }
-    
-    // Réinitialiser le jeûne en cours
-    currentFastStart = null;
-    localStorage.removeItem(KEY_FAST_START);
-    
-    showToast(`Jeûne terminé ! Durée: ${duration}h`, 'success');
-    updateStats();
-}
-
-/* ================= JEÛNE MANUEL ================= */
-function calculateFastEnd() {
-    const startInput = document.getElementById('fast-manual-start').value;
-    const durationInput = document.getElementById('fast-manual-duration').value;
-    
-    if (!startInput || !durationInput) {
-        showToast('Veuillez remplir la date de début et la durée', 'error');
-        return;
-    }
-    
-    const start = new Date(startInput);
-    const durationHours = parseFloat(durationInput);
-    
-    if (isNaN(durationHours) || durationHours <= 0) {
-        showToast('Durée invalide', 'error');
-        return;
-    }
-    
-    const end = new Date(start.getTime() + durationHours * 3600000);
-    
-    // Formater pour datetime-local (YYYY-MM-DDTHH:mm)
-    const formatDateTime = (d) => d.toISOString().slice(0, 16);
-    document.getElementById('fast-manual-end').value = formatDateTime(end);
-    
-    showToast(`Fin calculée: ${end.toLocaleString('fr-FR')}`, 'success');
-}
-
-function saveManualFast() {
-    const startInput = document.getElementById('fast-manual-start').value;
-    const endInput = document.getElementById('fast-manual-end').value;
-    const durationInput = document.getElementById('fast-manual-duration').value;
-    
-    if (!startInput || !endInput) {
-        showToast('Veuillez remplir les dates de début et de fin', 'error');
-        return;
-    }
-    
-    const start = new Date(startInput);
-    const end = new Date(endInput);
-    
-    if (end <= start) {
-        showToast('La fin doit être après le début', 'error');
-        return;
-    }
-    
-    // Calculer la durée
-    let duration = ((end - start) / 3600000).toFixed(1);
-    
-    // Si une durée est spécifiée manuellement, l'utiliser à la place
-    if (durationInput && !isNaN(parseFloat(durationInput))) {
-        duration = parseFloat(durationInput).toFixed(1);
-    }
-    
-    const startStr = start.toLocaleString('fr-FR');
-    const endStr = end.toLocaleTimeString('fr-FR');
-    
-    addLog('JEÛNE', `Manuel: ${duration}h (${startStr} → ${endStr})`, 'primary');
-    
-    if (!isOnline) {
-        queueForSync('fast_manual', { 
-            duration, 
-            start: start.toISOString(), 
-            end: end.toISOString() 
-        });
-    }
-    
-    closeDrawers();
-    showToast(`Jeûne manuel enregistré: ${duration}h`, 'success');
-    updateStats();
-    
-    // Réinitialiser les champs
-    initManualFastInputs();
-    document.getElementById('fast-manual-duration').value = '';
-}
-
-/* ================= PARAMÈTRES JEÛNE ================= */
 function updateFastSettings() {
-    const timeVal = document.getElementById('fast-start-time').value;
-    const [h, m] = timeVal.split(':').map(Number);
-    const duration = parseInt(document.getElementById('fast-duration').value) || 18;
-    
+    const [h, m] = document.getElementById('fast-start-time').value.split(':').map(Number);
     fastSettings = {
-        ...fastSettings,
-        startHour: h,
-        startMinute: m,
-        duration: Math.min(Math.max(duration, 12), 23)
+        startHour: h, startMinute: m,
+        duration: Math.min(Math.max(parseInt(document.getElementById('fast-duration').value) || 18, 12), 23)
     };
-    
-    safeStorage('set', KEY_FAST_SETTINGS, fastSettings);
-    showToast('Paramètres sauvegardés', 'success');
+    localStorage.setItem(KEY_FAST_SETTINGS, JSON.stringify(fastSettings));
     update();
 }
 
@@ -922,269 +539,93 @@ function updateFastSettings() {
 function toggleSleep() {
     const start = localStorage.getItem(KEY_SLEEP_START);
     if(!start) {
-        localStorage.setItem(KEY_SLEEP_START, new Date().getTime());
-        addLog('SOMMEIL', 'Couché à ' + new Date().toLocaleTimeString('fr-FR'), 'sleep');
-        showToast('Bonne nuit Hicham ! 🌙', 'success');
+        localStorage.setItem(KEY_SLEEP_START, Date.now());
+        addLog('SOMMEIL', 'Couché', 'sleep');
     } else {
-        const end = new Date().getTime();
-        const dur = ((end - parseInt(start)) / 3600000).toFixed(1);
-        addLog('SOMMEIL', 'Réveil après ' + dur + 'h', 'sleep');
+        addLog('SOMMEIL', 'Réveil après ' + ((Date.now() - parseInt(start)) / 3600000).toFixed(1) + 'h', 'sleep');
         localStorage.removeItem(KEY_SLEEP_START);
-        showToast(`Repos de ${dur}h enregistré ! ☀️`, 'success');
-        updateStats();
     }
     updateSleepStatus();
 }
 
 function updateSleepStatus() {
     const s = localStorage.getItem(KEY_SLEEP_START);
-    document.getElementById('sleep-status').innerText = s ? "En cours depuis " + new Date(parseInt(s)).toLocaleTimeString('fr-FR') : "Inactif";
+    document.getElementById('sleep-status').innerText = s ? "En cours..." : "Inactif";
     document.getElementById('sleep-btn').innerText = s ? "☀️ RÉVEIL" : "🛌 COUCHER";
 }
 
 function saveManualSleep() {
     const i = document.getElementById('sleep-in').value;
     const o = document.getElementById('sleep-out').value;
-    if(!i || !o) {
-        showToast('Veuillez remplir les deux dates', 'error');
-        return;
-    }
-    
-    const start = new Date(i);
-    const end = new Date(o);
-    
-    if (end <= start) {
-        showToast('Le réveil doit être après le coucher', 'error');
-        return;
-    }
-    
-    const dur = ((end - start) / 3600000).toFixed(1);
-    addLog('SOMMEIL', 'Nuit : ' + dur + 'h (Manuel)', 'sleep');
+    if(!i || !o) return alert('Dates requises');
+    const start = new Date(i), end = new Date(o);
+    if (end <= start) return alert('Réveil après coucher');
+    addLog('SOMMEIL', 'Nuit: ' + ((end - start) / 3600000).toFixed(1) + 'h', 'sleep');
     closeDrawers();
-    
-    document.getElementById('sleep-in').value = '';
-    document.getElementById('sleep-out').value = '';
-    
-    if (!isOnline) {
-        queueForSync('sleep_manual', { duration: dur, start: i, end: o });
-    }
-    
-    updateStats();
-    showToast('Sommeil enregistré', 'success');
 }
 
-/* ================= JOURNAL / LOGS ================= */
+/* ================= JOURNAL ================= */
 function addLog(type, desc, color) {
-    const entry = { 
-        type, 
-        desc, 
-        color, 
-        date: new Date().toISOString(),
-        id: Date.now(),
-        synced: isOnline
-    };
-    logs.unshift(entry);
-    
+    logs.unshift({ type, desc, color, date: new Date().toISOString(), id: Date.now() });
     if (logs.length > 100) logs = logs.slice(0, 100);
-    
-    safeStorage('set', KEY_LOGS, logs);
+    localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
     renderLogs();
 }
 
 function renderLogs() {
     const today = new Date().toDateString();
-    const todayLogs = logs.filter(l => new Date(l.date).toDateString() === today);
-    
     const html = logs.map(l => {
-        const date = new Date(l.date);
-        const dateStr = date.toLocaleDateString('fr-FR');
-        const timeStr = date.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
-        const isToday = date.toDateString() === today;
-        const syncIcon = l.synced === false ? ' ⏳' : '';
-        
-        return '<div class="log-item ' + l.color + '">' +
-               '<div><b>' + l.type + '</b><br><small>' + l.desc + syncIcon + '</small></div>' +
-               '<small>' + (isToday ? 'Aujourd\'hui ' + timeStr : dateStr) + '</small>' +
-               '</div>';
+        const d = new Date(l.date);
+        return '<div class="log-item ' + l.color + '"><div><b>' + l.type + '</b><br><small>' + l.desc + '</small></div><small>' + (d.toDateString() === today ? 'Auj.' : d.toLocaleDateString('fr-FR')) + '</small></div>';
     }).join('');
-    
-    document.getElementById('recent-logs').innerHTML = todayLogs.length > 0 ? 
-        html.slice(0, 3) : '<div class="empty-state">Aucune activité aujourd\'hui</div>';
+    document.getElementById('recent-logs').innerHTML = html.slice(0, 3) || '<div class="empty-state">Aucune activité</div>';
     document.getElementById('full-logs').innerHTML = html || '<div class="empty-state">Aucun historique</div>';
-}
-
-/* ================= STATISTIQUES ================= */
-function updateStats() {
-    const fastLogs = logs.filter(l => l.type === 'JEÛNE');
-    const avgFast = fastLogs.length > 0 
-        ? (fastLogs.reduce((acc, l) => {
-            const match = l.desc.match(/(\d+\.?\d*)h/);
-            return acc + (match ? parseFloat(match[1]) : 0);
-        }, 0) / fastLogs.length).toFixed(1)
-        : '--';
-    document.getElementById('stat-avg-fast').innerText = avgFast;
-    
-    const sleepLogs = logs.filter(l => l.type === 'SOMMEIL');
-    const avgSleep = sleepLogs.length > 0
-        ? (sleepLogs.reduce((acc, l) => {
-            const match = l.desc.match(/(\d+\.?\d*)h/);
-            return acc + (match ? parseFloat(match[1]) : 0);
-        }, 0) / sleepLogs.length).toFixed(1)
-        : '--';
-    document.getElementById('stat-avg-sleep').innerText = avgSleep;
-    
-    document.getElementById('stat-total-fast').innerText = fastLogs.length;
-    
-    if (weights.length >= 2) {
-        const first = weights[0].v;
-        const last = weights[weights.length - 1].v;
-        const diff = (last - first).toFixed(1);
-        const sign = diff > 0 ? '+' : '';
-        document.getElementById('stat-weight-change').innerText = sign + diff + 'kg';
-        document.getElementById('stat-weight-change').style.color = diff <= 0 ? 'var(--primary)' : 'var(--danger)';
-    } else {
-        document.getElementById('stat-weight-change').innerText = '--';
-    }
 }
 
 /* ================= POIDS ================= */
 function saveWeight() {
-    const v = document.getElementById('w-input').value;
-    if(!v || v < 30 || v > 300) {
-        showToast('Veuillez entrer un poids valide (30-300 kg)', 'error');
-        return;
-    }
-    
-    const weight = parseFloat(v);
-    const date = new Date();
-    
-    weights.push({
-        d: date.toISOString(),
-        v: weight,
-        dateLabel: date.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'})
-    });
-    
-    safeStorage('set', KEY_WEIGHTS, weights);
-    
-    addLog('POIDS', weight + 'kg enregistré', 'weight');
+    const v = parseFloat(document.getElementById('w-input').value);
+    if(!v || v < 30 || v > 300) return alert('Poids invalide');
+    weights.push({ d: new Date().toISOString(), v: v, dateLabel: new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}) });
+    localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+    addLog('POIDS', v + 'kg', 'weight');
     document.getElementById('w-input').value = '';
     closeDrawers();
-    
-    if (!isOnline) {
-        queueForSync('weight', { weight, date: date.toISOString() });
-    }
-    
-    showToast('Poids enregistré : ' + weight + 'kg', 'success');
-    
-    if (document.getElementById('view-stats').classList.contains('active')) {
-        renderChart();
-        updateStats();
-    }
+    if (document.getElementById('view-stats').classList.contains('active')) renderChart();
 }
 
 function renderChart() {
     const ctx = document.getElementById('weightChart');
     if (!ctx) return;
-    
-    if (chartInstance) {
-        chartInstance.destroy();
-        chartInstance = null;
-    }
-    
-    if (weights.length === 0) {
-        ctx.style.display = 'none';
-        return;
-    }
-    
+    if (chartInstance) chartInstance.destroy();
+    if (weights.length === 0) { ctx.style.display = 'none'; return; }
     ctx.style.display = 'block';
-    
-    const sortedWeights = [...weights].sort((a, b) => new Date(a.d) - new Date(b.d));
-    const recentWeights = sortedWeights.slice(-30);
-    
-    // Chart.js 4.x configuration avec gestion mémoire [^14^][^17^]
+    const sorted = [...weights].sort((a, b) => new Date(a.d) - new Date(b.d)).slice(-30);
     chartInstance = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: recentWeights.map(w => w.dateLabel),
-            datasets: [{
-                label: 'Poids (kg)',
-                data: recentWeights.map(w => w.v),
-                borderColor: '#2ecc71',
-                backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                borderWidth: 3,
-                pointBackgroundColor: '#2ecc71',
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
-            plugins: {
-                legend: { display: false },
-                tooltip: {
-                    backgroundColor: '#1a2235',
-                    titleColor: '#fff',
-                    bodyColor: '#fff',
-                    cornerRadius: 10,
-                    displayColors: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: false,
-                    grid: { color: 'rgba(255,255,255,0.05)' },
-                    ticks: { color: '#94a3b8' }
-                },
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#94a3b8' }
-                }
-            }
-        }
+        data: { labels: sorted.map(w => w.dateLabel), datasets: [{ data: sorted.map(w => w.v), borderColor: '#2ecc71', backgroundColor: 'rgba(46,204,113,0.1)', borderWidth: 3, tension: 0.4, fill: true, pointBackgroundColor: '#2ecc71' }] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, x: { grid: { display: false }, ticks: { color: '#94a3b8' } } } }
     });
 }
 
-/* ================= NAVIGATION ================= */
+/* ================= NAVIGATION & DRAWERS ================= */
 function switchTab(tab) {
     document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + tab).classList.add('active');
-    
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
     document.getElementById('nav-' + tab).classList.add('active');
-    
-    if(tab === 'stats') {
-        setTimeout(() => {
-            renderChart();
-            updateStats();
-        }, 100);
-    }
+    if(tab === 'stats') setTimeout(renderChart, 100);
 }
 
-/* ================= DRAWERS ================= */
 function openDrawer(id) {
-    const drawer = document.getElementById('drawer-' + id);
-    if (drawer) {
-        drawer.classList.add('open');
-        document.getElementById('overlay').classList.add('active');
-        
-        if (id === 'sleep') {
-            const now = new Date();
-            const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-            const formatDateTime = (d) => d.toISOString().slice(0, 16);
-            document.getElementById('sleep-in').value = formatDateTime(yesterday);
-            document.getElementById('sleep-out').value = formatDateTime(now);
-        }
-        
-        if (id === 'fast-manual') {
-            initManualFastInputs();
-        }
+    document.getElementById('drawer-' + id).classList.add('open');
+    document.getElementById('overlay').classList.add('active');
+    if (id === 'sleep') {
+        const now = new Date();
+        const yesterday = new Date(now.getTime() - 86400000);
+        const fmt = (d) => d.toISOString().slice(0, 16);
+        document.getElementById('sleep-in').value = fmt(yesterday);
+        document.getElementById('sleep-out').value = fmt(now);
     }
 }
 
@@ -1193,93 +634,200 @@ function closeDrawers() {
     document.getElementById('overlay').classList.remove('active');
 }
 
-/* ================= TOAST NOTIFICATIONS ================= */
-function showToast(message, type = 'info') {
-    const toast = document.getElementById('toast');
-    toast.innerText = message;
-    toast.className = 'toast ' + type;
-    toast.classList.add('show');
+/* ================= EXPORT/IMPORT CSV ================= */
+
+function exportCSV() {
+    let csv = "date,type,valeur,notes\n";
     
-    setTimeout(() => {
-        toast.classList.remove('show');
-    }, 3000);
-}
-
-/* ================= EXPORT / GESTION DONNÉES ================= */
-function exportData(format = 'json') {
-    if (format === 'json') {
-        const data = {
-            logs: logs,
-            weights: weights,
-            settings: fastSettings,
-            exportDate: new Date().toISOString()
-        };
+    logs.forEach(log => {
+        const d = new Date(log.date);
+        const dateStr = d.toISOString().split('T')[0];
+        let valeur = "";
+        let notes = log.desc.replace(/,/g, ";");
         
-        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
-        downloadFile(blob, `hicham-data-${new Date().toISOString().split('T')[0]}.json`);
-        showToast('Export JSON réussi !', 'success');
-    } else if (format === 'csv') {
-        let csv = 'Date,Poids (kg)\n';
-        weights.forEach(w => {
-            csv += `${w.d},${w.v}\n`;
-        });
+        if (log.type === "POIDS") {
+            const match = log.desc.match(/([0-9.]+)kg/);
+            valeur = match ? match[1] : "";
+        } else if (log.type === "JEUNE") {
+            const match = log.desc.match(/([0-9.]+)h/);
+            valeur = match ? match[1] : "18";
+        } else if (log.type === "SOMMEIL") {
+            const match = log.desc.match(/([0-9.]+)h/);
+            valeur = match ? match[1] : "";
+        }
         
-        const blob = new Blob([csv], {type: 'text/csv'});
-        downloadFile(blob, `hicham-poids-${new Date().toISOString().split('T')[0]}.csv`);
-        showToast('Export CSV réussi !', 'success');
-    }
-}
-
-function downloadFile(blob, filename) {
+        csv += dateStr + "," + log.type + "," + valeur + "," + notes + "\n";
+    });
+    
+    weights.forEach(w => {
+        const dateStr = w.d.split('T')[0];
+        const existe = logs.some(l => l.type === "POIDS" && l.date.startsWith(dateStr));
+        if (!existe) {
+            csv += dateStr + ",POIDS," + w.v + ",Poids\n";
+        }
+    });
+    
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = filename;
+    a.download = "hicham-fasting-" + new Date().toISOString().split('T')[0] + ".csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 }
 
-function clearAllData() {
-    if(!confirm('⚠️ ATTENTION : Cette action effacera TOUTES vos données !\n\nÊtes-vous sûr ?')) return;
-    if(!confirm('Dernière chance : confirmez la suppression totale ?')) return;
+function importCSV(input) {
+    const file = input.files[0];
+    if (!file) return;
     
-    exportData('json');
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        parseCSV(e.target.result);
+    };
+    reader.readAsText(file);
+    input.value = '';
+}
+
+function parseCSV(csv) {
+    const lines = csv.split('\n').filter(l => l.trim());
+    let imported = 0;
+    let errors = [];
     
-    safeStorage('remove', KEY_LOGS);
-    safeStorage('remove', KEY_WEIGHTS);
-    safeStorage('remove', KEY_SLEEP_START);
-    safeStorage('remove', KEY_FAST_START);
-    safeStorage('remove', KEY_FAST_SETTINGS);
-    safeStorage('remove', KEY_SYNC_QUEUE);
+    const startIndex = lines[0].toLowerCase().includes('date') && lines[0].toLowerCase().includes('type') ? 1 : 0;
+    
+    for (let i = startIndex; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        
+        const parts = parseCSVLine(line);
+        if (parts.length < 3) {
+            errors.push("Ligne " + (i + 1) + ": format invalide");
+            continue;
+        }
+        
+        const [dateStr, type, valeur, ...notesArr] = parts;
+        const notes = notesArr.join(',').trim();
+        
+        const date = new Date(dateStr);
+        if (isNaN(date.getTime())) {
+            errors.push("Ligne " + (i + 1) + ": date invalide " + dateStr);
+            continue;
+        }
+        
+        const typeUpper = type.toUpperCase().trim();
+        const val = parseFloat(valeur) || 0;
+        
+        if (typeUpper === "POIDS") {
+            weights.push({
+                d: date.toISOString(),
+                v: val,
+                dateLabel: date.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'})
+            });
+            addLog('POIDS', val + 'kg (importé)', 'weight');
+            imported++;
+        } else if (typeUpper === "JEUNE") {
+            addLog('JEUNE', 'Durée: ' + val + 'h' + (notes ? ' - ' + notes : ''), 'primary');
+            imported++;
+        } else if (typeUpper === "SOMMEIL") {
+            addLog('SOMMEIL', 'Nuit: ' + val + 'h' + (notes ? ' - ' + notes : ''), 'sleep');
+            imported++;
+        } else {
+            addLog(typeUpper, notes || (valeur + ' ' + typeUpper), 'primary');
+            imported++;
+        }
+    }
+    
+    localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+    renderLogs();
+    if (document.getElementById('view-stats').classList.contains('active')) renderChart();
+    
+    let msg = imported + " entrée(s) importée(s)";
+    if (errors.length > 0) msg += "\n\nErreurs (" + errors.length + "):\n" + errors.slice(0, 5).join("\n");
+    alert(msg);
+}
+
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        const nextChar = line[i + 1];
+        
+        if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+                current += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current.trim());
+    return result;
+}
+
+function showCSVEditor() {
+    let csv = "date,type,valeur,notes\n";
+    
+    logs.forEach(log => {
+        const d = new Date(log.date);
+        const dateStr = d.toISOString().split('T')[0];
+        let valeur = "";
+        
+        if (log.type === "POIDS") {
+            const match = log.desc.match(/([0-9.]+)kg/);
+            valeur = match ? match[1] : "";
+        } else if (log.type === "JEUNE") {
+            const match = log.desc.match(/([0-9.]+)h/);
+            valeur = match ? match[1] : "";
+        } else if (log.type === "SOMMEIL") {
+            const match = log.desc.match(/([0-9.]+)h/);
+            valeur = match ? match[1] : "";
+        }
+        
+        const notes = log.desc.replace(/,/g, ";").replace(/\n/g, " ");
+        csv += dateStr + "," + log.type + "," + valeur + "," + notes + "\n";
+    });
+    
+    document.getElementById('csv-textarea').value = csv;
+    openDrawer('csv-editor');
+}
+
+function saveCSVFromEditor() {
+    const csv = document.getElementById('csv-textarea').value;
+    if (!csv.trim()) return alert('CSV vide');
+    
+    if (!confirm("Cela remplacera toutes vos données actuelles. Continuer ?")) return;
     
     logs = [];
     weights = [];
-    syncQueue = [];
-    currentFastStart = null;
-    fastSettings = DEFAULT_FAST_SETTINGS;
     
-    renderLogs();
-    updateStats();
-    if (chartInstance) {
-        chartInstance.destroy();
-        chartInstance = null;
-    }
-    
-    showToast('Données effacées (backup téléchargé)', 'info');
-    setTimeout(() => location.reload(), 1500);
+    parseCSV(csv);
+    closeDrawers();
+    alert("Données mises à jour !");
 }
 
-// Gestion du clavier
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') closeDrawers();
-    if (e.key === 'h' && e.ctrlKey) switchTab('history');
-    if (e.key === 's' && e.ctrlKey) switchTab('stats');
-    if (e.key === 'm' && e.ctrlKey) switchTab('main');
-});
+/* ================= RESET ================= */
+function clearAllData() {
+    if(!confirm('⚠️ Effacer TOUTES les données ?')) return;
+    if(!confirm('Confirmation finale ?')) return;
+    
+    [KEY_LOGS, KEY_WEIGHTS, KEY_SLEEP_START, KEY_FAST_START, KEY_FAST_SETTINGS, KEY_FAST_MODE].forEach(k => localStorage.removeItem(k));
+    logs = []; weights = []; fastSettings = DEFAULT_FAST_SETTINGS; currentMode = 'auto';
+    renderLogs(); if (chartInstance) chartInstance.destroy();
+    alert('Données effacées'); location.reload();
+}
 
-// Initialisation au chargement
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeDrawers(); });
 document.addEventListener('DOMContentLoaded', init);
 </script>
 
