@@ -10,6 +10,7 @@
         :root {
             --primary: #2ecc71; --accent: #f39c12; --bg: #09101d;
             --card: #1a2235; --sleep: #6366f1; --text: #ffffff;
+            --danger: #e74c3c; --warning: #f1c40f;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
@@ -32,7 +33,7 @@
         .app-view { 
             flex: 1; overflow-y: auto; padding: 20px; 
             display: none; flex-direction: column; gap: 20px; 
-            padding-bottom: 120px; /* Espace vital pour les boutons du bas */
+            padding-bottom: 120px;
         }
         .app-view.active { display: flex; }
 
@@ -46,24 +47,33 @@
             display: flex; align-items: center; justify-content: center; 
         }
         .ring-container svg { position: absolute; transform: rotate(-90deg); width: 100%; height: 100%; pointer-events: none; }
-        .ring-fill { fill: none; stroke: var(--primary); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: 1s; }
+        .ring-fill { fill: none; stroke: var(--primary); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: 1s linear; }
         
-        .timer-ui { z-index: 10; position: relative; } /* S'assure que le bouton est cliquable */
+        .timer-ui { z-index: 10; position: relative; }
         #countdown { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
         .btn-stop { 
-            background: #e74c3c; color: white; border: none; padding: 12px 25px; 
+            background: var(--danger); color: white; border: none; padding: 12px 25px; 
             border-radius: 15px; font-weight: 800; cursor: pointer; position: relative; z-index: 20;
+            transition: transform 0.2s, opacity 0.2s;
         }
+        .btn-stop:active { transform: scale(0.95); }
+        .btn-stop:hover { opacity: 0.9; }
 
         /* SOMMEIL */
         .sleep-card { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px; border-radius: 30px; }
         .sleep-row { display: flex; justify-content: space-between; align-items: center; }
-        .btn-sleep { background: white; color: var(--sleep); border: none; padding: 12px 20px; border-radius: 15px; font-weight: 800; cursor: pointer; }
+        .btn-sleep { background: white; color: var(--sleep); border: none; padding: 12px 20px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
+        .btn-sleep:active { transform: scale(0.95); }
         .btn-link { background: none; border: none; color: white; font-size: 0.75rem; text-decoration: underline; margin-top: 10px; opacity: 0.8; cursor: pointer; }
 
         /* HISTORIQUE */
-        .log-item { background: var(--card); padding: 15px; border-radius: 20px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .log-item { background: var(--card); padding: 15px; border-radius: 20px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; animation: slideIn 0.3s ease; }
         .log-item.sleep { border-left-color: var(--sleep); }
+        .log-item.weight { border-left-color: var(--accent); }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
 
         /* NAV BAR FIXE */
         .nav-bar { 
@@ -71,29 +81,76 @@
             display: flex; justify-content: space-around; padding: 15px 0 35px; 
             border-top: 1px solid #222; z-index: 500;
         }
-        .nav-item { font-size: 1.5rem; opacity: 0.3; cursor: pointer; }
+        .nav-item { font-size: 1.5rem; opacity: 0.3; cursor: pointer; transition: opacity 0.3s, transform 0.2s; }
         .nav-item.active { opacity: 1; color: var(--primary); }
+        .nav-item:active { transform: scale(0.9); }
 
         /* DRAWERS */
         .drawer { 
             position: fixed; bottom: 0; width: 100%; background: #0f172a; 
             border-radius: 35px 35px 0 0; transform: translateY(100%); 
-            transition: 0.4s ease; z-index: 1000; padding: 30px; 
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; padding: 30px;
+            max-height: 80vh; overflow-y: auto;
         }
         .drawer.open { transform: translateY(0); }
-        .handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -15px auto 25px; }
+        .handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -15px auto 25px; cursor: pointer; }
 
-        input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 15px; color: white; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; }
-        .btn-full { width: 100%; padding: 18px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; }
+        input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 15px; color: white; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; transition: border-color 0.3s; }
+        input:focus { border-color: var(--primary); }
+        .btn-full { width: 100%; padding: 18px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
+        .btn-full:active { transform: scale(0.98); }
         .bg-green { background: var(--primary); color: white; }
         .bg-dark { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
+        .bg-sleep { background: var(--sleep); color: white; }
+        
+        /* Stats view improvements */
+        .chart-container {
+            background: var(--card);
+            padding: 20px;
+            border-radius: 25px;
+            margin-bottom: 20px;
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Settings */
+        .settings-row {
+            background: var(--card);
+            padding: 15px 20px;
+            border-radius: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.5;
+        }
+        
+        /* Overlay for drawers */
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 999;
+        }
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
     </style>
 </head>
 <body>
 
     <div class="header">
         <div class="profile">
-            <img src="votre-photo.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff'">
+            <img src="https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff" alt="Profile">
             <span style="font-weight: 800;">Hicham Master</span>
         </div>
         <div id="clock" style="font-weight: 700; opacity: 0.5;">00:00</div>
@@ -104,14 +161,16 @@
         <div class="timer-card">
             <span id="fast-status" style="font-size:0.75rem; font-weight:800; color:var(--primary);">JEÛNE EN COURS 🔥</span>
             <div class="ring-container">
-                <svg><circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
-                <circle id="ring-fill" class="ring-fill" cx="110" cy="110" r="100"></circle></svg>
+                <svg viewBox="0 0 220 220">
+                    <circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
+                    <circle id="ring-fill" class="ring-fill" cx="110" cy="110" r="100"></circle>
+                </svg>
                 <div class="timer-ui">
                     <div id="countdown">00:00:00</div>
                     <button class="btn-stop" onclick="stopFasting()">STOP JEÛNE</button>
                 </div>
             </div>
-            <p id="phase-txt" style="margin-top:15px; font-size:0.8rem; color:#94a3b8; font-weight:700;"></p>
+            <p id="phase-txt" style="margin-top:15px; font-size:0.8rem; color:#94a3b8; font-weight:700;">Phase : Analyse...</p>
         </div>
 
         <div class="sleep-card">
@@ -133,14 +192,27 @@
     <div class="app-view" id="view-history">
         <h2 style="margin-bottom:20px;">Journal de bord</h2>
         <div id="full-logs"></div>
-        <button class="btn-full bg-dark" onclick="exportData()">💾 EXPORTER JOURNAL (.JSON)</button>
+        <button class="btn-full bg-dark" onclick="exportData()" style="margin-top:20px;">💾 EXPORTER JOURNAL (.JSON)</button>
+        <button class="btn-full bg-dark" onclick="clearAllData()" style="margin-top:10px; color:var(--danger);">🗑️ EFFACER TOUTES LES DONNÉES</button>
     </div>
 
     <!-- VUE STATS -->
     <div class="app-view" id="view-stats">
         <h3>Graphique Poids</h3>
-        <canvas id="weightChart"></canvas>
-        <button class="btn-full bg-green" style="margin-top:20px" onclick="openDrawer('poids')">⚖️ NOTER POIDS</button>
+        <div class="chart-container">
+            <canvas id="weightChart"></canvas>
+        </div>
+        <button class="btn-full bg-green" onclick="openDrawer('poids')">⚖️ NOTER POIDS</button>
+        
+        <h3 style="margin-top:30px;">Paramètres Jeûne</h3>
+        <div class="settings-row">
+            <span>Début du jeûne</span>
+            <input type="time" id="fast-start-time" value="16:00" style="width:auto; margin:0;" onchange="updateFastSettings()">
+        </div>
+        <div class="settings-row">
+            <span>Durée (heures)</span>
+            <input type="number" id="fast-duration" value="18" min="12" max="23" style="width:80px; margin:0;" onchange="updateFastSettings()">
+        </div>
     </div>
 
     <!-- NAVIGATION BAR -->
@@ -150,11 +222,14 @@
         <div class="nav-item" id="nav-history" onclick="switchTab('history')">📜</div>
     </div>
 
+    <!-- OVERLAY -->
+    <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
+
     <!-- DRAWERS -->
     <div class="drawer" id="drawer-poids">
         <div class="handle" onclick="closeDrawers()"></div>
         <h3>Pesée du jour</h3>
-        <input type="number" id="w-input" step="0.1" placeholder="85.0 kg">
+        <input type="number" id="w-input" step="0.1" placeholder="85.0 kg" min="30" max="300">
         <button class="btn-full bg-green" onclick="saveWeight()">OK</button>
     </div>
 
@@ -165,7 +240,7 @@
         <input type="datetime-local" id="sleep-in">
         <label style="font-size:0.7rem; color:#64748b;">Réveil :</label>
         <input type="datetime-local" id="sleep-out">
-        <button class="btn-full bg-green" onclick="saveManualSleep()" style="background:var(--sleep)">VALIDER</button>
+        <button class="btn-full bg-sleep" onclick="saveManualSleep()">VALIDER</button>
     </div>
 
 <script>
@@ -173,54 +248,193 @@
 const KEY_LOGS = 'HICHAM_V3_LOGS';
 const KEY_WEIGHTS = 'HICHAM_V3_WEIGHTS';
 const KEY_SLEEP_START = 'HICHAM_V3_SLEEP_START';
+const KEY_FAST_START = 'HICHAM_V3_FAST_START';
+const KEY_FAST_SETTINGS = 'HICHAM_V3_FAST_SETTINGS';
 
-let logs = JSON.parse(localStorage.getItem(KEY_LOGS) || '[]');
-let weights = JSON.parse(localStorage.getItem(KEY_WEIGHTS) || '[]');
+// Paramètres par défaut
+const DEFAULT_FAST_SETTINGS = {
+    startHour: 16,
+    startMinute: 0,
+    duration: 18
+};
 
+// État global
+let logs = [];
+let weights = [];
+let fastSettings = DEFAULT_FAST_SETTINGS;
+let chartInstance = null;
+
+/* ================= INITIALISATION ================= */
+function init() {
+    try {
+        logs = JSON.parse(localStorage.getItem(KEY_LOGS)) || [];
+        weights = JSON.parse(localStorage.getItem(KEY_WEIGHTS)) || [];
+        fastSettings = JSON.parse(localStorage.getItem(KEY_FAST_SETTINGS)) || DEFAULT_FAST_SETTINGS;
+    } catch (e) {
+        console.error('Erreur chargement données:', e);
+        logs = [];
+        weights = [];
+    }
+    
+    // Appliquer les paramètres sauvegardés
+    document.getElementById('fast-start-time').value = 
+        String(fastSettings.startHour).padStart(2, '0') + ':' + 
+        String(fastSettings.startMinute).padStart(2, '0');
+    document.getElementById('fast-duration').value = fastSettings.duration;
+    
+    renderLogs();
+    update();
+    
+    // Démarrer la boucle de mise à jour
+    setInterval(update, 1000);
+}
+
+/* ================= MISE À JOUR PRINCIPALE ================= */
 function update() {
     const now = new Date();
-    const h = now.getHours(); const totS = h*3600 + now.getMinutes()*60 + now.getSeconds();
-    document.getElementById('clock').innerText = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const s = now.getSeconds();
+    const totS = h * 3600 + m * 60 + s;
+    
+    // Horloge
+    document.getElementById('clock').innerText = 
+        String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 
-    // Fasting Logic 18/6
-    let isF = (h < 10 || h >= 16);
-    let rem = isF ? (h >= 16 ? (86400 - totS + 36000) : (36000 - totS)) : (57600 - totS);
-    let totWin = isF ? 18*3600 : 6*3600;
+    // Calcul des temps de jeûne
+    const fastStartSeconds = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
+    const fastDurationSeconds = fastSettings.duration * 3600;
+    const eatDurationSeconds = (24 - fastSettings.duration) * 3600;
+    const fastEndSeconds = (fastStartSeconds + fastDurationSeconds) % 86400;
+    
+    // Déterminer si on est en période de jeûne
+    let isFasting = false;
+    let remainingSeconds = 0;
+    let totalWindowSeconds = 0;
+    
+    if (fastStartSeconds < fastEndSeconds) {
+        // Pas de passage minuit
+        isFasting = totS >= fastStartSeconds && totS < fastEndSeconds;
+        if (isFasting) {
+            remainingSeconds = fastEndSeconds - totS;
+            totalWindowSeconds = fastDurationSeconds;
+        } else {
+            if (totS < fastStartSeconds) {
+                remainingSeconds = fastStartSeconds - totS;
+            } else {
+                remainingSeconds = (86400 - totS) + fastStartSeconds;
+            }
+            totalWindowSeconds = eatDurationSeconds;
+        }
+    } else {
+        // Passage minuit
+        isFasting = totS >= fastStartSeconds || totS < fastEndSeconds;
+        if (isFasting) {
+            if (totS >= fastStartSeconds) {
+                remainingSeconds = (86400 - totS) + fastEndSeconds;
+            } else {
+                remainingSeconds = fastEndSeconds - totS;
+            }
+            totalWindowSeconds = fastDurationSeconds;
+        } else {
+            remainingSeconds = fastStartSeconds - totS;
+            totalWindowSeconds = eatDurationSeconds;
+        }
+    }
 
-    document.getElementById('countdown').innerText = formatTime(rem);
-    document.getElementById('fast-status').innerText = isF ? "JEÛNE EN COURS 🔥" : "FENÊTRE REPAS 🍽️";
-    document.getElementById('fast-status').style.color = isF ? "var(--primary)" : "var(--accent)";
-    document.getElementById('ring-fill').style.stroke = isF ? "var(--primary)" : "var(--accent)";
-    document.getElementById('ring-fill').style.strokeDashoffset = 628 - (rem / totWin) * 628;
+    // Mise à jour UI
+    document.getElementById('countdown').innerText = formatTime(remainingSeconds);
+    document.getElementById('fast-status').innerText = isFasting ? "JEÛNE EN COURS 🔥" : "FENÊTRE REPAS 🍽️";
+    document.getElementById('fast-status').style.color = isFasting ? "var(--primary)" : "var(--accent)";
+    
+    // Animation de l'anneau
+    const ring = document.getElementById('ring-fill');
+    ring.style.stroke = isFasting ? "var(--primary)" : "var(--accent)";
+    const progress = 1 - (remainingSeconds / totalWindowSeconds);
+    ring.style.strokeDashoffset = 628 - (progress * 628);
 
-    // Phase Logic
-    let fH = isF ? (h >= 16 ? h - 16 : h + 8) : -1;
-    let pTxt = "Repas";
-    if(fH >= 16) pTxt = "Autophagie"; else if(fH >= 12) pTxt = "Cétose"; else if(fH >= 4) pTxt = "Chute d'insuline";
-    document.getElementById('phase-txt').innerText = "Phase : " + pTxt;
-
+    // Phase de jeûne
+    updatePhaseInfo(isFasting, totS, fastStartSeconds, fastDurationSeconds);
+    
+    // Status sommeil
     updateSleepStatus();
 }
 
-function formatTime(s) {
-    const hr = Math.floor(s/3600); const mn = Math.floor((s%3600)/60); const sc = s%60;
-    return `${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
+function updatePhaseInfo(isFasting, currentSeconds, fastStartSeconds, fastDurationSeconds) {
+    if (!isFasting) {
+        document.getElementById('phase-txt').innerText = "Phase : Alimentation - Profitez de vos repas !";
+        return;
+    }
+    
+    // Calcul des heures de jeûne écoulées
+    let fastedHours = 0;
+    if (currentSeconds >= fastStartSeconds) {
+        fastedHours = (currentSeconds - fastStartSeconds) / 3600;
+    } else {
+        fastedHours = ((86400 - fastStartSeconds) + currentSeconds) / 3600;
+    }
+    
+    let phase = "";
+    if (fastedHours < 4) phase = "Phase digestive - Éviter les grignotages";
+    else if (fastedHours < 8) phase = "Chute d'insuline - Brûlage de sucre";
+    else if (fastedHours < 12) phase = "Cétose légère - Début brûlage graisse";
+    else if (fastedHours < 16) phase = "Cétose profonde - Autophagie";
+    else phase = "Autophagie maximale - Régénération cellulaire";
+    
+    document.getElementById('phase-txt').innerText = "Phase : " + phase;
 }
 
-/* ================= ACTIONS ================= */
+function formatTime(totalSeconds) {
+    const hours = Math.floor(totalSeconds / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    return String(hours).padStart(2, '0') + ':' + 
+           String(minutes).padStart(2, '0') + ':' + 
+           String(seconds).padStart(2, '0');
+}
+
+/* ================= ACTIONS JEÛNE ================= */
 function stopFasting() {
     if(!confirm("Hicham, confirmer la fin du jeûne ?")) return;
-    addLog('JEÛNE', 'Validé à ' + new Date().toLocaleTimeString(), 'primary');
+    
+    const now = new Date();
+    const fastStart = localStorage.getItem(KEY_FAST_START);
+    let duration = fastSettings.duration;
+    
+    if (fastStart) {
+        const start = new Date(parseInt(fastStart));
+        duration = ((now - start) / 3600000).toFixed(1);
+    }
+    
+    addLog('JEÛNE', 'Validé après ' + duration + 'h - ' + now.toLocaleTimeString('fr-FR'), 'primary');
+    localStorage.removeItem(KEY_FAST_START);
 }
 
+function updateFastSettings() {
+    const timeVal = document.getElementById('fast-start-time').value;
+    const [h, m] = timeVal.split(':').map(Number);
+    const duration = parseInt(document.getElementById('fast-duration').value) || 18;
+    
+    fastSettings = {
+        startHour: h,
+        startMinute: m,
+        duration: Math.min(Math.max(duration, 12), 23)
+    };
+    
+    localStorage.setItem(KEY_FAST_SETTINGS, JSON.stringify(fastSettings));
+    update();
+}
+
+/* ================= SOMMEIL ================= */
 function toggleSleep() {
     const start = localStorage.getItem(KEY_SLEEP_START);
     if(!start) {
         localStorage.setItem(KEY_SLEEP_START, new Date().getTime());
+        addLog('SOMMEIL', 'Couché à ' + new Date().toLocaleTimeString('fr-FR'), 'sleep');
     } else {
         const end = new Date().getTime();
         const dur = ((end - parseInt(start)) / 3600000).toFixed(1);
-        addLog('SOMMEIL', `Nuit : ${dur}h (Auto)`, 'sleep');
+        addLog('SOMMEIL', 'Réveil après ' + dur + 'h', 'sleep');
         localStorage.removeItem(KEY_SLEEP_START);
     }
     updateSleepStatus();
@@ -228,49 +442,264 @@ function toggleSleep() {
 
 function updateSleepStatus() {
     const s = localStorage.getItem(KEY_SLEEP_START);
-    document.getElementById('sleep-status').innerText = s ? "En cours..." : "Inactif";
+    document.getElementById('sleep-status').innerText = s ? "En cours depuis " + new Date(parseInt(s)).toLocaleTimeString('fr-FR') : "Inactif";
     document.getElementById('sleep-btn').innerText = s ? "☀️ RÉVEIL" : "🛌 COUCHER";
 }
 
 function saveManualSleep() {
     const i = document.getElementById('sleep-in').value;
     const o = document.getElementById('sleep-out').value;
-    if(!i || !o) return;
-    const dur = ((new Date(o) - new Date(i)) / 3600000).toFixed(1);
-    addLog('SOMMEIL', `Nuit : ${dur}h (Manuel)`, 'sleep');
+    if(!i || !o) {
+        alert('Veuillez remplir les deux dates');
+        return;
+    }
+    
+    const start = new Date(i);
+    const end = new Date(o);
+    
+    if (end <= start) {
+        alert('Le réveil doit être après le coucher');
+        return;
+    }
+    
+    const dur = ((end - start) / 3600000).toFixed(1);
+    addLog('SOMMEIL', 'Nuit : ' + dur + 'h (Manuel)', 'sleep');
     closeDrawers();
+    
+    // Reset inputs
+    document.getElementById('sleep-in').value = '';
+    document.getElementById('sleep-out').value = '';
 }
 
+/* ================= JOURNAL / LOGS ================= */
 function addLog(type, desc, color) {
-    logs.unshift({ type, desc, color, date: new Date().toLocaleDateString('fr-FR') });
-    localStorage.setItem(KEY_LOGS, JSON.stringify(logs.slice(0, 50)));
+    const entry = { 
+        type, 
+        desc, 
+        color, 
+        date: new Date().toISOString(),
+        id: Date.now()
+    };
+    logs.unshift(entry);
+    
+    // Garder seulement les 100 derniers
+    if (logs.length > 100) logs = logs.slice(0, 100);
+    
+    try {
+        localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+    } catch (e) {
+        console.error('Erreur sauvegarde:', e);
+    }
+    
     renderLogs();
 }
 
 function renderLogs() {
-    const html = logs.map(l => `<div class="log-item ${l.color === 'sleep' ? 'sleep' : ''}"><div><b>${l.type}</b><br><small>${l.desc}</small></div><small>${l.date}</small></div>`).join('');
-    document.getElementById('recent-logs').innerHTML = html.slice(0, 400); // Limite visuelle
-    document.getElementById('full-logs').innerHTML = html;
+    const today = new Date().toDateString();
+    const todayLogs = logs.filter(l => new Date(l.date).toDateString() === today);
+    
+    const html = logs.map(l => {
+        const date = new Date(l.date);
+        const dateStr = date.toLocaleDateString('fr-FR');
+        const timeStr = date.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+        const isToday = date.toDateString() === today;
+        
+        return '<div class="log-item ' + l.color + '">' +
+               '<div><b>' + l.type + '</b><br><small>' + l.desc + '</small></div>' +
+               '<small>' + (isToday ? 'Aujourd\'hui ' + timeStr : dateStr) + '</small>' +
+               '</div>';
+    }).join('');
+    
+    document.getElementById('recent-logs').innerHTML = todayLogs.length > 0 ? 
+        html.slice(0, 3) : '<div class="empty-state">Aucune activité aujourd\'hui</div>';
+    document.getElementById('full-logs').innerHTML = html || '<div class="empty-state">Aucun historique</div>';
 }
 
-/* ================= NAVIGATION & DRAWER ================= */
-function switchTab(t) {
-    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-'+t).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('nav-'+t).classList.add('active');
-    if(t === 'stats') renderChart();
-}
-
-function openDrawer(id) { document.getElementById('drawer-'+id).classList.add('open'); }
-function closeDrawers() { document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open')); }
-
+/* ================= POIDS ================= */
 function saveWeight() {
-    const v = document.getElementById('w-input').value; if(!v) return;
-    weights.push({d: new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}), v: parseFloat(v)});
-    localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
-    addLog('POIDS', `${v}kg enregistré`, 'primary');
+    const v = document.getElementById('w-input').value;
+    if(!v || v < 30 || v > 300) {
+        alert('Veuillez entrer un poids valide (30-300 kg)');
+        return;
+    }
+    
+    const weight = parseFloat(v);
+    const date = new Date();
+    
+    weights.push({
+        d: date.toISOString(),
+        v: weight,
+        dateLabel: date.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'})
+    });
+    
+    try {
+        localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+    } catch (e) {
+        console.error('Erreur sauvegarde poids:', e);
+    }
+    
+    addLog('POIDS', weight + 'kg enregistré', 'weight');
+    document.getElementById('w-input').value = '';
     closeDrawers();
+    
+    if (document.getElementById('view-stats').classList.contains('active')) {
+        renderChart();
+    }
 }
 
-function
+function renderChart() {
+    const ctx = document.getElementById('weightChart');
+    if (!ctx) return;
+    
+    if (chartInstance) {
+        chartInstance.destroy();
+    }
+    
+    if (weights.length === 0) {
+        ctx.style.display = 'none';
+        return;
+    }
+    
+    ctx.style.display = 'block';
+    
+    // Trier par date
+    const sortedWeights = [...weights].sort((a, b) => new Date(a.d) - new Date(b.d));
+    
+    // Garder les 30 derniers jours max
+    const recentWeights = sortedWeights.slice(-30);
+    
+    chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: recentWeights.map(w => w.dateLabel),
+            datasets: [{
+                label: 'Poids (kg)',
+                data: recentWeights.map(w => w.v),
+                borderColor: '#2ecc71',
+                backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                borderWidth: 3,
+                pointBackgroundColor: '#2ecc71',
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    backgroundColor: '#1a2235',
+                    titleColor: '#fff',
+                    bodyColor: '#fff',
+                    cornerRadius: 10,
+                    displayColors: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    grid: { color: 'rgba(255,255,255,0.05)' },
+                    ticks: { color: '#94a3b8' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { color: '#94a3b8' }
+                }
+            }
+        }
+    });
+}
+
+/* ================= NAVIGATION ================= */
+function switchTab(tab) {
+    document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + tab).classList.add('active');
+    
+    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    document.getElementById('nav-' + tab).classList.add('active');
+    
+    if(tab === 'stats') {
+        setTimeout(renderChart, 100);
+    }
+}
+
+/* ================= DRAWERS ================= */
+function openDrawer(id) {
+    document.getElementById('drawer-' + id).classList.add('open');
+    document.getElementById('overlay').classList.add('active');
+    
+    // Pré-remplir les dates pour le sommeil
+    if (id === 'sleep') {
+        const now = new Date();
+        const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const formatDateTime = (d) => {
+            return d.toISOString().slice(0, 16);
+        };
+        document.getElementById('sleep-in').value = formatDateTime(yesterday);
+        document.getElementById('sleep-out').value = formatDateTime(now);
+    }
+}
+
+function closeDrawers() {
+    document.querySelectorAll('.drawer').forEach(d => d.classList.remove('open'));
+    document.getElementById('overlay').classList.remove('active');
+}
+
+/* ================= EXPORT / GESTION DONNÉES ================= */
+function exportData() {
+    const data = {
+        logs: logs,
+        weights: weights,
+        settings: fastSettings,
+        exportDate: new Date().toISOString()
+    };
+    
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'hicham-fasting-data-' + new Date().toISOString().split('T')[0] + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function clearAllData() {
+    if(!confirm('⚠️ ATTENTION : Cette action effacera TOUTES vos données !\n\nÊtes-vous sûr ?')) return;
+    if(!confirm('Dernière chance : confirmez la suppression totale ?')) return;
+    
+    localStorage.removeItem(KEY_LOGS);
+    localStorage.removeItem(KEY_WEIGHTS);
+    localStorage.removeItem(KEY_SLEEP_START);
+    localStorage.removeItem(KEY_FAST_START);
+    localStorage.removeItem(KEY_FAST_SETTINGS);
+    
+    logs = [];
+    weights = [];
+    fastSettings = DEFAULT_FAST_SETTINGS;
+    
+    renderLogs();
+    if (chartInstance) {
+        chartInstance.destroy();
+        chartInstance = null;
+    }
+    
+    alert('Toutes les données ont été effacées');
+    location.reload();
+}
+
+// Gestion du clavier (Escape pour fermer)
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeDrawers();
+});
+
+// Initialisation au chargement
+document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>
