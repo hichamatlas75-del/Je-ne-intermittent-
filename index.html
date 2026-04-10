@@ -5,239 +5,235 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Hicham Master - Fasting Pro</title>
+    <title>Hicham Master - Fasting Dropbox</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-primary: #F7F3EF;
             --bg-secondary: #FFFFFF;
-            --bg-card: rgba(255, 255, 255, 0.9);
             --accent-primary: #D4A574;
-            --accent-secondary: #8B7355;
             --accent-success: #6B8E6B;
-            --accent-sleep: #7B8CDE;
             --text-primary: #2D2A26;
             --text-secondary: #8B8680;
-            --shadow-soft: 0 4px 20px rgba(139, 115, 85, 0.08);
+            --dropbox-blue: #0061FF;
             --btn-height: 60px;
         }
         
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
-        
-        body { 
-            margin: 0; background: var(--bg-primary); color: var(--text-primary); 
-            height: 100dvh; overflow: hidden; position: fixed; width: 100%;
-        }
-
+        body { margin: 0; background: var(--bg-primary); color: var(--text-primary); height: 100dvh; overflow: hidden; position: fixed; width: 100%; }
         .app-container { display: flex; flex-direction: column; height: 100%; width: 100%; }
 
+        /* Header */
         .header { 
             padding: 16px 20px; padding-top: max(16px, env(safe-area-inset-top));
             display: flex; justify-content: space-between; align-items: center; 
             background: var(--bg-secondary); border-bottom: 1px solid rgba(139, 115, 85, 0.08);
         }
 
-        .app-view { 
-            flex: 1; overflow-y: auto; padding: 16px 20px 100px; 
-            display: none; flex-direction: column; gap: 16px; 
-        }
+        /* Views */
+        .app-view { flex: 1; overflow-y: auto; padding: 16px 20px 100px; display: none; flex-direction: column; gap: 16px; }
         .app-view.active { display: flex; }
 
-        .timer-card { 
-            background: var(--bg-card); padding: 24px; border-radius: 32px; 
-            text-align: center; box-shadow: var(--shadow-soft); border: 1px solid rgba(139, 115, 85, 0.05);
-        }
-
-        .ring-container { 
-            position: relative; width: 220px; height: 220px; margin: 0 auto 20px; 
-            display: flex; align-items: center; justify-content: center; 
-        }
+        /* Timer Card */
+        .timer-card { background: white; padding: 24px; border-radius: 32px; text-align: center; box-shadow: 0 4px 20px rgba(139, 115, 85, 0.08); }
+        .ring-container { position: relative; width: 220px; height: 220px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; }
         svg { transform: rotate(-90deg); width: 100%; height: 100%; }
         .ring-bg { fill: none; stroke: rgba(139, 115, 85, 0.1); stroke-width: 10; }
-        .ring-fill { 
-            fill: none; stroke: var(--accent-primary); stroke-width: 10; 
-            stroke-linecap: round; stroke-dasharray: 565; stroke-dashoffset: 565; 
-            transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease; 
-        }
+        .ring-fill { fill: none; stroke: var(--accent-primary); stroke-width: 10; stroke-linecap: round; stroke-dasharray: 565; stroke-dashoffset: 565; transition: all 0.5s ease; }
 
-        #countdown { font-size: 2.5rem; font-weight: 800; margin-bottom: 4px; letter-spacing: -1px; }
-        
-        .btn-primary {
-            height: var(--btn-height); width: 100%; max-width: 280px;
-            border-radius: 20px; border: none; font-weight: 700; font-size: 1rem;
-            cursor: pointer; transition: all 0.2s; color: white;
-            background: linear-gradient(135deg, var(--accent-success), #8FBC8F);
-        }
-        .btn-primary:active { transform: scale(0.96); }
-        .btn-stop { background: linear-gradient(135deg, #E07A5F, var(--accent-primary)); }
+        /* Buttons */
+        .btn-primary { height: var(--btn-height); width: 100%; max-width: 280px; border-radius: 20px; border: none; font-weight: 700; cursor: pointer; color: white; background: var(--accent-success); }
+        .btn-dropbox { background: var(--dropbox-blue); color: white; border: none; padding: 12px; border-radius: 14px; font-weight: 600; cursor: pointer; width: 100%; margin-top: 10px; }
 
-        .nav-bar { 
-            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95);
-            display: flex; justify-content: space-around; padding: 12px 0 max(12px, env(safe-area-inset-bottom));
-            border-top: 1px solid rgba(139,115,85,0.1); backdrop-filter: blur(10px);
-        }
-        .nav-item { 
-            display: flex; flex-direction: column; align-items: center; 
-            color: var(--text-secondary); font-size: 0.7rem; gap: 4px; cursor: pointer;
-            padding: 8px 12px;
-        }
+        /* Sync Status */
+        .sync-indicator { position: fixed; top: 75px; right: 20px; padding: 8px 12px; border-radius: 20px; background: white; font-size: 0.75rem; display: none; align-items: center; gap: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 1000; }
+        .sync-indicator.active { display: flex; }
+
+        /* Nav */
+        .nav-bar { position: fixed; bottom: 0; left: 0; right: 0; background: white; display: flex; justify-content: space-around; padding: 12px 0 max(12px, env(safe-area-inset-bottom)); border-top: 1px solid rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-secondary); font-size: 0.7rem; gap: 4px; cursor: pointer; }
         .nav-item.active { color: var(--accent-primary); font-weight: 700; }
-
-        .phase-detail-card {
-            background: var(--bg-secondary); padding: 16px; border-radius: 20px;
-            text-align: left; border: 1px solid rgba(139, 115, 85, 0.1);
-        }
-        
-        .phase-1 { stroke: #E6A75C; } 
-        .phase-2 { stroke: #D4A574; } 
-        .phase-3 { stroke: #6B8E6B; } 
-        .phase-4 { stroke: #7B8CDE; }
     </style>
 </head>
 <body>
 
+<div class="sync-indicator" id="sync-ui">🔄 <span id="sync-text">Synchro...</span></div>
+
 <div class="app-container">
     <div class="header">
-        <div>
-            <h1 style="margin:0; font-size:1.2rem;">Hicham Master</h1>
-            <span style="font-size:0.8rem; color:var(--text-secondary);" id="date-display">--</span>
-        </div>
-        <div class="profile">
-            <img src="https://ui-avatars.com/api/?name=Hicham&background=D4A574&color=fff" style="width:40px; border-radius:10px;">
-        </div>
+        <div><h1 style="margin:0; font-size:1.1rem;">Hicham Master</h1><span style="font-size:0.8rem; color:var(--text-secondary);" id="clock-display">--:--</span></div>
+        <div id="db-status-icon" style="font-size: 1.2rem;">☁️</div>
     </div>
 
     <div class="app-view active" id="view-home">
         <div class="timer-card">
-            <div id="fast-info-box" style="display:none; margin-bottom:15px; font-size:0.9rem;">
-                Démarré : <b id="start-time-text">--:--</b> 
-                <button onclick="editStartTime()" style="border:none; background:none;">✏️</button>
-            </div>
+            <div id="timer-info" style="margin-bottom:15px; font-size:0.9rem; font-weight:600;"></div>
             <div class="ring-container">
                 <svg viewBox="0 0 200 200">
                     <circle cx="100" cy="100" r="90" class="ring-bg"></circle>
                     <circle id="ring-fill" class="ring-fill" cx="100" cy="100" r="90"></circle>
                 </svg>
                 <div style="position:absolute;">
-                    <div id="countdown">00:00:00</div>
-                    <div id="timer-label" style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:15px;">Fenêtre repas</div>
-                    <button id="main-action-btn" class="btn-primary" onclick="handleAction()">Démarrer</button>
+                    <div id="countdown" style="font-size:2.2rem; font-weight:800;">00:00:00</div>
+                    <button id="main-btn" class="btn-primary" onclick="handleAction()" style="margin-top:15px;">Démarrer</button>
                 </div>
             </div>
-            <div class="phase-detail-card">
-                <div id="p-title" style="font-weight:700; margin-bottom:5px;">🍽️ Alimentation</div>
-                <div id="p-desc" style="font-size:0.8rem; color:var(--text-secondary);">Le corps utilise le glucose.</div>
-            </div>
         </div>
-    </div>
-
-    <div class="app-view" id="view-stats">
-        <h2 style="font-size:1.1rem;">Mes Statistiques</h2>
-        <div style="background:white; padding:20px; border-radius:24px; text-align:center;">
-            <p style="color:var(--text-secondary);">Graphiques à venir...</p>
+        
+        <div style="background:white; padding:20px; border-radius:24px; border: 1px solid rgba(0,97,255,0.2);">
+            <h3 style="margin:0 0 8px 0; font-size:1rem;">Cloud Sync</h3>
+            <p style="margin:0 0 15px 0; font-size:0.8rem; color:var(--text-secondary);">Sauvegardez vos données sur Dropbox automatiquement.</p>
+            <button id="db-connect-btn" class="btn-dropbox" onclick="connectDropbox()">Connecter Dropbox</button>
         </div>
     </div>
 
     <div class="app-view" id="view-history">
-        <h2 style="font-size:1.1rem;">Historique</h2>
-        <div id="history-list" style="display:flex; flex-direction:column; gap:10px;">
-            <p style="text-align:center; color:var(--text-secondary);">Aucun historique pour le moment.</p>
-        </div>
+        <h2 style="font-size:1.1rem;">Historique Cloud</h2>
+        <div id="history-list"></div>
     </div>
 
     <div class="nav-bar">
-        <div class="nav-item active" id="nav-home" onclick="switchTab('home')">🏠<span>Accueil</span></div>
-        <div class="nav-item" id="nav-stats" onclick="switchTab('stats')">📈<span>Stats</span></div>
-        <div class="nav-item" id="nav-history" onclick="switchTab('history')">📜<span>Historique</span></div>
+        <div class="nav-item active" onclick="switchTab('home')">🏠<span>Accueil</span></div>
+        <div class="nav-item" onclick="switchTab('history')">📜<span>Historique</span></div>
     </div>
 </div>
 
 <script>
-    const KEY_START = 'FAST_START_v3';
-    let settings = { duration: 16 };
+    // --- CONFIG DROPBOX ---
+    const DB_CLIENT_ID = 'hey2nvnz07mjq05'; 
+    const DB_REDIRECT_URI = window.location.href.split('#')[0].split('?')[0];
+    const KEY_START = 'HICHAM_FAST_START';
+    const KEY_DB_TOKEN = 'HICHAM_DB_TOKEN';
 
-    const PHASES = [
-        { title: "🍽️ Alimentation", desc: "Le corps utilise le glucose. L'insuline est élevée." },
-        { title: "📉 Post-Absorption", desc: "4h-12h : Le taux de sucre baisse." },
-        { title: "⚡ Néoglucogenèse", desc: "12h-16h : Brûlage du glucose stocké." },
-        { title: "🔥 Cétose", desc: "16h-24h : Brûlage intensif des graisses." },
-        { title: "🧬 Autophagie", desc: "24h+ : Régénération cellulaire." }
-    ];
+    let dbToken = localStorage.getItem(KEY_DB_TOKEN);
+    let duration = 16;
 
+    // --- INITIALISATION ---
     function init() {
-        document.getElementById('date-display').innerText = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+        handleDropboxAuth();
         setInterval(update, 1000);
         update();
+        if(dbToken) {
+            document.getElementById('db-connect-btn').innerText = "✅ Dropbox Connecté";
+            document.getElementById('db-status-icon').innerText = "☁️✅";
+            syncFromDropbox(); // Charger les données au démarrage
+        }
     }
 
-    // FONCTION DE NAVIGATION (Correction du bug)
-    function switchTab(tabId) {
-        // Désactiver toutes les vues
-        document.querySelectorAll('.app-view').forEach(view => view.classList.remove('active'));
-        // Désactiver tous les items nav
-        document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-        
-        // Activer la vue et l'item sélectionnés
-        document.getElementById('view-' + tabId).classList.add('active');
-        document.getElementById('nav-' + tabId).classList.add('active');
-    }
-
+    // --- LOGIQUE TIMER ---
     function update() {
         const start = localStorage.getItem(KEY_START);
-        const actionBtn = document.getElementById('main-action-btn');
         const ring = document.getElementById('ring-fill');
-        const circum = 565; // 2 * PI * 90
+        const circum = 565;
 
         if (start) {
             const elapsed = (Date.now() - parseInt(start)) / 1000;
-            const remaining = Math.max(0, (settings.duration * 3600) - elapsed);
-            const progress = Math.min(1, elapsed / (settings.duration * 3600));
+            const remaining = Math.max(0, (duration * 3600) - elapsed);
+            const progress = Math.min(1, elapsed / (duration * 3600));
 
             document.getElementById('countdown').innerText = formatTime(remaining);
-            document.getElementById('timer-label').innerText = "Temps restant";
-            actionBtn.innerText = "Arrêter";
-            actionBtn.classList.add('btn-stop');
-            document.getElementById('fast-info-box').style.display = 'block';
-            document.getElementById('start-time-text').innerText = new Date(parseInt(start)).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-            
+            document.getElementById('main-btn').innerText = "Arrêter";
+            document.getElementById('main-btn').style.background = "#E07A5F";
             ring.style.strokeDashoffset = circum - (progress * circum);
-
-            const hours = elapsed / 3600;
-            let pIdx = hours < 4 ? 0 : hours < 12 ? 1 : hours < 16 ? 2 : hours < 24 ? 3 : 4;
-            document.getElementById('p-title').innerText = PHASES[pIdx].title;
-            document.getElementById('p-desc').innerText = PHASES[pIdx].desc;
-            ring.className = `ring-fill phase-${pIdx}`;
         } else {
             document.getElementById('countdown').innerText = "00:00:00";
-            document.getElementById('timer-label').innerText = "Fenêtre repas";
-            actionBtn.innerText = "Démarrer";
-            actionBtn.classList.remove('btn-stop');
-            document.getElementById('fast-info-box').style.display = 'none';
+            document.getElementById('main-btn').innerText = "Démarrer";
+            document.getElementById('main-btn').style.background = "#6B8E6B";
             ring.style.strokeDashoffset = circum;
         }
+        document.getElementById('clock-display').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
     }
 
     function handleAction() {
         if (localStorage.getItem(KEY_START)) {
-            if(confirm("Terminer le jeûne ?")) localStorage.removeItem(KEY_START);
+            if(confirm("Terminer le jeûne ?")) {
+                localStorage.removeItem(KEY_START);
+                if(dbToken) syncToDropbox();
+            }
         } else {
             localStorage.setItem(KEY_START, Date.now());
+            if(dbToken) syncToDropbox();
         }
         update();
     }
 
-    function editStartTime() {
-        const current = localStorage.getItem(KEY_START);
-        if (!current) return;
-        const h = prompt("Heure (0-23) ?", new Date(parseInt(current)).getHours());
-        const m = prompt("Minutes (0-59) ?", new Date(parseInt(current)).getMinutes());
-        if (h !== null && m !== null) {
-            const d = new Date(); d.setHours(h, m, 0);
-            if (d > Date.now()) d.setDate(d.getDate() - 1);
-            localStorage.setItem(KEY_START, d.getTime());
-            update();
+    // --- LOGIQUE DROPBOX ---
+    function connectDropbox() {
+        const authUrl = `https://www.dropbox.com/oauth2/authorize?client_id=${DB_CLIENT_ID}&response_type=token&redirect_uri=${encodeURIComponent(DB_REDIRECT_URI)}`;
+        window.location.href = authUrl;
+    }
+
+    function handleDropboxAuth() {
+        const hash = window.location.hash;
+        if (hash && hash.includes('access_token=')) {
+            const token = hash.split('access_token=')[1].split('&')[0];
+            localStorage.setItem(KEY_DB_TOKEN, token);
+            dbToken = token;
+            window.location.hash = ''; // Nettoyer l'URL
+            showSyncStatus("Connecté !");
         }
+    }
+
+    async function syncToDropbox() {
+        if (!dbToken) return;
+        showSyncStatus("Sauvegarde...");
+        
+        const data = {
+            lastStart: localStorage.getItem(KEY_START),
+            syncDate: new Date().toISOString()
+        };
+
+        try {
+            const response = await fetch('https://content.dropboxapi.com/2/files/upload', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${dbToken}`,
+                    'Dropbox-API-Arg': JSON.stringify({
+                        path: '/fasting_data.json',
+                        mode: 'overwrite'
+                    }),
+                    'Content-Type': 'application/octet-stream'
+                },
+                body: JSON.stringify(data)
+            });
+            if (response.ok) showSyncStatus("Cloud à jour ✅");
+        } catch (e) {
+            showSyncStatus("Erreur Cloud ❌");
+        }
+    }
+
+    async function syncFromDropbox() {
+        if (!dbToken) return;
+        try {
+            const response = await fetch('https://content.dropboxapi.com/2/files/download', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${dbToken}`,
+                    'Dropbox-API-Arg': JSON.stringify({ path: '/fasting_data.json' })
+                }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                if (data.lastStart) {
+                    localStorage.setItem(KEY_START, data.lastStart);
+                    update();
+                }
+            }
+        } catch (e) { console.error("Sync down failed", e); }
+    }
+
+    // --- UTILITAIRES ---
+    function switchTab(id) {
+        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+        document.getElementById('view-' + id).classList.add('active');
+    }
+
+    function showSyncStatus(msg) {
+        const ui = document.getElementById('sync-ui');
+        document.getElementById('sync-text').innerText = msg;
+        ui.classList.add('active');
+        setTimeout(() => ui.classList.remove('active'), 3000);
     }
 
     function formatTime(s) {
