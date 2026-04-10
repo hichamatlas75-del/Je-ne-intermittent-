@@ -73,7 +73,6 @@
             box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
         }
         .btn-early:active { transform: scale(0.95); }
-        .btn-early:hover { opacity: 0.9; }
 
         .mode-selector {
             background: rgba(255,255,255,0.05);
@@ -226,7 +225,6 @@
         }
         .file-input-label:active { transform: scale(0.98); }
 
-        /* Cloud Sync Styles */
         .cloud-status {
             background: var(--card);
             padding: 15px;
@@ -253,21 +251,6 @@
             cursor: pointer;
             font-size: 0.8rem;
         }
-        .sync-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        
-        .cloud-provider {
-            background: var(--card);
-            padding: 15px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-        }
-        .cloud-provider:hover { border-color: var(--dropbox); }
-        .cloud-provider.selected { border-color: var(--dropbox); background: rgba(0, 97, 255, 0.1); }
-        .cloud-provider h4 { margin: 0 0 5px 0; display: flex; align-items: center; gap: 8px; }
-        .cloud-provider p { margin: 0; font-size: 0.8rem; opacity: 0.7; }
         
         .sync-indicator {
             position: fixed;
@@ -357,6 +340,9 @@
             font-size: 0.75rem;
             margin-top: 10px;
             color: #ff6b6b;
+            max-height: 150px;
+            overflow-y: auto;
+            word-break: break-word;
         }
         
         .token-help {
@@ -364,6 +350,16 @@
             color: #64748b;
             margin-top: 5px;
             font-style: italic;
+        }
+        
+        .debug-info {
+            font-family: monospace;
+            font-size: 0.65rem;
+            background: rgba(0,0,0,0.3);
+            padding: 8px;
+            border-radius: 4px;
+            margin-top: 5px;
+            color: #94a3b8;
         }
     </style>
 </head>
@@ -400,7 +396,6 @@
             <p id="phase-txt" style="margin-top:15px; font-size:0.8rem; color:#94a3b8; font-weight:700;">Phase : Analyse...</p>
             <p id="fast-info" style="margin-top:5px; font-size:0.7rem; color:#64748b;"></p>
             
-            <!-- Bouton jeûne anticipé -->
             <div id="early-fast-container" style="display:none;">
                 <button class="btn-early" onclick="startEarlyFast()">
                     ⚡ COMMENCER LE JEÛNE MAINTENANT
@@ -430,7 +425,6 @@
     <div class="app-view" id="view-history">
         <h2 style="margin-bottom:20px;">Journal de bord</h2>
         
-        <!-- Cloud Sync Section Dropbox -->
         <div class="cloud-status" id="cloud-status">
             <div class="cloud-icon">📦</div>
             <div class="cloud-info">
@@ -547,18 +541,14 @@
         
         <div id="dropbox-not-connected">
             <div class="dropbox-instructions">
-                <strong>🔧 Configuration Dropbox (Étape par étape) :</strong>
+                <strong>🔧 Configuration Dropbox :</strong>
                 <ol>
-                    <li>Allez sur <a href="https://www.dropbox.com/developers/apps" target="_blank" onclick="window.open('https://www.dropbox.com/developers/apps', '_blank')">dropbox.com/developers/apps</a></li>
-                    <li>Cliquez <b>"Create app"</b> → Choisissez <b>"Scoped access"</b></li>
-                    <li><b>Type d'accès :</b> "App folder" (recommandé) ou "Full Dropbox"</li>
-                    <li>Nommez l'app : <code>HichamFastingApp</code> → Create</li>
-                    <li>Allez dans l'onglet <b>"Permissions"</b> (à gauche)</li>
-                    <li>Cochez : <code>files.content.write</code> et <code>files.content.read</code></li>
-                    <li>Cliquez <b>"Submit"</b> en bas (IMPORTANT !)</li>
-                    <li>Retournez dans <b>"Settings"</b> → Section <b>"OAuth 2"</b></li>
-                    <li>Cliquez <b>"Generate"</b> à côté de "Access token"</li>
-                    <li>Copiez le token (commence par <code>sl.</code>) ci-dessous 👇</li>
+                    <li>Allez sur <a href="https://www.dropbox.com/developers/apps" target="_blank">dropbox.com/developers/apps</a></li>
+                    <li>Créez une app : <b>"Scoped access"</b> → <b>"App folder"</b></li>
+                    <li>Onglet <b>"Permissions"</b> : cochez <code>files.content.write</code> et <code>files.content.read</code></li>
+                    <li><b>Cliquez "Submit" en bas (IMPORTANT !)</b></li>
+                    <li>Onglet <b>"Settings"</b> → <b>"Generate"</b> token</li>
+                    <li>Copiez le token (commence par <code>sl.</code>) ci-dessous</li>
                 </ol>
             </div>
             
@@ -572,7 +562,7 @@
             </button>
             
             <button class="btn-full bg-dark" onclick="testDropboxToken()" style="margin-top:10px;">
-                🧪 Tester le token
+                🧪 Tester le token d'abord
             </button>
         </div>
 
@@ -675,19 +665,57 @@ function init() {
     }
 }
 
-/* ================= DROPBOX INTEGRATION ================= */
+/* ================= DROPBOX INTEGRATION - CORRIGÉE ================= */
+async function makeDropboxRequest(url, token, options = {}) {
+    const defaultOptions = {
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            ...options.headers
+        },
+        ...options
+    };
+    
+    // Si on envoie du JSON dans le body, on ajoute Content-Type
+    if (options.body && typeof options.body === 'string' && !options.headers?.['Content-Type']) {
+        defaultOptions.headers['Content-Type'] = 'application/json';
+    }
+    
+    try {
+        const response = await fetch(url, defaultOptions);
+        const text = await response.text();
+        
+        // Essayer de parser comme JSON, sinon retourner le texte brut
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            data = { raw: text, isText: true };
+        }
+        
+        if (!response.ok) {
+            const error = data.error || data;
+            throw new Error(typeof error === 'string' ? error : JSON.stringify(error));
+        }
+        
+        return data;
+    } catch (e) {
+        console.error('Dropbox API Error:', e);
+        throw e;
+    }
+}
+
 async function testDropboxToken() {
     const token = document.getElementById('dropbox-token').value.trim();
     const errorDiv = document.getElementById('dropbox-error');
     
     if (!token) {
-        errorDiv.innerText = '⚠️ Veuillez entrer un token';
+        errorDiv.innerHTML = '⚠️ Veuillez entrer un token';
         errorDiv.style.display = 'block';
         return;
     }
     
     if (!token.startsWith('sl.')) {
-        errorDiv.innerText = '⚠️ Le token doit commencer par "sl."';
+        errorDiv.innerHTML = '⚠️ Le token doit commencer par "sl."<br>Exemple: sl.Bx... (140 caractères environ)';
         errorDiv.style.display = 'block';
         return;
     }
@@ -696,29 +724,34 @@ async function testDropboxToken() {
     errorDiv.style.display = 'none';
     
     try {
-        const response = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            }
-        });
+        // Test avec l'API account
+        const data = await makeDropboxRequest(
+            'https://api.dropboxapi.com/2/users/get_current_account',
+            token,
+            { method: 'POST', body: 'null' } // body null requis pour cette API
+        );
         
-        if (response.ok) {
-            const account = await response.json();
-            showSyncStatus('success', 'Token valide ! ' + account.name.display_name);
-            errorDiv.innerHTML = '✅ Token valide pour : <b>' + account.name.display_name + '</b><br>Email: ' + account.email;
-            errorDiv.style.color = '#2ecc71';
-            errorDiv.style.borderColor = '#2ecc71';
-            errorDiv.style.background = 'rgba(46, 204, 113, 0.1)';
-            errorDiv.style.display = 'block';
-        } else {
-            const errorData = await response.json();
-            throw new Error(errorData.error_summary || 'Token invalide');
-        }
+        showSyncStatus('success', 'Token valide ! ' + data.name.display_name);
+        errorDiv.innerHTML = '✅ <b>Token valide !</b><br>Compte: ' + data.name.display_name + '<br>Email: ' + data.email;
+        errorDiv.style.color = '#2ecc71';
+        errorDiv.style.borderColor = '#2ecc71';
+        errorDiv.style.background = 'rgba(46, 204, 113, 0.1)';
+        errorDiv.style.display = 'block';
+        
     } catch (e) {
         showSyncStatus('error', 'Token invalide');
-        errorDiv.innerText = '❌ Erreur: ' + e.message + '\n\nVérifiez que vous avez bien cliqué "Submit" dans les Permissions de votre app Dropbox.';
+        console.error('Test error:', e);
+        
+        let errorMsg = e.message;
+        if (errorMsg.includes('invalid_access_token')) {
+            errorMsg = 'Token invalide ou expiré.<br><br>Solutions:<br>1. Vérifiez que vous avez cliqué "Submit" dans les Permissions<br>2. Régénérez le token dans Dropbox<br>3. Vérifiez que vous n\'avez pas de espace avant/après le token';
+        } else if (errorMsg.includes('missing_scope')) {
+            errorMsg = 'Permissions manquantes. Allez dans l\'onglet "Permissions" de votre app Dropbox et cochez:<br>- files.content.read<br>- files.content.write<br>Puis cliquez "Submit"';
+        } else if (errorMsg.includes('raw')) {
+            errorMsg = 'Erreur réseau ou CORS. Détail: ' + errorMsg.substring(0, 100);
+        }
+        
+        errorDiv.innerHTML = '❌ <b>Erreur:</b><br>' + errorMsg;
         errorDiv.style.color = '#ff6b6b';
         errorDiv.style.borderColor = 'var(--danger)';
         errorDiv.style.background = 'rgba(231, 76, 60, 0.1)';
@@ -731,59 +764,37 @@ async function connectDropbox() {
     const errorDiv = document.getElementById('dropbox-error');
     
     if (!token) {
-        alert('Veuillez entrer un token d\'accès Dropbox');
+        alert('Veuillez entrer un token');
         return;
     }
     
-    if (!token.startsWith('sl.')) {
-        alert('Le token doit commencer par "sl."\n\nAssurez-vous de copier le token complet depuis Dropbox Developers.');
-        return;
-    }
-    
-    showSyncStatus('syncing', 'Connexion à Dropbox...');
-    errorDiv.style.display = 'none';
+    showSyncStatus('syncing', 'Connexion...');
     
     try {
-        const response = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
-            method: 'POST',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            }
-        });
+        const data = await makeDropboxRequest(
+            'https://api.dropboxapi.com/2/users/get_current_account',
+            token,
+            { method: 'POST', body: 'null' }
+        );
         
-        if (response.ok) {
-            const account = await response.json();
-            dropboxToken = token;
-            localStorage.setItem(KEY_DROPBOX_TOKEN, token);
-            showSyncStatus('success', 'Connecté: ' + account.name.display_name);
-            updateDropboxStatus();
-            closeDrawers();
-            
-            setTimeout(() => syncToDropbox(), 1000);
-        } else {
-            const errorData = await response.json();
-            let errorMsg = errorData.error_summary || 'Token invalide';
-            
-            if (errorMsg.includes('expired')) {
-                errorMsg = 'Token expiré. Générez-en un nouveau dans Dropbox Developers.';
-            } else if (errorMsg.includes('invalid_access_token')) {
-                errorMsg = 'Token invalide. Vérifiez que vous avez bien cliqué "Submit" dans les Permissions.';
-            }
-            
-            throw new Error(errorMsg);
-        }
+        dropboxToken = token;
+        localStorage.setItem(KEY_DROPBOX_TOKEN, token);
+        showSyncStatus('success', 'Connecté: ' + data.name.display_name);
+        updateDropboxStatus();
+        closeDrawers();
+        
+        setTimeout(() => syncToDropbox(), 1000);
+        
     } catch (e) {
-        showSyncStatus('error', 'Erreur connexion');
-        errorDiv.innerText = '❌ ' + e.message;
+        showSyncStatus('error', 'Échec connexion');
+        console.error('Connection error:', e);
+        errorDiv.innerHTML = '❌ Erreur: ' + e.message;
         errorDiv.style.display = 'block';
-        console.error('Dropbox connection error:', e);
     }
 }
 
 function disconnectDropbox() {
-    if (!confirm('Déconnecter Dropbox ? Les données locales seront conservées.')) return;
-    
+    if (!confirm('Déconnecter Dropbox ?')) return;
     dropboxToken = null;
     localStorage.removeItem(KEY_DROPBOX_TOKEN);
     localStorage.removeItem(KEY_DROPBOX_AUTO);
@@ -831,11 +842,11 @@ function updateDropboxStatus() {
 
 async function syncToDropbox() {
     if (!dropboxToken) {
-        alert('Veuillez d\'abord connecter Dropbox');
+        alert('Non connecté à Dropbox');
         return;
     }
     
-    showSyncStatus('syncing', 'Upload vers Dropbox...');
+    showSyncStatus('syncing', 'Upload...');
     
     const data = {
         logs: logs,
@@ -848,6 +859,7 @@ async function syncToDropbox() {
     };
     
     try {
+        // Utiliser l'API upload de Dropbox
         const response = await fetch('https://content.dropboxapi.com/2/files/upload', {
             method: 'POST',
             headers: {
@@ -863,35 +875,36 @@ async function syncToDropbox() {
             body: JSON.stringify(data)
         });
         
-        if (response.ok) {
-            const result = await response.json();
-            localStorage.setItem(KEY_LAST_SYNC, new Date().toISOString());
-            showSyncStatus('success', 'Sauvegardé sur Dropbox !');
-            updateDropboxStatus();
-            return true;
-        } else {
-            const error = await response.json();
-            console.error('Dropbox error:', error);
-            
-            if (error.error && error.error['.tag'] === 'invalid_access_token') {
-                alert('Token Dropbox invalide ou expiré. Veuillez vous reconnecter.');
-                disconnectDropbox();
-            } else {
-                throw new Error(error.error_summary || 'Erreur upload');
-            }
+        const text = await response.text();
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (e) {
+            throw new Error('Réponse invalide: ' + text.substring(0, 100));
         }
+        
+        if (!response.ok) {
+            if (result.error && result.error['.tag'] === 'invalid_access_token') {
+                throw new Error('Token invalide');
+            }
+            throw new Error(result.error_summary || 'Erreur upload');
+        }
+        
+        localStorage.setItem(KEY_LAST_SYNC, new Date().toISOString());
+        showSyncStatus('success', 'Sauvegardé !');
+        updateDropboxStatus();
+        
     } catch (e) {
-        console.error('Dropbox upload error:', e);
-        showSyncStatus('error', 'Échec upload Dropbox');
-        alert('Erreur de sauvegarde: ' + e.message);
-        return false;
+        console.error('Upload error:', e);
+        showSyncStatus('error', 'Échec upload');
+        alert('Erreur: ' + e.message);
     }
 }
 
 async function syncFromDropbox(silent = false) {
     if (!dropboxToken) return;
     
-    if (!silent) showSyncStatus('syncing', 'Récupération Dropbox...');
+    if (!silent) showSyncStatus('syncing', 'Download...');
     
     try {
         const response = await fetch('https://content.dropboxapi.com/2/files/download', {
@@ -904,61 +917,54 @@ async function syncFromDropbox(silent = false) {
             }
         });
         
-        if (response.ok) {
-            const text = await response.text();
-            const data = JSON.parse(text);
-            
-            if (data.logs) {
-                const existingIds = new Set(logs.map(l => l.id));
-                const newLogs = data.logs.filter(l => !existingIds.has(l.id));
-                logs = [...newLogs, ...logs].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 100);
-                localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
-            }
-            
-            if (data.weights) {
-                const existingDates = new Set(weights.map(w => w.d));
-                const newWeights = data.weights.filter(w => !existingDates.has(w.d));
-                weights = [...weights, ...newWeights];
-                localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
-            }
-            
-            if (data.earlyFast) {
-                localStorage.setItem(KEY_EARLY_FAST, data.earlyFast);
-                isEarlyFasting = true;
-            }
-            
-            renderLogs();
-            if (document.getElementById('view-stats').classList.contains('active')) renderChart();
-            
-            localStorage.setItem(KEY_LAST_SYNC, new Date().toISOString());
-            if (!silent) showSyncStatus('success', 'Données restaurées !');
-            updateDropboxStatus();
-            return true;
-        } else if (response.status === 409) {
-            if (!silent) showSyncStatus('error', 'Aucune sauvegarde trouvée');
-            return false;
-        } else {
-            const error = await response.json();
-            if (error.error && error.error['.tag'] === 'invalid_access_token') {
-                if (!silent) alert('Token Dropbox invalide. Veuillez vous reconnecter.');
-                disconnectDropbox();
-                return false;
-            }
-            throw new Error('Erreur download');
+        if (response.status === 409) {
+            if (!silent) showSyncStatus('error', 'Aucun fichier');
+            return;
         }
+        
+        if (!response.ok) {
+            const text = await response.text();
+            throw new Error('Download failed: ' + text.substring(0, 100));
+        }
+        
+        const text = await response.text();
+        const data = JSON.parse(text);
+        
+        if (data.logs) {
+            const existingIds = new Set(logs.map(l => l.id));
+            const newLogs = data.logs.filter(l => !existingIds.has(l.id));
+            logs = [...newLogs, ...logs].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 100);
+            localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
+        }
+        
+        if (data.weights) {
+            const existingDates = new Set(weights.map(w => w.d));
+            const newWeights = data.weights.filter(w => !existingDates.has(w.d));
+            weights = [...weights, ...newWeights];
+            localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
+        }
+        
+        if (data.earlyFast) {
+            localStorage.setItem(KEY_EARLY_FAST, data.earlyFast);
+            isEarlyFasting = true;
+        }
+        
+        renderLogs();
+        updateDropboxStatus();
+        
+        localStorage.setItem(KEY_LAST_SYNC, new Date().toISOString());
+        if (!silent) showSyncStatus('success', 'Restauré !');
+        
     } catch (e) {
-        console.error('Dropbox download error:', e);
-        if (!silent) showSyncStatus('error', 'Erreur de récupération');
-        return false;
+        console.error('Download error:', e);
+        if (!silent) showSyncStatus('error', 'Échec download');
     }
 }
 
 function toggleDropboxAutoSync() {
     const enabled = document.getElementById('dropbox-autosync').checked;
     localStorage.setItem(KEY_DROPBOX_AUTO, enabled ? 'true' : 'false');
-    if (enabled) {
-        showSyncStatus('success', 'Auto-sync activé');
-    }
+    if (enabled) showSyncStatus('success', 'Auto-sync ON');
 }
 
 function triggerAutoSync() {
@@ -967,7 +973,7 @@ function triggerAutoSync() {
     }
 }
 
-/* ================= GESTION DES MODES ================= */
+/* ================= RESTE DU CODE (identique) ================= */
 function setMode(mode) {
     currentMode = mode;
     localStorage.setItem(KEY_FAST_MODE, mode);
@@ -980,34 +986,27 @@ function updateModeDisplay() {
     document.getElementById('mode-manual').classList.toggle('active', currentMode === 'manual');
 }
 
-/* ================= GESTION DU JEÛNE ANTICIPÉ ================= */
 function startEarlyFast() {
-    if(!confirm("Commencer un jeûne anticipé maintenant ?\n\nCela démarrera votre jeûne immédiatement même si vous êtes dans la fenêtre alimentaire.")) return;
-    
+    if(!confirm("Commencer un jeûne anticipé maintenant ?")) return;
     const startTime = Date.now();
     localStorage.setItem(KEY_EARLY_FAST, JSON.stringify({
         start: startTime,
         originalStartHour: fastSettings.startHour,
         originalStartMinute: fastSettings.startMinute
     }));
-    
     isEarlyFasting = true;
     addLog('JEÛNE', 'Démarré anticipé (avant l\'heure)', 'primary');
     update();
     triggerAutoSync();
-    
     document.getElementById('early-fast-container').style.display = 'none';
 }
 
 function stopEarlyFast() {
     const earlyData = localStorage.getItem(KEY_EARLY_FAST);
     if (!earlyData) return;
-    
     const data = JSON.parse(earlyData);
     const duration = ((Date.now() - data.start) / 3600000).toFixed(1);
-    
     if(!confirm("Arrêter le jeûne anticipé après " + duration + " heures ?")) return;
-    
     addLog('JEÛNE', 'Terminé anticipé après ' + duration + 'h', 'primary');
     localStorage.removeItem(KEY_EARLY_FAST);
     isEarlyFasting = false;
@@ -1015,7 +1014,6 @@ function stopEarlyFast() {
     triggerAutoSync();
 }
 
-/* ================= GESTION DU BOUTON JEÛNE ================= */
 function handleFastAction() {
     if (currentMode === 'manual') {
         const isFasting = localStorage.getItem(KEY_FAST_START);
@@ -1031,7 +1029,7 @@ function handleFastAction() {
             alert('Mode automatique actif. Le jeûne démarrera à ' + 
                   String(fastSettings.startHour).padStart(2, '0') + ':' + 
                   String(fastSettings.startMinute).padStart(2, '0') + 
-                  '.\n\nUtilisez le bouton "COMMENCER LE JEÛNE MAINTENANT" pour démarrer plus tôt.');
+                  '.\n\nUtilisez "COMMENCER LE JEÛNE MAINTENANT" pour démarrer plus tôt.');
         }
     }
 }
@@ -1055,7 +1053,6 @@ function stopManualFasting() {
     triggerAutoSync();
 }
 
-/* ================= MISE À JOUR PRINCIPALE ================= */
 function update() {
     const now = new Date();
     const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
@@ -1152,10 +1149,8 @@ function updatePhaseInfo(isFasting) {
         document.getElementById('phase-txt').innerText = "Phase : Fenêtre alimentaire";
         return;
     }
-    
     let hours = 0;
     let modeText = "";
-    
     if (currentMode === 'manual') {
         const start = localStorage.getItem(KEY_FAST_START);
         if (start) hours = (Date.now() - parseInt(start)) / 3600000;
@@ -1173,7 +1168,6 @@ function updatePhaseInfo(isFasting) {
             modeText = "Auto";
         }
     }
-    
     let phase = hours < 4 ? "Digestion" : hours < 8 ? "Chute insuline" : hours < 12 ? "Cétose légère" : hours < 16 ? "Cétose profonde" : "Autophagie max";
     document.getElementById('phase-txt').innerText = "Phase : " + phase + " (" + Math.floor(hours) + "h) - " + modeText;
 }
@@ -1193,7 +1187,6 @@ function updateFastSettings() {
     update();
 }
 
-/* ================= SOMMEIL ================= */
 function toggleSleep() {
     const start = localStorage.getItem(KEY_SLEEP_START);
     if(!start) {
@@ -1225,7 +1218,6 @@ function saveManualSleep() {
     triggerAutoSync();
 }
 
-/* ================= JOURNAL ================= */
 function addLog(type, desc, color) {
     logs.unshift({ type, desc, color, date: new Date().toISOString(), id: Date.now() });
     if (logs.length > 100) logs = logs.slice(0, 100);
@@ -1243,7 +1235,6 @@ function renderLogs() {
     document.getElementById('full-logs').innerHTML = html || '<div class="empty-state">Aucun historique</div>';
 }
 
-/* ================= POIDS ================= */
 function saveWeight() {
     const v = parseFloat(document.getElementById('w-input').value);
     if(!v || v < 30 || v > 300) return alert('Poids invalide');
@@ -1303,7 +1294,6 @@ function renderChart() {
     });
 }
 
-/* ================= NAVIGATION & DRAWERS ================= */
 function switchTab(tab) {
     document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
     document.getElementById('view-' + tab).classList.add('active');
@@ -1324,7 +1314,6 @@ function openDrawer(id) {
     }
     if (id === 'cloud') {
         updateDropboxStatus();
-        // Reset error message
         const errorDiv = document.getElementById('dropbox-error');
         if (errorDiv) errorDiv.style.display = 'none';
     }
@@ -1335,7 +1324,6 @@ function closeDrawers() {
     document.getElementById('overlay').classList.remove('active');
 }
 
-/* ================= EXPORT/IMPORT CSV ================= */
 function exportCSV() {
     let csv = "date,type,valeur,notes\n";
     
@@ -1534,7 +1522,6 @@ function showSyncStatus(type, message) {
     }
 }
 
-/* ================= RESET ================= */
 function clearAllData() {
     if(!confirm('⚠️ Effacer TOUTES les données ?')) return;
     if(!confirm('Confirmation finale ?')) return;
