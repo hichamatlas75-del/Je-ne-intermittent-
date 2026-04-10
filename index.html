@@ -143,6 +143,7 @@
             color: var(--accent-success);
         }
 
+        /* Info début de jeûne avec bouton édit */
         .fast-start-info {
             background: linear-gradient(135deg, rgba(212, 165, 116, 0.1), rgba(139, 115, 85, 0.05));
             padding: 12px 16px;
@@ -297,49 +298,39 @@
 
         .phase-indicator {
             background: var(--bg-primary);
-            padding: 16px;
-            border-radius: 20px;
+            padding: 12px 16px;
+            border-radius: 16px;
             display: flex;
-            align-items: flex-start;
+            align-items: center;
             gap: 12px;
             text-align: left;
             margin-top: 16px;
-            min-height: 120px;
         }
         
         .phase-icon {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 14px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             background: white;
             box-shadow: var(--shadow-soft);
             flex-shrink: 0;
-            margin-top: 2px;
-        }
-        
-        .phase-info {
-            flex: 1;
         }
         
         .phase-info h4 {
-            margin: 0 0 8px 0;
-            font-size: 1rem;
+            margin: 0 0 2px 0;
+            font-size: 0.9rem;
             font-weight: 700;
         }
         
         .phase-info p {
             margin: 0;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: var(--text-secondary);
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 10;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            line-height: 1.3;
         }
 
         .mode-selector { 
@@ -844,6 +835,7 @@
             display: none;
         }
         
+        /* Drawer ajustement heure */
         .adjust-info {
             background: var(--bg-primary);
             padding: 16px;
@@ -872,6 +864,7 @@
     </div>
 
     <div class="app-view active" id="view-main">
+        <!-- Check-in Matinal -->
         <div id="checkin-card" class="checkin-card" style="display: none;">
             <div class="checkin-header">
                 <div class="checkin-icon">🌅</div>
@@ -900,6 +893,7 @@
                 <button class="mode-btn" id="mode-manual" onclick="setMode('manual')">👤 Manuel</button>
             </div>
 
+            <!-- Info début de jeûne avec bouton édit -->
             <div class="fast-start-info" id="fast-start-info" style="display: none;">
                 <span class="label">Début du jeûne</span>
                 <span class="value">
@@ -924,7 +918,7 @@
                 <div class="phase-icon" id="phase-icon">🍽️</div>
                 <div class="phase-info">
                     <h4 id="phase-title">Fenêtre alimentaire</h4>
-                    <p id="phase-desc">Votre corps est en phase d'absorption des nutriments. Profitez de vos repas équilibrés riches en protéines, fibres et bonnes graisses. C'est le moment de nourrir vos cellules et de stocker l'énergie nécessaire pour le jeûne à venir. Hydratez-vous bien avec de l'eau, du thé ou du café noir. Évitez les sucres raffinés qui provoqueront des pics d'insuline. Concentrez-vous sur des aliments complets et non transformés. Cette fenêtre alimentaire est cruciale pour le succès de votre jeûne. Mangez lentement et en pleine conscience. Votre métabolisme travaille activement à la digestion et à l'assimilation. Préparez votre corps aux heures de jeûne qui suivent.</p>
+                    <p id="phase-desc">Profitez de vos repas nutritifs</p>
                 </div>
             </div>
 
@@ -932,6 +926,7 @@
                 <button class="btn-primary btn-early" onclick="startEarlyFast()">⚡ Commencer maintenant</button>
             </div>
             
+            <!-- Bouton ajuster visible uniquement en jeûne auto -->
             <div id="adjust-container" style="display:none; text-align: center;">
                 <button class="btn-primary btn-adjust" onclick="openAdjustTimeDrawer()">🕐 Ajuster l'heure de début</button>
             </div>
@@ -1031,6 +1026,7 @@
     <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
     <div class="sync-indicator" id="sync-indicator"><span id="sync-icon">🔄</span><span id="sync-text">...</span></div>
 
+    <!-- Drawers -->
     <div class="drawer" id="drawer-poids">
         <div class="handle" onclick="closeDrawers()"></div>
         <h3 style="margin: 0 0 16px 0; font-size: 1.2rem;">Nouvelle pesée</h3>
@@ -1049,6 +1045,7 @@
         <button class="btn-full bg-green" onclick="saveManualSleep()">Valider</button>
     </div>
 
+    <!-- Drawer ajustement heure de jeûne -->
     <div class="drawer" id="drawer-adjust">
         <div class="handle" onclick="closeDrawers()"></div>
         <h3 style="margin: 0 0 16px 0; font-size: 1.2rem;">Ajuster l'heure</h3>
@@ -1119,9 +1116,11 @@
 </div>
 
 <script>
+// Configuration
 const DROPBOX_CLIENT_ID = 'hey2nvnz07mjq05';
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 
+// Clés stockage
 const KEY_LOGS = 'HICHAM_LOGS_v3';
 const KEY_WEIGHTS = 'HICHAM_WEIGHTS_v3';
 const KEY_SETTINGS = 'HICHAM_SETTINGS_v3';
@@ -1137,6 +1136,7 @@ const DB_REFRESH = 'DB_REFRESH_v3';
 const DB_EXPIRES = 'DB_EXPIRES_v3';
 const DB_AUTO = 'DB_AUTO_v3';
 
+// Données
 let logs = [], weights = [], settings = { startHour: 20, startMinute: 0, duration: 16, fastType: 16 };
 let currentMode = 'auto', isEarly = false, chart = null;
 let dbToken = null, dbRefresh = null, dbExpires = 0;
@@ -1144,61 +1144,41 @@ let fastStartTime = null;
 let updateInterval = null;
 let isInitialized = false;
 
-// PHASES AVEC DESCRIPTIONS DÉTAILLÉES (10 LIGNES CHACUNE)
 const PHASES = {
-    0: { 
-        icon: '🍽️', 
-        title: 'Fenêtre Alimentaire', 
-        desc: 'Votre corps est en phase d\'absorption des nutriments. Profitez de vos repas équilibrés riches en protéines, fibres et bonnes graisses. C\'est le moment de nourrir vos cellules et de stocker l\'énergie nécessaire pour le jeûne à venir. Hydratez-vous bien avec de l\'eau, du thé ou du café noir. Évitez les sucres raffinés qui provoqueront des pics d\'insuline. Concentrez-vous sur des aliments complets et non transformés. Cette fenêtre alimentaire est cruciale pour le succès de votre jeûne. Mangez lentement et en pleine conscience. Votre métabolisme travaille activement à la digestion et à l\'assimilation. Préparez votre corps aux heures de jeûne qui suivent.', 
-        class: '' 
-    },
-    1: { 
-        icon: '🔄', 
-        title: 'Phase Digestive', 
-        desc: 'Votre corps travaille activement à digérer les derniers repas consommés. L\'énergie se concentre dans votre système digestif pour assimiler les nutriments essentiels. Vous pouvez ressentir une légère somnolence due à l\'effort digestif accru pendant cette période. C\'est une phase naturelle où le métabolisme est encore alimenté par les sucres sanguins récents. Vos niveaux d\'insuline restent élevés pendant cette période post-prandiale importante. Le foie commence à stocker le glucose sous forme de glycogène pour les heures à venir. Buvez beaucoup d\'eau pour aider votre corps à éliminer les déchets métaboliques naturellement. Évitez toute activité physique intense qui pourrait perturber la digestion en cours. Votre température corporelle peut légèrement augmenter pendant ce processus. Laissez votre corps faire son travail sans ajouter de nouvelles calories à digérer.', 
-        class: 'phase-digest' 
-    },
-    2: { 
-        icon: '📉', 
-        title: 'Chute d\'Insuline', 
-        desc: 'Votre taux d\'insuline commence à baisser significativement et de manière notable. Le corps passe progressivement en mode combustion des graisses stockées. Le glycogène hépatique s\'épuise lentement pour maintenir la glycémie stable. Vous pouvez ressentir une légère faim ou des fringales passagères qui disparaîtront vite. L\'énergie cérébrale reste assurée par le glucose encore disponible dans le sang. C\'est la phase où le métabolisme bascule vers la lipolyse et la mobilisation des graisses. Buvez beaucoup d\'eau pour calmer la sensation de faim et rester bien hydraté. Le café ou le thé vert peuvent aider à accélérer ce processus métabolique naturel. Votre corps apprend à puiser dans ses réserves énergétiques profondes. Restez occupé mentalement pour ne pas penser constamment à la nourriture.', 
-        class: 'phase-fat' 
-    },
-    3: { 
-        icon: '🔥', 
-        title: 'Cétose Nutritionnelle', 
-        desc: 'Vous entrez en cétose nutritionnelle et douce de manière progressive et efficace. Votre foie produit activement des corps cétoniques à partir des graisses mobilisées. Le cerveau commence à utiliser les cétones comme carburant alternatif de qualité supérieure. Vous pouvez ressentir une clarté mentale accrue et une meilleure concentration cognitive. La faim devient moins pressante et beaucoup plus gérable au quotidien. Votre corps brûle désormais les graisses de manière optimale et continue. L\'énergie globale se stabilise et les pics de fatigue diminuent sensiblement. C\'est la phase idéale pour la productivité intellectuelle et le travail créatif. Les inflammations chroniques commencent à réduire dans tout l\'organisme. Continuez à vous hydrater abondamment pour faciliter l\'élimination des cétones.', 
-        class: 'phase-ketosis' 
-    },
-    4: { 
-        icon: '✨', 
-        title: 'Autophagie Cellulaire', 
-        desc: 'Vous atteignez la phase d\'autophagie cellulaire profonde et régénérante. Vos cellules recyclent méthodiquement leurs composants défectueux et vieillissants naturellement. Ce processus nettoie les protéines mal repliées et les organites endommagés du métabolisme. Votre système immunitaire se régénère activement et se renforce considérablement. La production d\'hormone de croissance augmente naturellement et significativement. Les marqueurs inflammatoires diminuent de manière notable dans tout votre corps. Vous pouvez ressentir une euphorie naturelle ou une légère fatigue selon votre adaptation. C\'est la phase la plus bénéfique pour la longévité cellulaire et la santé globale. Les processus de réparation de l\'ADN s\'activent et se multiplient efficacement. Votre corps fonctionne désormais en mode optimal de régénération et de détoxification profonde.', 
-        class: 'phase-autophagy' 
-    }
+    0: { icon: '🍽️', title: 'Fenêtre alimentaire', desc: 'Profitez de vos repas nutritifs', class: '' },
+    1: { icon: '🔄', title: 'Digestion', desc: 'Votre corps traite les nutriments', class: 'phase-digest' },
+    2: { icon: '📉', title: 'Chute insuline', desc: 'Le corps passe en mode brûlage', class: 'phase-fat' },
+    3: { icon: '🔥', title: 'Cétose', desc: 'Brûlage optimal des graisses', class: 'phase-ketosis' },
+    4: { icon: '✨', title: 'Autophagie', desc: 'Régénération cellulaire', class: 'phase-autophagy' }
 };
 
+// Safe JSON parse
 function safeJSONParse(str, defaultVal) {
     try {
         return JSON.parse(str) || defaultVal;
     } catch (e) {
+        console.warn('JSON parse error:', e);
         return defaultVal;
     }
 }
 
+// Safe localStorage get
 function safeGetItem(key, defaultVal = null) {
     try {
         return localStorage.getItem(key) || defaultVal;
     } catch (e) {
+        console.warn('localStorage error:', e);
         return defaultVal;
     }
 }
 
+// Safe localStorage set
 function safeSetItem(key, value) {
     try {
         localStorage.setItem(key, value);
         return true;
     } catch (e) {
+        console.warn('localStorage set error:', e);
         if (e.name === 'QuotaExceededError') {
             alert('Stockage plein. Videz l\'historique ou synchronisez avec Dropbox.');
         }
@@ -1206,22 +1186,34 @@ function safeSetItem(key, value) {
     }
 }
 
+// Validation des données chargées
 function validateLogEntry(entry) {
-    return entry && typeof entry === 'object' && entry.type && entry.date && !isNaN(new Date(entry.date).getTime());
+    return entry && 
+           typeof entry === 'object' && 
+           entry.type && 
+           entry.date && 
+           !isNaN(new Date(entry.date).getTime());
 }
 
 function validateWeightEntry(entry) {
-    return entry && typeof entry === 'object' && typeof entry.v === 'number' && entry.d && !isNaN(new Date(entry.d).getTime());
+    return entry && 
+           typeof entry === 'object' && 
+           typeof entry.v === 'number' && 
+           entry.d && 
+           !isNaN(new Date(entry.d).getTime());
 }
 
+// Initialisation
 function init() {
     if (isInitialized) return;
     isInitialized = true;
 
+    // Chargement local avec validation
     logs = safeJSONParse(safeGetItem(KEY_LOGS), []).filter(validateLogEntry);
     weights = safeJSONParse(safeGetItem(KEY_WEIGHTS), []).filter(validateWeightEntry);
     settings = { ...settings, ...safeJSONParse(safeGetItem(KEY_SETTINGS), {}) };
     
+    // Validation des settings
     if (typeof settings.startHour !== 'number' || settings.startHour < 0 || settings.startHour > 23) settings.startHour = 20;
     if (typeof settings.startMinute !== 'number' || settings.startMinute < 0 || settings.startMinute > 59) settings.startMinute = 0;
     if (typeof settings.duration !== 'number' || settings.duration < 12 || settings.duration > 23) settings.duration = 16;
@@ -1232,11 +1224,14 @@ function init() {
     dbRefresh = safeGetItem(DB_REFRESH);
     dbExpires = parseInt(safeGetItem(DB_EXPIRES, '0')) || 0;
 
+    // Vérifier jeûne en cours
     checkFastStatus();
     
+    // Interface
     const timeInput = document.getElementById('fast-start-time');
     if (timeInput) {
-        timeInput.value = String(settings.startHour).padStart(2, '0') + ':' + String(settings.startMinute).padStart(2, '0');
+        timeInput.value = String(settings.startHour).padStart(2, '0') + ':' + 
+                         String(settings.startMinute).padStart(2, '0');
     }
     
     const durationInput = document.getElementById('fast-duration');
@@ -1246,27 +1241,35 @@ function init() {
     
     updateFastTypeUI();
 
+    // Check-in
     checkMorningCheckin();
+    
+    // OAuth
     handleOAuthReturn();
 
+    // Premier render avant sync
     updateMode();
     updateCloudUI();
     renderLogs();
     updateGreeting();
     update();
 
+    // Timer - nettoyage préventif
     if (updateInterval) clearInterval(updateInterval);
     updateInterval = setInterval(update, 1000);
 
+    // Sync auto si connecté
     if (dbToken && safeGetItem(DB_AUTO) === 'true') {
         setTimeout(() => syncFromDropbox(true), 1500);
     }
 
+    // Gestion du beforeunload pour nettoyer
     window.addEventListener('beforeunload', () => {
         if (updateInterval) clearInterval(updateInterval);
     });
 }
 
+// Vérifier statut du jeûne - CORRIGÉ
 function checkFastStatus() {
     const early = safeGetItem(KEY_EARLY);
     const manual = safeGetItem(KEY_FAST_START);
@@ -1287,16 +1290,23 @@ function checkFastStatus() {
                     isEarly = true;
                     fastStartTime = startTime;
                 } else if (hoursElapsed >= settings.duration) {
+                    // Jeûne terminé, nettoyer
                     safeSetItem(KEY_EARLY, '');
                 }
             }
         } catch (e) {
+            console.error('Error parsing early fast:', e);
             safeSetItem(KEY_EARLY, '');
         }
     } else if (manual) {
         const manualTime = parseInt(manual);
         if (!isNaN(manualTime)) {
             fastStartTime = new Date(manualTime);
+            // Vérifier si le jeûne manuel n'a pas dépassé la durée
+            const hoursElapsed = (Date.now() - manualTime) / 3600000;
+            if (hoursElapsed >= settings.duration) {
+                // Jeûne terminé mais on garde l'info pour l'affichage
+            }
         }
     } else if (adjusted) {
         try {
@@ -1313,10 +1323,12 @@ function checkFastStatus() {
             safeSetItem(KEY_ADJUSTED_START, '');
         }
     } else {
+        // Mode auto standard - calculer prochain début
         const now = new Date();
         const target = new Date(now);
         target.setHours(settings.startHour, settings.startMinute, 0, 0);
         
+        // Si déjà passé aujourd'hui, c'est pour demain
         if (target <= now) {
             target.setDate(target.getDate() + 1);
         }
@@ -1324,6 +1336,7 @@ function checkFastStatus() {
     }
 }
 
+// Check-in matinal
 function checkMorningCheckin() {
     const lastVisit = safeGetItem(KEY_LAST_VISIT);
     const today = new Date().toDateString();
@@ -1383,6 +1396,7 @@ function updateGreeting() {
     if (greetingSub) greetingSub.textContent = sub;
 }
 
+// Mise à jour du timer - CORRIGÉ
 function update() {
     const now = new Date();
     const h = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
@@ -1397,6 +1411,7 @@ function update() {
     const durationSeconds = settings.duration * 3600;
     
     try {
+        // Calcul selon le mode
         if (currentMode === 'manual') {
             const start = safeGetItem(KEY_FAST_START);
             if (start) {
@@ -1412,10 +1427,12 @@ function update() {
                 }
             }
         } else {
+            // Mode auto avec possibilité d'ajustement
             const early = safeGetItem(KEY_EARLY);
             const adjusted = safeGetItem(KEY_ADJUSTED_START);
             
             if (early) {
+                // Jeûne anticipé prioritaire
                 const d = safeJSONParse(early, null);
                 if (d && d.start) {
                     const startTime = d.start;
@@ -1429,6 +1446,7 @@ function update() {
                     isEarly = true;
                 }
             } else if (adjusted) {
+                // Heure ajustée manuellement
                 const adjustedTime = new Date(adjusted).getTime();
                 if (!isNaN(adjustedTime)) {
                     const elapsedMs = Date.now() - adjustedTime;
@@ -1443,11 +1461,13 @@ function update() {
                         }
                         isAdjusted = true;
                     } else if (elapsed >= durationSeconds) {
+                        // Jeûne terminé, nettoyer l'ajustement
                         safeSetItem(KEY_ADJUSTED_START, '');
                         fasting = false;
                     }
                 }
             } else {
+                // Mode auto standard
                 const fs = settings.startHour * 3600 + settings.startMinute * 60;
                 const fe = (fs + durationSeconds) % 86400;
                 const ts = h * 3600 + m * 60 + s;
@@ -1475,6 +1495,7 @@ function update() {
             }
         }
         
+        // Déterminer phase
         if (!fasting) phase = 0;
         else {
             const hoursElapsed = elapsed / 3600;
@@ -1484,6 +1505,7 @@ function update() {
             else phase = 4;
         }
         
+        // Mise à jour UI
         const badge = document.getElementById('fast-badge');
         const startInfo = document.getElementById('fast-start-info');
         const startDisplay = document.getElementById('fast-start-time-display');
@@ -1495,6 +1517,7 @@ function update() {
             badge.innerText = fasting ? 'Jeûne en cours' : 'Fenêtre repas';
         }
         
+        // Afficher/masquer info début de jeûne et bouton ajuster
         if (startInfo) {
             if (fasting && fastStartTime) {
                 startInfo.style.display = 'flex';
@@ -1507,21 +1530,25 @@ function update() {
         }
         
         if (adjustContainer) {
+            // Afficher bouton ajuster uniquement en mode auto (pas early)
             adjustContainer.style.display = (fasting && currentMode === 'auto' && !isEarly) ? 'block' : 'none';
         }
         
+        // Cercle
         if (ring) {
             const circumference = 2 * Math.PI * 90;
             ring.style.strokeDashoffset = circumference - (progress * circumference);
             ring.className = `ring-fill ${PHASES[phase].class}`;
         }
         
+        // Textes
         const countdown = document.getElementById('countdown');
         const timerLabel = document.getElementById('timer-label');
         
         if (countdown) countdown.innerText = formatTime(Math.abs(remaining));
         if (timerLabel) timerLabel.innerText = fasting ? 'Temps restant' : 'Prochain jeûne dans';
         
+        // Phase
         const phaseIcon = document.getElementById('phase-icon');
         const phaseTitle = document.getElementById('phase-title');
         const phaseDesc = document.getElementById('phase-desc');
@@ -1534,6 +1561,7 @@ function update() {
                 phaseData.desc + ' (heure ajustée)' : phaseData.desc;
         }
         
+        // Bouton principal
         const btn = document.getElementById('fast-action-btn');
         if (btn) {
             if (currentMode === 'manual') {
@@ -1548,6 +1576,7 @@ function update() {
             }
         }
         
+        // Early start (uniquement si pas déjà en jeûne)
         const earlyContainer = document.getElementById('early-fast-container');
         if (earlyContainer) {
             const showEarly = currentMode === 'auto' && !fasting && !isEarly && !isAdjusted;
@@ -1567,12 +1596,14 @@ function formatTime(s) {
     return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':' + String(sec).padStart(2, '0');
 }
 
+// Drawer ajustement heure - CORRIGÉ
 function openAdjustTimeDrawer() {
     const drawer = document.getElementById('drawer-adjust');
     const overlay = document.getElementById('overlay');
     
     if (!drawer || !overlay) return;
     
+    // Pré-remplir avec l'heure actuelle de début
     const now = new Date();
     let defaultTime, defaultDate;
     
@@ -1610,28 +1641,34 @@ function saveAdjustedTime() {
         return;
     }
     
+    // Créer la date de début ajustée
     const adjustedDate = new Date(dateVal + 'T' + timeVal);
     
+    // Vérifier que la date est valide
     if (isNaN(adjustedDate.getTime())) {
         alert('Date invalide');
         return;
     }
     
+    // Vérifier que c'est dans le passé (comparaison CORRIGÉE - both timestamps)
     const now = new Date();
     if (adjustedDate.getTime() > now.getTime()) {
         alert('L\'heure de début doit être dans le passé');
         return;
     }
     
+    // Vérifier que ça ne dépasse pas la durée du jeûne
     const hoursElapsed = (now.getTime() - adjustedDate.getTime()) / 3600000;
     if (hoursElapsed > settings.duration) {
         alert(`Ce jeûne dépasserait déjà ${settings.duration}h. Vérifiez l'heure.`);
         return;
     }
     
+    // Sauvegarder l'ajustement
     safeSetItem(KEY_ADJUSTED_START, adjustedDate.toISOString());
     fastStartTime = adjustedDate;
     
+    // Log l'ajustement
     const timeStr = adjustedDate.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     addLog('AJUSTEMENT', `Heure de début: ${timeStr}`, 'adjust');
     
@@ -1641,6 +1678,7 @@ function saveAdjustedTime() {
     if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
+// Actions
 function setMode(m) {
     currentMode = m;
     safeSetItem(KEY_MODE, m);
@@ -1698,6 +1736,7 @@ function handleFastAction() {
     }
 }
 
+// Sommeil - CORRIGÉ
 function toggleSleep() {
     const s = safeGetItem(KEY_SLEEP_START);
     const btn = document.getElementById('sleep-btn');
@@ -1757,13 +1796,14 @@ function saveManualSleep() {
     if (safeGetItem(DB_AUTO) === 'true') setTimeout(syncToDropbox, 1500);
 }
 
+// Logs - CORRIGÉ
 function addLog(type, desc, color) {
     const entry = {
         type, 
         desc, 
         color,
         date: new Date().toISOString(),
-        id: Date.now() + Math.random().toString(36).substr(2, 9)
+        id: Date.now() + Math.random().toString(36).substr(2, 9) // ID plus unique
     };
     
     logs.unshift(entry);
@@ -1807,6 +1847,7 @@ function renderLogs() {
         </div>
     `;
     
+    // Échappement HTML pour éviter XSS
     function escapeHtml(text) {
         if (!text) return '';
         const div = document.createElement('div');
@@ -1814,6 +1855,7 @@ function renderLogs() {
         return div.innerHTML;
     }
     
+    // Logs récents (aujourd'hui uniquement)
     const recentContainer = document.getElementById('recent-logs');
     if (recentContainer) {
         const todayLogs = logs.filter(l => {
@@ -1835,6 +1877,7 @@ function renderLogs() {
         }
     }
     
+    // Tous les logs
     const fullContainer = document.getElementById('full-logs');
     if (fullContainer) {
         if (logs.length === 0) {
@@ -1849,6 +1892,7 @@ function renderLogs() {
     }
 }
 
+// Poids - CORRIGÉ
 function saveWeight() {
     const input = document.getElementById('w-input');
     if (!input) return;
@@ -1880,6 +1924,7 @@ function renderChart() {
     const cvs = document.getElementById('weightChart');
     if (!cvs) return;
     
+    // Vérifier que Chart.js est chargé
     if (typeof Chart === 'undefined') {
         cvs.parentElement.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📊</div><p>Chargement du graphique...</p></div>';
         return;
@@ -1910,6 +1955,7 @@ function renderChart() {
             return;
         }
         
+        // Recréer le canvas si nécessaire (si innerHTML a été écrasé avant)
         if (!document.getElementById('weightChart')) {
             const container = document.querySelector('.chart-container');
             if (container) {
@@ -2000,6 +2046,7 @@ function updateFastSettings() {
     update();
 }
 
+// Navigation
 function switchTab(tab) {
     const views = ['main', 'stats', 'history'];
     
@@ -2012,10 +2059,12 @@ function switchTab(tab) {
     });
     
     if (tab === 'stats') {
+        // Attendre que le DOM soit prêt
         setTimeout(() => {
             if (typeof Chart !== 'undefined') {
                 renderChart();
             } else {
+                // Retry après chargement de Chart.js
                 setTimeout(renderChart, 1000);
             }
         }, 100);
@@ -2035,7 +2084,11 @@ function openDrawer(id) {
         
         if (sleepIn && sleepOut) {
             const n = new Date(), y = new Date(n.getTime() - 86400000);
-            const f = d => d.toISOString().slice(0, 16);
+            const f = d => {
+                // Format datetime-local: YYYY-MM-DDTHH:mm
+                const iso = d.toISOString();
+                return iso.slice(0, 16);
+            };
             sleepIn.value = f(y);
             sleepOut.value = f(n);
         }
@@ -2072,6 +2125,8 @@ function showStatus(type, msg) {
         setTimeout(() => ind.classList.remove('show'), 2500);
     }
 }
+
+// ========== DROPBOX SYNC - CORRIGÉ ==========
 
 async function startOAuth() {
     try {
@@ -2129,6 +2184,7 @@ async function handleOAuthReturn() {
         
         if (error) {
             showStatus('error', 'Connexion annulée: ' + error);
+            // Nettoyer l'URL sans recharger
             window.history.replaceState({}, document.title, window.location.pathname);
             return;
         }
@@ -2141,6 +2197,7 @@ async function handleOAuthReturn() {
             return;
         }
         
+        // Nettoyer les params OAuth de l'URL immédiatement
         window.history.replaceState({}, document.title, window.location.pathname);
         
         const verifier = localStorage.getItem('oauth_verifier');
@@ -2175,6 +2232,7 @@ async function handleOAuthReturn() {
             throw new Error(data.error_description || 'Erreur d\'authentification');
         }
         
+        // Nettoyer le localStorage OAuth
         localStorage.removeItem('oauth_verifier');
         localStorage.removeItem('oauth_state');
         
@@ -2314,10 +2372,12 @@ async function syncFromDropbox(silent = false) {
         
         console.log('Données reçues:', data);
         
+        // Validation des données reçues
         if (!data || typeof data !== 'object') {
             throw new Error('Format invalide');
         }
         
+        // Merge logs avec validation
         if (data.logs && Array.isArray(data.logs)) {
             const validLogs = data.logs.filter(validateLogEntry);
             const existingIds = new Set(logs.map(l => l.id));
@@ -2331,6 +2391,7 @@ async function syncFromDropbox(silent = false) {
             }
         }
         
+        // Merge poids avec validation
         if (data.weights && Array.isArray(data.weights)) {
             const validWeights = data.weights.filter(validateWeightEntry);
             const existingDates = new Set(weights.map(w => w.d));
@@ -2343,14 +2404,17 @@ async function syncFromDropbox(silent = false) {
             }
         }
         
+        // Restaurer settings avec validation
         if (data.settings && typeof data.settings === 'object') {
             const newSettings = { ...settings, ...data.settings };
+            // Validation
             if (typeof newSettings.startHour === 'number' && newSettings.startHour >= 0 && newSettings.startHour <= 23 &&
                 typeof newSettings.startMinute === 'number' && newSettings.startMinute >= 0 && newSettings.startMinute <= 59 &&
                 typeof newSettings.duration === 'number' && newSettings.duration >= 12 && newSettings.duration <= 23) {
                 settings = newSettings;
                 safeSetItem(KEY_SETTINGS, JSON.stringify(settings));
                 
+                // Mettre à jour les inputs
                 const timeInput = document.getElementById('fast-start-time');
                 const durationInput = document.getElementById('fast-duration');
                 if (timeInput) timeInput.value = String(settings.startHour).padStart(2, '0') + ':' + String(settings.startMinute).padStart(2, '0');
@@ -2359,6 +2423,7 @@ async function syncFromDropbox(silent = false) {
             }
         }
         
+        // Restaurer état
         if (data.early) safeSetItem(KEY_EARLY, data.early);
         if (data.adjustedStart) safeSetItem(KEY_ADJUSTED_START, data.adjustedStart);
         if (data.fastStart) safeSetItem(KEY_FAST_START, data.fastStart);
@@ -2368,6 +2433,7 @@ async function syncFromDropbox(silent = false) {
             updateMode();
         }
         
+        // Refresh UI
         checkFastStatus();
         renderLogs();
         update();
@@ -2487,6 +2553,7 @@ function toggleAuto() {
     }
 }
 
+// Démarrage sécurisé
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
