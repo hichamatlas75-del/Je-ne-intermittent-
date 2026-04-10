@@ -63,6 +63,18 @@
         }
         .btn-start:active { transform: scale(0.95); }
 
+        .btn-early {
+            background: linear-gradient(135deg, var(--primary), #27ae60);
+            color: white; border: none; padding: 10px 20px; 
+            border-radius: 12px; font-weight: 700; cursor: pointer; position: relative; z-index: 20;
+            transition: transform 0.2s, opacity 0.2s;
+            font-size: 0.85rem;
+            margin-top: 10px;
+            box-shadow: 0 4px 15px rgba(46, 204, 113, 0.3);
+        }
+        .btn-early:active { transform: scale(0.95); }
+        .btn-early:hover { opacity: 0.9; }
+
         .mode-selector {
             background: rgba(255,255,255,0.05);
             padding: 10px;
@@ -281,6 +293,17 @@
             text-align: center;
             margin-top: 10px;
         }
+
+        .early-fast-info {
+            background: rgba(46, 204, 113, 0.1);
+            border: 1px solid var(--primary);
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.75rem;
+            display: none;
+        }
+        .early-fast-info.show { display: block; }
     </style>
 </head>
 <body>
@@ -315,6 +338,16 @@
             </div>
             <p id="phase-txt" style="margin-top:15px; font-size:0.8rem; color:#94a3b8; font-weight:700;">Phase : Analyse...</p>
             <p id="fast-info" style="margin-top:5px; font-size:0.7rem; color:#64748b;"></p>
+            
+            <!-- Bouton jeûne anticipé (visible uniquement en mode auto pendant fenêtre repas) -->
+            <div id="early-fast-container" style="display:none;">
+                <button class="btn-early" onclick="startEarlyFast()">
+                    ⚡ COMMENCER LE JEÛNE MAINTENANT
+                </button>
+                <div class="early-fast-info" id="early-fast-info">
+                    Vous êtes en fenêtre alimentaire mais vous pouvez commencer le jeûne manuellement.
+                </div>
+            </div>
         </div>
 
         <div class="sleep-card">
@@ -507,6 +540,7 @@ const KEY_FAST_SETTINGS = 'HICHAM_V3_FAST_SETTINGS';
 const KEY_FAST_MODE = 'HICHAM_V3_FAST_MODE';
 const KEY_CLOUD_CONFIG = 'HICHAM_V3_CLOUD_CONFIG';
 const KEY_LAST_SYNC = 'HICHAM_V3_LAST_SYNC';
+const KEY_EARLY_FAST = 'HICHAM_V3_EARLY_FAST'; // Nouveau: pour suivre le jeûne anticipé
 
 const DEFAULT_FAST_SETTINGS = {
     startHour: 16,
@@ -521,6 +555,7 @@ let chartInstance = null;
 let currentMode = 'auto';
 let cloudConfig = null;
 let selectedProvider = null;
+let isEarlyFasting = false; // État du jeûne anticipé
 
 /* ================= INITIALISATION ================= */
 function init() {
@@ -530,6 +565,19 @@ function init() {
         fastSettings = JSON.parse(localStorage.getItem(KEY_FAST_SETTINGS)) || DEFAULT_FAST_SETTINGS;
         currentMode = localStorage.getItem(KEY_FAST_MODE) || 'auto';
         cloudConfig = JSON.parse(localStorage.getItem(KEY_CLOUD_CONFIG));
+        
+        // Vérifier si un jeûne anticipé est en cours
+        const earlyFastData = localStorage.getItem(KEY_EARLY_FAST);
+        if (earlyFastData) {
+            const data = JSON.parse(earlyFastData);
+            // Vérifier si le jeûne anticipé est encore valide (pas expiré)
+            const elapsed = (Date.now() - data.start) / 3600000;
+            if (elapsed < fastSettings.duration) {
+                isEarlyFasting = true;
+            } else {
+                localStorage.removeItem(KEY_EARLY_FAST);
+            }
+        }
     } catch (e) {
         console.error('Erreur chargement:', e);
         logs = [];
@@ -566,6 +614,42 @@ function updateModeDisplay() {
     document.getElementById('mode-manual').classList.toggle('active', currentMode === 'manual');
 }
 
+/* ================= GESTION DU JEÛNE ANTICIPÉ ================= */
+function startEarlyFast() {
+    if(!confirm("Commencer un jeûne anticipé maintenant ?\n\nCela démarrera votre jeûne immédiatement même si vous êtes dans la fenêtre alimentaire.")) return;
+    
+    const startTime = Date.now();
+    localStorage.setItem(KEY_EARLY_FAST, JSON.stringify({
+        start: startTime,
+        originalStartHour: fastSettings.startHour,
+        originalStartMinute: fastSettings.startMinute
+    }));
+    
+    isEarlyFasting = true;
+    addLog('JEÛNE', 'Démarré anticipé (avant l\'heure)', 'primary');
+    update();
+    triggerAutoSync();
+    
+    // Cacher le bouton après démarrage
+    document.getElementById('early-fast-container').style.display = 'none';
+}
+
+function stopEarlyFast() {
+    const earlyData = localStorage.getItem(KEY_EARLY_FAST);
+    if (!earlyData) return;
+    
+    const data = JSON.parse(earlyData);
+    const duration = ((Date.now() - data.start) / 3600000).toFixed(1);
+    
+    if(!confirm("Arrêter le jeûne anticipé après " + duration + " heures ?")) return;
+    
+    addLog('JEÛNE', 'Terminé anticipé après ' + duration + 'h', 'primary');
+    localStorage.removeItem(KEY_EARLY_FAST);
+    isEarlyFasting = false;
+    update();
+    triggerAutoSync();
+}
+
 /* ================= GESTION DU BOUTON JEÛNE ================= */
 function handleFastAction() {
     if (currentMode === 'manual') {
@@ -576,14 +660,23 @@ function handleFastAction() {
             startManualFasting();
         }
     } else {
-        alert('En mode Auto, le jeûne suit l\'horaire défini dans les paramètres.');
+        // Mode auto - si jeûne anticipé actif, proposer de l'arrêter
+        if (isEarlyFasting) {
+            stopEarlyFast();
+        } else {
+            // Sinon, ne rien faire ou informer
+            alert('Mode automatique actif. Le jeûne démarrera à ' + 
+                  String(fastSettings.startHour).padStart(2, '0') + ':' + 
+                  String(fastSettings.startMinute).padStart(2, '0') + 
+                  '.\n\nUtilisez le bouton "COMMENCER LE JEÛNE MAINTENANT" pour démarrer plus tôt.');
+        }
     }
 }
 
 function startManualFasting() {
     if(!confirm("Démarrer un jeûne maintenant ?")) return;
     localStorage.setItem(KEY_FAST_START, Date.now());
-    addLog('JEUNE', 'Démarré manuellement', 'primary');
+    addLog('JEÛNE', 'Démarré manuellement', 'primary');
     update();
     triggerAutoSync();
 }
@@ -593,7 +686,7 @@ function stopManualFasting() {
     if (!start) return;
     const duration = ((Date.now() - parseInt(start)) / 3600000).toFixed(1);
     if(!confirm("Arrêter le jeûne après " + duration + " heures ?")) return;
-    addLog('JEUNE', 'Terminé après ' + duration + 'h', 'primary');
+    addLog('JEÛNE', 'Terminé après ' + duration + 'h', 'primary');
     localStorage.removeItem(KEY_FAST_START);
     update();
     triggerAutoSync();
@@ -609,6 +702,7 @@ function update() {
         String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
 
     let isFasting = false, remainingSeconds = 0, progress = 0;
+    let showEarlyButton = false;
     
     if (currentMode === 'manual') {
         const manualStart = localStorage.getItem(KEY_FAST_START);
@@ -620,13 +714,51 @@ function update() {
             progress = Math.min(1, elapsed / target);
         }
     } else {
+        // Mode auto
         const fastStart = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
         const fastEnd = (fastStart + fastSettings.duration * 3600) % 86400;
-        isFasting = fastStart < fastEnd ? (totS >= fastStart && totS < fastEnd) : (totS >= fastStart || totS < fastEnd);
-        if (isFasting) {
-            remainingSeconds = totS >= fastStart ? (fastEnd - totS + (totS < fastStart ? 86400 : 0)) : (fastEnd - totS);
-            progress = 1 - (remainingSeconds / (fastSettings.duration * 3600));
+        
+        // Vérifier si jeûne anticipé en cours
+        if (isEarlyFasting) {
+            const earlyData = JSON.parse(localStorage.getItem(KEY_EARLY_FAST));
+            const elapsed = (Date.now() - earlyData.start) / 1000;
+            const target = fastSettings.duration * 3600;
+            remainingSeconds = Math.max(0, target - elapsed);
+            progress = Math.min(1, elapsed / target);
+            isFasting = remainingSeconds > 0;
+            
+            if (!isEarlyFasting) {
+                // Jeûne anticipé terminé, nettoyer
+                localStorage.removeItem(KEY_EARLY_FAST);
+                isEarlyFasting = false;
+            }
+        } else {
+            // Mode auto normal
+            isFasting = fastStart < fastEnd ? (totS >= fastStart && totS < fastEnd) : (totS >= fastStart || totS < fastEnd);
+            
+            if (isFasting) {
+                remainingSeconds = totS >= fastStart ? (fastEnd - totS + (totS < fastStart ? 86400 : 0)) : (fastEnd - totS);
+                progress = 1 - (remainingSeconds / (fastSettings.duration * 3600));
+            } else {
+                // Pas en jeûne - vérifier si on est avant l'heure de début
+                const beforeStart = totS < fastStart;
+                if (beforeStart && !isEarlyFasting) {
+                    // Afficher le bouton de jeûne anticipé
+                    showEarlyButton = true;
+                    // Calculer temps restant avant début normal
+                    remainingSeconds = fastStart - totS;
+                }
+            }
         }
+    }
+
+    // Gérer l'affichage du bouton de jeûne anticipé
+    const earlyContainer = document.getElementById('early-fast-container');
+    if (currentMode === 'auto' && showEarlyButton && !isEarlyFasting) {
+        earlyContainer.style.display = 'block';
+        document.getElementById('early-fast-info').classList.add('show');
+    } else {
+        earlyContainer.style.display = 'none';
     }
 
     document.getElementById('countdown').innerText = formatTime(remainingSeconds);
@@ -637,13 +769,25 @@ function update() {
     if (currentMode === 'manual') {
         if (localStorage.getItem(KEY_FAST_START)) {
             btn.innerText = "STOP JEÛNE"; btn.className = "btn-stop";
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
         } else {
             btn.innerText = "DÉMARRER JEÛNE"; btn.className = "btn-start";
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
         }
     } else {
-        btn.innerText = "MODE AUTO"; btn.className = "btn-stop";
-        btn.style.opacity = "0.5";
-        btn.style.cursor = "default";
+        // Mode auto
+        if (isEarlyFasting) {
+            btn.innerText = "STOP JEÛNE ANTICIPÉ"; btn.className = "btn-stop";
+            btn.style.opacity = "1";
+            btn.style.cursor = "pointer";
+        } else {
+            btn.innerText = "MODE AUTO"; 
+            btn.className = "btn-stop";
+            btn.style.opacity = "0.5";
+            btn.style.cursor = "default";
+        }
     }
     
     const ring = document.getElementById('ring-fill');
@@ -659,18 +803,30 @@ function updatePhaseInfo(isFasting) {
         document.getElementById('phase-txt').innerText = "Phase : Fenêtre alimentaire";
         return;
     }
+    
     let hours = 0;
+    let modeText = "";
+    
     if (currentMode === 'manual') {
         const start = localStorage.getItem(KEY_FAST_START);
         if (start) hours = (Date.now() - parseInt(start)) / 3600000;
+        modeText = "Manuel";
     } else {
-        const now = new Date();
-        const start = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
-        const current = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-        hours = current >= start ? (current - start) / 3600 : ((86400 - start) + current) / 3600;
+        if (isEarlyFasting) {
+            const earlyData = JSON.parse(localStorage.getItem(KEY_EARLY_FAST));
+            hours = (Date.now() - earlyData.start) / 3600000;
+            modeText = "Anticipé";
+        } else {
+            const now = new Date();
+            const start = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
+            const current = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+            hours = current >= start ? (current - start) / 3600 : ((86400 - start) + current) / 3600;
+            modeText = "Auto";
+        }
     }
+    
     let phase = hours < 4 ? "Digestion" : hours < 8 ? "Chute insuline" : hours < 12 ? "Cétose légère" : hours < 16 ? "Cétose profonde" : "Autophagie max";
-    document.getElementById('phase-txt').innerText = "Phase : " + phase + " (" + Math.floor(hours) + "h)";
+    document.getElementById('phase-txt').innerText = "Phase : " + phase + " (" + Math.floor(hours) + "h) - " + modeText;
 }
 
 function formatTime(s) {
@@ -1317,8 +1473,8 @@ function clearAllData() {
     if(!confirm('⚠️ Effacer TOUTES les données ?')) return;
     if(!confirm('Confirmation finale ?')) return;
     
-    [KEY_LOGS, KEY_WEIGHTS, KEY_SLEEP_START, KEY_FAST_START, KEY_FAST_SETTINGS, KEY_FAST_MODE, KEY_CLOUD_CONFIG, KEY_LAST_SYNC].forEach(k => localStorage.removeItem(k));
-    logs = []; weights = []; fastSettings = DEFAULT_FAST_SETTINGS; currentMode = 'auto'; cloudConfig = null;
+    [KEY_LOGS, KEY_WEIGHTS, KEY_SLEEP_START, KEY_FAST_START, KEY_FAST_SETTINGS, KEY_FAST_MODE, KEY_CLOUD_CONFIG, KEY_LAST_SYNC, KEY_EARLY_FAST].forEach(k => localStorage.removeItem(k));
+    logs = []; weights = []; fastSettings = DEFAULT_FAST_SETTINGS; currentMode = 'auto'; cloudConfig = null; isEarlyFasting = false;
     renderLogs(); 
     if (chartInstance) {
         chartInstance.destroy();
