@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hicham Ultimate Tracker</title>
+    <title>Hicham Ultimate V2</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -14,45 +14,47 @@
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* HEADER */
         .header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: rgba(9, 16, 29, 0.95); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .profile { display: flex; align-items: center; gap: 10px; }
         .profile img { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--primary); object-fit: cover; }
 
-        /* SCROLL CONTAINER */
-        .app-main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 120px; }
+        .app-main { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 20px; padding-bottom: 140px; }
 
-        /* TIMER CARD + BUTTON STOP */
-        .timer-card { background: var(--card); padding: 25px; border-radius: 40px; text-align: center; position: relative; border: 1px solid rgba(255,255,255,0.05); }
-        .ring-box { position: relative; width: 220px; height: 220px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
-        .ring-box svg { transform: rotate(-90deg); position: absolute; width: 220px; height: 220px; }
-        .ring-fill { fill: none; stroke: var(--primary); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 628; stroke-dashoffset: 628; transition: 1s; }
-        
-        .timer-center { z-index: 10; display: flex; flex-direction: column; align-items: center; }
+        /* TIMER */
+        .timer-card { background: var(--card); padding: 25px; border-radius: 40px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .ring-box { position: relative; width: 210px; height: 210px; margin: 0 auto; display: flex; align-items: center; justify-content: center; }
+        .ring-box svg { transform: rotate(-90deg); position: absolute; width: 210px; height: 210px; }
+        .ring-fill { fill: none; stroke: var(--primary); stroke-width: 12; stroke-linecap: round; stroke-dasharray: 596; stroke-dashoffset: 596; transition: 1s; }
         #countdown { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
-        .btn-stop { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 0.8rem; cursor: pointer; box-shadow: 0 5px 15px rgba(231,76,60,0.3); }
+        .btn-stop { background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 15px; font-weight: 800; font-size: 0.8rem; cursor: pointer; }
 
         /* SLEEP WIDGET */
-        .sleep-card { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px; border-radius: 30px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-sleep { background: white; color: var(--sleep); border: none; padding: 12px 20px; border-radius: 15px; font-weight: 800; cursor: pointer; font-size: 0.8rem; }
+        .sleep-card { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px; border-radius: 30px; }
+        .sleep-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .btn-sleep { background: white; color: var(--sleep); border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.75rem; }
+        .btn-manual-sleep { color: white; font-size: 0.7rem; text-decoration: underline; background: none; border: none; opacity: 0.8; cursor: pointer; }
 
-        /* HISTORY LIST */
+        /* HISTORY */
         .history-list { display: flex; flex-direction: column; gap: 10px; }
         .history-item { background: var(--card); padding: 15px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 4px solid var(--primary); }
         .history-item.sleep { border-left-color: var(--sleep); }
-        .history-meta { font-size: 0.75rem; color: #64748b; }
 
-        /* NAV & DRAWERS */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #0b121f; display: flex; justify-content: space-around; padding: 15px 0 35px; border-top: 1px solid #222; }
+        /* NAV */
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #0b121f; display: flex; justify-content: space-around; padding: 15px 0 35px; border-top: 1px solid #222; z-index: 1000; }
         .nav-item { font-size: 1.5rem; opacity: 0.3; cursor: pointer; }
         .nav-item.active { opacity: 1; color: var(--primary); }
 
-        .drawer { position: fixed; bottom: 0; width: 100%; background: #0f172a; border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.4s; z-index: 2000; padding: 30px; max-height: 80vh; overflow-y: auto; }
+        /* DRAWERS */
+        .drawer { position: fixed; bottom: 0; width: 100%; background: #0f172a; border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.4s cubic-bezier(0.1, 0.7, 0.1, 1); z-index: 2000; padding: 30px; }
         .drawer.open { transform: translateY(0); }
-        .handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -15px auto 20px; }
+        .handle { width: 50px; height: 4px; background: #334155; border-radius: 10px; margin: -15px auto 25px; }
 
-        .btn-block { width: 100%; padding: 18px; border-radius: 20px; border: none; font-weight: 800; cursor: pointer; margin-top: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 0.75rem; color: #64748b; margin-bottom: 5px; font-weight: 700; }
+        input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 15px; color: white; border-radius: 12px; font-family: inherit; }
+        .btn-block { width: 100%; padding: 16px; border-radius: 15px; border: none; font-weight: 800; cursor: pointer; margin-top: 10px; }
         .bg-green { background: var(--primary); color: white; }
+        .bg-sleep { background: var(--sleep); color: white; }
         .bg-dark { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
     </style>
 </head>
@@ -61,43 +63,40 @@
     <div class="header">
         <div class="profile">
             <img src="votre-photo.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff'">
-            <span style="font-weight: 800;">Hicham Life Pro</span>
+            <span style="font-weight: 800;">Hicham Health Manager</span>
         </div>
         <div id="clock" style="opacity: 0.5; font-size: 0.8rem; font-weight: 700;">00:00</div>
     </div>
 
     <div class="app-main" id="view-main">
-        <!-- FASTING TIMER -->
+        <!-- FASTING -->
         <div class="timer-card">
-            <span id="fast-label" style="font-size:0.7rem; font-weight:800; color:var(--primary); letter-spacing:1px;">JEÛNE ACTIF</span>
+            <span id="fast-label" style="font-size:0.7rem; font-weight:800; color:var(--primary);">JEÛNE ACTIF 🔥</span>
             <div class="ring-box">
-                <svg><circle cx="110" cy="110" r="100" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
-                <circle id="ring-fill" class="ring-fill" cx="110" cy="110" r="100"></circle></svg>
-                <div class="timer-center">
+                <svg><circle cx="105" cy="105" r="95" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="12"></circle>
+                <circle id="ring-fill" class="ring-fill" cx="105" cy="105" r="95"></circle></svg>
+                <div style="z-index:10; text-align:center;">
                     <div id="countdown">00:00:00</div>
-                    <button class="btn-stop" id="stop-btn" onclick="stopFasting()">STOP JEÛNE</button>
+                    <button class="btn-stop" onclick="stopFasting()">STOP JEÛNE</button>
                 </div>
             </div>
-            <p id="info-phase" style="font-size: 0.8rem; color: #94a3b8; margin-top: 15px;">Phase : Analyse...</p>
+            <p id="info-phase" style="font-size: 0.75rem; color: #64748b; margin-top: 10px;">Analyse métabolique...</p>
         </div>
 
-        <!-- SLEEP WIDGET -->
+        <!-- SLEEP -->
         <div class="sleep-card">
-            <div>
-                <h4 style="margin:0;">Sommeil</h4>
-                <p id="sleep-status" style="margin:5px 0 0; font-size:0.75rem; opacity:0.8;">Pas de session en cours</p>
+            <div class="sleep-header">
+                <div>
+                    <h4 style="margin:0;">Sommeil</h4>
+                    <p id="sleep-status" style="margin:2px 0 0; font-size:0.7rem; opacity:0.8;">Session auto</p>
+                </div>
+                <button class="btn-sleep" id="sleep-toggle" onclick="toggleSleep()">🛌 COUCHER</button>
             </div>
-            <button class="btn-sleep" id="sleep-toggle" onclick="toggleSleep()">🛌 COUCHER</button>
+            <button class="btn-manual-sleep" onclick="openDrawer('sleep-manual')">➕ Saisie manuelle (Oubli ?)</button>
         </div>
 
-        <!-- RECENT HISTORY -->
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <h3 style="margin:0; font-size:1rem;">Historique Récent</h3>
-            <span style="font-size:0.7rem; color:var(--primary);" onclick="showTab('history')">Voir tout</span>
-        </div>
-        <div id="recent-list" class="history-list">
-            <!-- Injecté par JS -->
-        </div>
+        <h3 style="margin:0; font-size:0.9rem;">Dernières activités</h3>
+        <div id="recent-list" class="history-list"></div>
     </div>
 
     <!-- VIEW HISTORY -->
@@ -109,9 +108,9 @@
 
     <!-- VIEW STATS -->
     <div class="app-main" id="view-stats" style="display:none;">
-        <h3>Évolution Poids</h3>
+        <h3>Progression Poids</h3>
         <canvas id="wChart"></canvas>
-        <button class="btn-block bg-green" onclick="toggleDrawer()">⚖️ AJOUTER POIDS</button>
+        <button class="btn-block bg-green" onclick="openDrawer('poids')">⚖️ AJOUTER POIDS</button>
     </div>
 
     <!-- NAV BAR -->
@@ -122,17 +121,32 @@
     </div>
 
     <!-- DRAWER POIDS -->
-    <div class="drawer" id="drawer">
-        <div class="handle" onclick="toggleDrawer()"></div>
-        <h3>Ma pesée</h3>
-        <input type="number" id="w-input" step="0.1" placeholder="Poids en kg" style="width:100%; background:#1e293b; border:none; padding:20px; color:white; border-radius:15px;">
+    <div class="drawer" id="drawer-poids">
+        <div class="handle" onclick="closeDrawers()"></div>
+        <h3>Ajouter Poids</h3>
+        <input type="number" id="w-input" step="0.1" placeholder="82.5 kg">
         <button class="btn-block bg-green" onclick="saveW()">ENREGISTRER</button>
+    </div>
+
+    <!-- DRAWER SOMMEIL MANUEL -->
+    <div class="drawer" id="drawer-sleep-manual">
+        <div class="handle" onclick="closeDrawers()"></div>
+        <h3>Oubli Sommeil</h3>
+        <div class="form-group">
+            <label>Heure du coucher</label>
+            <input type="datetime-local" id="manual-sleep-start">
+        </div>
+        <div class="form-group">
+            <label>Heure du réveil</label>
+            <input type="datetime-local" id="manual-sleep-end">
+        </div>
+        <button class="btn-block bg-sleep" onclick="saveManualSleep()">VALIDER LA NUIT</button>
     </div>
 
 <script>
 /* ================= SYSTEM DATA ================= */
-const DB_LOGS = 'HICHAM_LOGS';
-const DB_WEIGHTS = 'HICHAM_WEIGHTS';
+const DB_LOGS = 'HICHAM_LOGS_V2';
+const DB_WEIGHTS = 'HICHAM_WEIGHTS_V2';
 const DB_SLEEP_START = 'HICHAM_SLEEP_START';
 
 let logs = JSON.parse(localStorage.getItem(DB_LOGS) || '[]');
@@ -143,7 +157,6 @@ function update() {
     const h = now.getHours(); const totS = h*3600 + now.getMinutes()*60 + now.getSeconds();
     document.getElementById('clock').innerText = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
-    // Fasting Logic 18/6
     let isF = (h < 10 || h >= 16);
     let rem = isF ? (h >= 16 ? (86400 - totS + 36000) : (36000 - totS)) : (57600 - totS);
     let totWin = isF ? 18*3600 : 6*3600;
@@ -152,17 +165,8 @@ function update() {
     document.getElementById('fast-label').innerText = isF ? "JEÛNE ACTIF 🔥" : "FENÊTRE REPAS 🍽️";
     document.getElementById('fast-label').style.color = isF ? "var(--primary)" : "var(--accent)";
     document.getElementById('ring-fill').style.stroke = isF ? "var(--primary)" : "var(--accent)";
-    document.getElementById('ring-fill').style.strokeDashoffset = 628 - (rem / totWin) * 628;
+    document.getElementById('ring-fill').style.strokeDashoffset = 596 - (rem / totWin) * 596;
     
-    // Phase Info
-    let fH = isF ? (h >= 16 ? h - 16 : h + 8) : -1;
-    let phaseTxt = "Alimentation active";
-    if(fH >= 16) phaseTxt = "Autophagie (Régénération)";
-    else if(fH >= 12) phaseTxt = "Cétose (Brûlage graisses)";
-    else if(fH >= 4) phaseTxt = "Baisse d'insuline";
-    else if(fH >= 0) phaseTxt = "Stabilisation sucre";
-    document.getElementById('info-phase').innerText = "Phase : " + phaseTxt;
-
     checkSleepStatus();
 }
 
@@ -171,117 +175,53 @@ function formatTime(s) {
     return `${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
 }
 
-/* ================= ACTIONS JEÛNE ================= */
+/* ================= ACTIONS ================= */
 function stopFasting() {
-    if(!confirm("Hicham, as-tu fini ton jeûne et commencé à manger ?")) return;
-    const now = new Date();
-    // On calcule la durée théorique effectuée (exemple simplifié)
-    addLog('JEÛNE', 'Validé à ' + now.toLocaleTimeString(), 'primary');
-    alert("Bravo ! Session enregistrée.");
+    if(!confirm("Arrêter le jeûne et enregistrer ?")) return;
+    addLog('JEÛNE', 'Terminé à ' + new Date().toLocaleTimeString(), 'primary');
+    alert("Bravo ! Session sauvée.");
 }
 
-/* ================= SOMMEIL ================= */
 function toggleSleep() {
-    const startTime = localStorage.getItem(DB_SLEEP_START);
-    const btn = document.getElementById('sleep-toggle');
-    
-    if(!startTime) {
-        // Commencer sommeil
+    const start = localStorage.getItem(DB_SLEEP_START);
+    if(!start) {
         localStorage.setItem(DB_SLEEP_START, new Date().getTime());
-        alert("Bonne nuit Hicham ! Repose-toi bien.");
+        alert("Bonne nuit !");
     } else {
-        // Réveil
         const end = new Date().getTime();
-        const durationHr = ((end - parseInt(startTime)) / 3600000).toFixed(1);
-        addLog('SOMMEIL', `Durée : ${durationHr} heures`, 'sleep');
+        const dur = ((end - parseInt(start)) / 3600000).toFixed(1);
+        addLog('SOMMEIL', `Nuit de ${dur}h (Auto)`, 'sleep');
         localStorage.removeItem(DB_SLEEP_START);
-        alert(`Bonjour ! Tu as dormi ${durationHr}h.`);
+        alert(`Réveil enregistré : ${dur}h.`);
     }
     checkSleepStatus();
 }
 
-function checkSleepStatus() {
-    const startTime = localStorage.getItem(DB_SLEEP_START);
-    const status = document.getElementById('sleep-status');
-    const btn = document.getElementById('sleep-toggle');
-    if(startTime) {
-        status.innerText = "Sommeil en cours...";
-        btn.innerText = "☀️ RÉVEIL";
-    } else {
-        status.innerText = "Pas de session en cours";
-        btn.innerText = "🛌 COUCHER";
-    }
+function saveManualSleep() {
+    const start = document.getElementById('manual-sleep-start').value;
+    const end = document.getElementById('manual-sleep-end').value;
+    if(!start || !end) return alert("Remplis les deux dates !");
+
+    const dur = ((new Date(end) - new Date(start)) / 3600000).toFixed(1);
+    if(dur <= 0) return alert("L'heure de réveil doit être après le coucher !");
+
+    addLog('SOMMEIL', `Nuit de ${dur}h (Manuel)`, 'sleep');
+    closeDrawers();
+    alert(`Nuit manuelle enregistrée : ${dur}h.`);
 }
 
-/* ================= JOURNAL & EXPORT ================= */
-function addLog(type, desc, colorClass) {
-    const entry = { type, desc, color: colorClass, date: new Date().toLocaleDateString('fr-FR'), time: new Date().toLocaleTimeString('fr-FR') };
-    logs.unshift(entry);
-    localStorage.setItem(DB_LOGS, JSON.stringify(logs.slice(0, 50))); // Garde 50 entrées
+function checkSleepStatus() {
+    const start = localStorage.getItem(DB_SLEEP_START);
+    document.getElementById('sleep-status').innerText = start ? "Dodo en cours..." : "Pas de session";
+    document.getElementById('sleep-toggle').innerText = start ? "☀️ RÉVEIL" : "🛌 COUCHER";
+}
+
+function addLog(type, desc, color) {
+    logs.unshift({ type, desc, color, date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString() });
+    localStorage.setItem(DB_LOGS, JSON.stringify(logs.slice(0, 100)));
     renderHistory();
 }
 
 function renderHistory() {
-    const recent = document.getElementById('recent-list');
-    const full = document.getElementById('full-list');
-    const html = logs.map(l => `
-        <div class="history-item ${l.color === 'sleep' ? 'sleep' : ''}">
-            <div>
-                <b style="font-size:0.9rem">${l.type}</b><br>
-                <span style="font-size:0.8rem; opacity:0.8">${l.desc}</span>
-            </div>
-            <div class="history-meta">${l.date}</div>
-        </div>
-    `).join('');
-    recent.innerHTML = logs.slice(0, 3).map(l => `
-        <div class="history-item ${l.color === 'sleep' ? 'sleep' : ''}" style="padding:10px">
-            <span style="font-size:0.8rem"><b>${l.type}:</b> ${l.desc}</span>
-        </div>
-    `).join('');
-    full.innerHTML = html;
-}
-
-function exportMasterData() {
-    const masterData = { user: "Hicham", logs: logs, weights: weights, exportDate: new Date().toISOString() };
-    const blob = new Blob([JSON.stringify(masterData, null, 2)], {type: 'application/json'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `Hicham_Health_Backup_${new Date().toLocaleDateString()}.json`;
-    a.click();
-}
-
-/* ================= UI NAVIGATION ================= */
-function showTab(t) {
-    document.querySelectorAll('.app-main').forEach(v => v.style.display = 'none');
-    document.getElementById('view-'+t).style.display = 'flex';
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('nav-'+t).classList.add('active');
-    if(t === 'stats') renderChart();
-}
-
-function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
-function saveW() {
-    const v = document.getElementById('w-input').value; if(!v) return;
-    weights.push({d: new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}), v: parseFloat(v)});
-    localStorage.setItem(DB_WEIGHTS, JSON.stringify(weights));
-    addLog('POIDS', `Nouveau poids : ${v}kg`, 'primary');
-    toggleDrawer(); alert("Poids enregistré !");
-}
-
-let chartObj = null;
-function renderChart() {
-    const ctx = document.getElementById('wChart').getContext('2d');
-    if(chartObj) chartObj.destroy();
-    chartObj = new Chart(ctx, {
-        type: 'line',
-        data: { labels: weights.slice(-7).map(x=>x.d), datasets: [{label:'kg', data:weights.slice(-7).map(x=>x.v), borderColor:'#2ecc71', tension:0.4, fill:true, backgroundColor:'rgba(46,204,113,0.1)'}]},
-        options: { responsive:true, maintainAspectRatio:false, plugins: { legend: { display: false } } }
-    });
-}
-
-setInterval(update, 1000);
-update();
-renderHistory();
-</script>
-</body>
-</html>
+    const html = logs.map(l => `<div class="history-item ${l.color === 'sleep' ? 'sleep' : ''}"><div><b>${l.type}</b><br><span style="font-size:0.7rem; opacity:0.8">${l.desc}</span></div><span style="font-size:0.7rem">${l.date}</span></div>`).join('');
+    document.getElementById('recent-list').innerHTML = logs.slice(0, 3).map(l => `<div class="history-item ${l.color === 'sleep' ? 'sleep' : ''}" style="padding:10px; font-size:0.8rem"><b>${l
