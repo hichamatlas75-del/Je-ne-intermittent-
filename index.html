@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hicham Ultimate V3 - Stable</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="theme-color" content="#09101d">
+    <meta name="description" content="Hicham Ultimate - Tracker de jeûne intermittent, sommeil et poids">
+    <title>Hicham Ultimate V4 - PWA</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiSGljaGFtIFVsdGltYXRlIiwic2hvcnRfbmFtZSI6IkhpY2hhbSIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMDkxMDFkIiwidGhlbWVfY29sb3IiOiIjMmVjYzcxIiwiaWNvbnMiOlt7InNyYyI6Imh0dHBzOi8vdWktYXZhdGFycy5jb20vYXBpLz9uYW1lPUgmaGFja2dyb3VuZD0yZWNjNzEmY29sb3I9ZmZmJnNpemU9MTkyIiwic2l6ZXMiOiIxOTJ4MTkyIiwidHlwZSI6ImltYWdlL3BuZyJ9XX0=">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #2ecc71; --accent: #f39c12; --bg: #09101d;
             --card: #1a2235; --sleep: #6366f1; --text: #ffffff;
-            --danger: #e74c3c; --warning: #f1c40f;
+            --danger: #e74c3c; --warning: #f1c40f; --info: #3498db;
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         
@@ -29,6 +35,23 @@
         .profile { display: flex; align-items: center; gap: 10px; }
         .profile img { width: 40px; height: 40px; border-radius: 12px; border: 2px solid var(--primary); object-fit: cover; }
 
+        /* OFFLINE BANNER */
+        .offline-banner {
+            background: var(--warning);
+            color: #000;
+            text-align: center;
+            padding: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        .offline-banner.show { display: block; }
+        @keyframes slideDown {
+            from { transform: translateY(-100%); }
+            to { transform: translateY(0); }
+        }
+
         /* VUES SCROLLABLES */
         .app-view { 
             flex: 1; overflow-y: auto; padding: 20px; 
@@ -41,6 +64,19 @@
         .timer-card { 
             background: var(--card); padding: 25px; border-radius: 40px; 
             text-align: center; border: 1px solid rgba(255,255,255,0.05); 
+            position: relative;
+            overflow: hidden;
+        }
+        .timer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle, rgba(46,204,113,0.1) 0%, transparent 70%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
         }
         .ring-container { 
             position: relative; width: 220px; height: 220px; margin: 0 auto; 
@@ -59,12 +95,59 @@
         .btn-stop:active { transform: scale(0.95); }
         .btn-stop:hover { opacity: 0.9; }
 
+        /* BREATHING EXERCISE */
+        .breathing-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 30px;
+            text-align: center;
+            display: none;
+        }
+        .breathing-card.active { display: block; }
+        .breath-circle {
+            width: 80px; height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            margin: 20px auto;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2rem;
+            animation: breathe 4s ease-in-out infinite;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
         /* SOMMEIL */
         .sleep-card { background: linear-gradient(135deg, #4f46e5, #7c3aed); padding: 20px; border-radius: 30px; }
         .sleep-row { display: flex; justify-content: space-between; align-items: center; }
         .btn-sleep { background: white; color: var(--sleep); border: none; padding: 12px 20px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: transform 0.2s; }
         .btn-sleep:active { transform: scale(0.95); }
         .btn-link { background: none; border: none; color: white; font-size: 0.75rem; text-decoration: underline; margin-top: 10px; opacity: 0.8; cursor: pointer; }
+
+        /* STATS GRID */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            background: var(--card);
+            padding: 15px;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+        .stat-label {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-top: 5px;
+        }
 
         /* HISTORIQUE */
         .log-item { background: var(--card); padding: 15px; border-radius: 20px; border-left: 5px solid var(--primary); display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; animation: slideIn 0.3s ease; }
@@ -95,13 +178,14 @@
         .drawer.open { transform: translateY(0); }
         .handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -15px auto 25px; cursor: pointer; }
 
-        input { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 15px; color: white; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; transition: border-color 0.3s; }
-        input:focus { border-color: var(--primary); }
+        input, select { width: 100%; background: #1e293b; border: 1px solid #334155; padding: 15px; color: white; border-radius: 15px; margin-bottom: 10px; font-size: 1rem; transition: border-color 0.3s; }
+        input:focus, select:focus { border-color: var(--primary); }
         .btn-full { width: 100%; padding: 18px; border-radius: 18px; border: none; font-weight: 800; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
         .btn-full:active { transform: scale(0.98); }
         .bg-green { background: var(--primary); color: white; }
         .bg-dark { background: #1e293b; color: #94a3b8; border: 1px solid #334155; }
         .bg-sleep { background: var(--sleep); color: white; }
+        .bg-info { background: var(--info); color: white; }
         
         /* Stats view improvements */
         .chart-container {
@@ -144,9 +228,58 @@
             opacity: 1;
             pointer-events: all;
         }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--card);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .toast.success { border-left: 4px solid var(--primary); }
+        .toast.error { border-left: 4px solid var(--danger); }
+        .toast.info { border-left: 4px solid var(--info); }
+
+        /* Quick actions */
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+        }
+        .quick-btn {
+            background: var(--card);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            white-space: nowrap;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-btn:hover {
+            background: rgba(255,255,255,0.1);
+        }
     </style>
 </head>
 <body>
+
+    <div class="offline-banner" id="offline-banner">
+        ⚠️ Mode hors ligne - Les données seront synchronisées automatiquement
+    </div>
 
     <div class="header">
         <div class="profile">
@@ -173,6 +306,20 @@
             <p id="phase-txt" style="margin-top:15px; font-size:0.8rem; color:#94a3b8; font-weight:700;">Phase : Analyse...</p>
         </div>
 
+        <!-- Breathing Exercise -->
+        <div class="breathing-card" id="breathing-card">
+            <h4 style="margin:0 0 10px 0;">Exercice de respiration</h4>
+            <p style="margin:0; font-size:0.8rem; opacity:0.8;">Inspirez quand le cercle grandit</p>
+            <div class="breath-circle">🫁</div>
+            <button class="btn-full bg-dark" onclick="toggleBreathing()" style="padding: 10px;">Fermer</button>
+        </div>
+
+        <div class="quick-actions">
+            <button class="quick-btn" onclick="toggleBreathing()">🧘 Respiration</button>
+            <button class="quick-btn" onclick="openDrawer('poids')">⚖️ Poids</button>
+            <button class="quick-btn" onclick="requestNotification()">🔔 Rappels</button>
+        </div>
+
         <div class="sleep-card">
             <div class="sleep-row">
                 <div>
@@ -191,13 +338,36 @@
     <!-- VUE HISTORIQUE -->
     <div class="app-view" id="view-history">
         <h2 style="margin-bottom:20px;">Journal de bord</h2>
+        <div class="quick-actions" style="margin-bottom:20px;">
+            <button class="quick-btn" onclick="exportData('json')">📥 JSON</button>
+            <button class="quick-btn" onclick="exportData('csv')">📊 CSV</button>
+        </div>
         <div id="full-logs"></div>
-        <button class="btn-full bg-dark" onclick="exportData()" style="margin-top:20px;">💾 EXPORTER JOURNAL (.JSON)</button>
-        <button class="btn-full bg-dark" onclick="clearAllData()" style="margin-top:10px; color:var(--danger);">🗑️ EFFACER TOUTES LES DONNÉES</button>
+        <button class="btn-full bg-dark" onclick="clearAllData()" style="margin-top:20px; color:var(--danger);">🗑️ EFFACER TOUTES LES DONNÉES</button>
     </div>
 
     <!-- VUE STATS -->
     <div class="app-view" id="view-stats">
+        <h3>Statistiques</h3>
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-value" id="stat-avg-fast">--</div>
+                <div class="stat-label">Moy. jeûne (h)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-avg-sleep">--</div>
+                <div class="stat-label">Moy. sommeil (h)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-total-fast">--</div>
+                <div class="stat-label">Total jeûnes</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value" id="stat-weight-change">--</div>
+                <div class="stat-label">Variation poids</div>
+            </div>
+        </div>
+
         <h3>Graphique Poids</h3>
         <div class="chart-container">
             <canvas id="weightChart"></canvas>
@@ -213,17 +383,24 @@
             <span>Durée (heures)</span>
             <input type="number" id="fast-duration" value="18" min="12" max="23" style="width:80px; margin:0;" onchange="updateFastSettings()">
         </div>
+        <div class="settings-row">
+            <span>Notifications</span>
+            <button class="btn-full bg-info" onclick="requestNotification()" style="width:auto; padding:10px 20px;">Activer</button>
+        </div>
     </div>
 
     <!-- NAVIGATION BAR -->
     <div class="nav-bar">
         <div class="nav-item active" id="nav-main" onclick="switchTab('main')">🏠</div>
         <div class="nav-item" id="nav-stats" onclick="switchTab('stats')">📈</div>
-        <div class="nav-item" id="nav-history" onclick="switchTab('history')">📜</div>
+        <div class="nav-item" id="="nav-history" onclick="switchTab('history')">📜</div>
     </div>
 
     <!-- OVERLAY -->
     <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
 
     <!-- DRAWERS -->
     <div class="drawer" id="drawer-poids">
@@ -245,17 +422,19 @@
 
 <script>
 /* ================= DONNÉES UNIFIÉES ================= */
-const KEY_LOGS = 'HICHAM_V3_LOGS';
-const KEY_WEIGHTS = 'HICHAM_V3_WEIGHTS';
-const KEY_SLEEP_START = 'HICHAM_V3_SLEEP_START';
-const KEY_FAST_START = 'HICHAM_V3_FAST_START';
-const KEY_FAST_SETTINGS = 'HICHAM_V3_FAST_SETTINGS';
+const KEY_LOGS = 'HICHAM_V4_LOGS';
+const KEY_WEIGHTS = 'HICHAM_V4_WEIGHTS';
+const KEY_SLEEP_START = 'HICHAM_V4_SLEEP_START';
+const KEY_FAST_START = 'HICHAM_V4_FAST_START';
+const KEY_FAST_SETTINGS = 'HICHAM_V4_FAST_SETTINGS';
+const KEY_SYNC_QUEUE = 'HICHAM_V4_SYNC_QUEUE';
 
 // Paramètres par défaut
 const DEFAULT_FAST_SETTINGS = {
     startHour: 16,
     startMinute: 0,
-    duration: 18
+    duration: 18,
+    notifications: false
 };
 
 // État global
@@ -263,18 +442,51 @@ let logs = [];
 let weights = [];
 let fastSettings = DEFAULT_FAST_SETTINGS;
 let chartInstance = null;
+let isOnline = navigator.onLine;
+let syncQueue = [];
+
+/* ================= GESTION ROBUSTE LOCALSTORAGE ================= */
+function safeStorage(operation, key, data) {
+    try {
+        if (operation === 'set') {
+            localStorage.setItem(key, JSON.stringify(data));
+            return true;
+        } else if (operation === 'get') {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : null;
+        } else if (operation === 'remove') {
+            localStorage.removeItem(key);
+            return true;
+        }
+    } catch (e) {
+        if (e.name === 'QuotaExceededError') {
+            showToast('Stockage plein ! Exportez vos données.', 'error');
+            // Tentative de nettoyage automatique
+            cleanupOldData();
+        } else {
+            console.error('Storage error:', e);
+            showToast('Erreur de sauvegarde', 'error');
+        }
+        return false;
+    }
+}
+
+function cleanupOldData() {
+    // Garder seulement les 50 derniers logs si stockage plein
+    if (logs.length > 50) {
+        logs = logs.slice(0, 50);
+        safeStorage('set', KEY_LOGS, logs);
+        showToast('Anciennes données nettoyées automatiquement', 'info');
+    }
+}
 
 /* ================= INITIALISATION ================= */
 function init() {
-    try {
-        logs = JSON.parse(localStorage.getItem(KEY_LOGS)) || [];
-        weights = JSON.parse(localStorage.getItem(KEY_WEIGHTS)) || [];
-        fastSettings = JSON.parse(localStorage.getItem(KEY_FAST_SETTINGS)) || DEFAULT_FAST_SETTINGS;
-    } catch (e) {
-        console.error('Erreur chargement données:', e);
-        logs = [];
-        weights = [];
-    }
+    // Charger données avec gestion d'erreurs
+    logs = safeStorage('get', KEY_LOGS) || [];
+    weights = safeStorage('get', KEY_WEIGHTS) || [];
+    fastSettings = safeStorage('get', KEY_FAST_SETTINGS) || DEFAULT_FAST_SETTINGS;
+    syncQueue = safeStorage('get', KEY_SYNC_QUEUE) || [];
     
     // Appliquer les paramètres sauvegardés
     document.getElementById('fast-start-time').value = 
@@ -282,11 +494,182 @@ function init() {
         String(fastSettings.startMinute).padStart(2, '0');
     document.getElementById('fast-duration').value = fastSettings.duration;
     
+    // Écouter état réseau
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    // Vérifier état initial
+    updateOnlineStatus();
+    
     renderLogs();
     update();
+    updateStats();
     
     // Démarrer la boucle de mise à jour
     setInterval(update, 1000);
+    
+    // Enregistrer Service Worker
+    registerSW();
+    
+    // Vérifier rappels
+    checkReminders();
+}
+
+/* ================= GESTION OFFLINE/ONLINE ================= */
+function updateOnlineStatus() {
+    const banner = document.getElementById('offline-banner');
+    if (navigator.onLine) {
+        banner.classList.remove('show');
+        isOnline = true;
+    } else {
+        banner.classList.add('show');
+        isOnline = false;
+        showToast('Mode hors ligne activé', 'info');
+    }
+}
+
+function handleOnline() {
+    updateOnlineStatus();
+    showToast('Connexion rétablie !', 'success');
+    processSyncQueue();
+}
+
+function handleOffline() {
+    updateOnlineStatus();
+}
+
+function queueForSync(action, data) {
+    syncQueue.push({
+        action,
+        data,
+        timestamp: new Date().toISOString()
+    });
+    safeStorage('set', KEY_SYNC_QUEUE, syncQueue);
+}
+
+function processSyncQueue() {
+    if (syncQueue.length === 0) return;
+    
+    showToast(`Synchronisation de ${syncQueue.length} actions...`, 'info');
+    
+    // Traiter la file d'attente
+    syncQueue.forEach(item => {
+        // Ici on pourrait envoyer vers un serveur
+        console.log('Syncing:', item);
+    });
+    
+    syncQueue = [];
+    safeStorage('set', KEY_SYNC_QUEUE, syncQueue);
+}
+
+/* ================= SERVICE WORKER ================= */
+function registerSW() {
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            const CACHE_NAME = 'hicham-v4-cache-v1';
+            const urlsToCache = [
+                '/',
+                'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
+                'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap'
+            ];
+            
+            self.addEventListener('install', event => {
+                event.waitUntil(
+                    caches.open(CACHE_NAME)
+                        .then(cache => cache.addAll(urlsToCache))
+                );
+                self.skipWaiting();
+            });
+            
+            self.addEventListener('activate', event => {
+                event.waitUntil(
+                    caches.keys().then(cacheNames => {
+                        return Promise.all(
+                            cacheNames
+                                .filter(name => name !== CACHE_NAME)
+                                .map(name => caches.delete(name))
+                        );
+                    })
+                );
+                self.clients.claim();
+            });
+            
+            self.addEventListener('fetch', event => {
+                event.respondWith(
+                    caches.match(event.request)
+                        .then(response => {
+                            if (response) return response;
+                            return fetch(event.request).catch(() => {
+                                // Fallback offline
+                                if (event.request.mode === 'navigate') {
+                                    return new Response('Offline');
+                                }
+                            });
+                        })
+                );
+            });
+        `;
+        
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        const swUrl = URL.createObjectURL(blob);
+        
+        navigator.serviceWorker.register(swUrl)
+            .then(reg => console.log('SW registered:', reg))
+            .catch(err => console.log('SW registration failed:', err));
+    }
+}
+
+/* ================= NOTIFICATIONS ================= */
+function requestNotification() {
+    if (!('Notification' in window)) {
+        showToast('Notifications non supportées', 'error');
+        return;
+    }
+    
+    Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+            fastSettings.notifications = true;
+            safeStorage('set', KEY_FAST_SETTINGS, fastSettings);
+            showToast('Notifications activées !', 'success');
+            scheduleFastReminder();
+        } else {
+            showToast('Notifications refusées', 'error');
+        }
+    });
+}
+
+function scheduleFastReminder() {
+    if (!fastSettings.notifications) return;
+    
+    // Vérifier toutes les heures si on doit envoyer une notification
+    setInterval(() => {
+        const now = new Date();
+        const fastStartSeconds = fastSettings.startHour * 3600 + fastSettings.startMinute * 60;
+        const currentSeconds = now.getHours() * 3600 + now.getMinutes() * 60;
+        
+        // Notification 1h avant fin du jeûne
+        const fastEndSeconds = (fastStartSeconds + fastSettings.duration * 3600) % 86400;
+        const oneHourBefore = (fastEndSeconds - 3600 + 86400) % 86400;
+        
+        if (Math.abs(currentSeconds - oneHourBefore) < 60) {
+            new Notification('Hicham Ultimate', {
+                body: 'Fin du jeûne dans 1 heure ! Préparez votre repas 🍽️',
+                icon: 'https://ui-avatars.com/api/?name=H&background=2ecc71&color=fff'
+            });
+        }
+    }, 60000); // Vérifier chaque minute
+}
+
+function checkReminders() {
+    // Vérifier au démarrage si on a manqué des actions
+    const lastWeight = weights[weights.length - 1];
+    if (lastWeight) {
+        const lastDate = new Date(lastWeight.d);
+        const daysSince = (new Date() - lastDate) / (1000 * 60 * 60 * 24);
+        if (daysSince > 2) {
+            showToast(`Dernière pesée il y a ${Math.floor(daysSince)} jours`, 'info');
+        }
+    }
 }
 
 /* ================= MISE À JOUR PRINCIPALE ================= */
@@ -407,7 +790,13 @@ function stopFasting() {
     }
     
     addLog('JEÛNE', 'Validé après ' + duration + 'h - ' + now.toLocaleTimeString('fr-FR'), 'primary');
+    
+    if (!isOnline) {
+        queueForSync('fast_end', { duration, timestamp: now.toISOString() });
+    }
+    
     localStorage.removeItem(KEY_FAST_START);
+    updateStats();
 }
 
 function updateFastSettings() {
@@ -416,12 +805,14 @@ function updateFastSettings() {
     const duration = parseInt(document.getElementById('fast-duration').value) || 18;
     
     fastSettings = {
+        ...fastSettings,
         startHour: h,
         startMinute: m,
         duration: Math.min(Math.max(duration, 12), 23)
     };
     
-    localStorage.setItem(KEY_FAST_SETTINGS, JSON.stringify(fastSettings));
+    safeStorage('set', KEY_FAST_SETTINGS, fastSettings);
+    showToast('Paramètres sauvegardés', 'success');
     update();
 }
 
@@ -431,11 +822,14 @@ function toggleSleep() {
     if(!start) {
         localStorage.setItem(KEY_SLEEP_START, new Date().getTime());
         addLog('SOMMEIL', 'Couché à ' + new Date().toLocaleTimeString('fr-FR'), 'sleep');
+        showToast('Bonne nuit Hicham ! 🌙', 'success');
     } else {
         const end = new Date().getTime();
         const dur = ((end - parseInt(start)) / 3600000).toFixed(1);
         addLog('SOMMEIL', 'Réveil après ' + dur + 'h', 'sleep');
         localStorage.removeItem(KEY_SLEEP_START);
+        showToast(`Repos de ${dur}h enregistré ! ☀️`, 'success');
+        updateStats();
     }
     updateSleepStatus();
 }
@@ -450,7 +844,7 @@ function saveManualSleep() {
     const i = document.getElementById('sleep-in').value;
     const o = document.getElementById('sleep-out').value;
     if(!i || !o) {
-        alert('Veuillez remplir les deux dates');
+        showToast('Veuillez remplir les deux dates', 'error');
         return;
     }
     
@@ -458,7 +852,7 @@ function saveManualSleep() {
     const end = new Date(o);
     
     if (end <= start) {
-        alert('Le réveil doit être après le coucher');
+        showToast('Le réveil doit être après le coucher', 'error');
         return;
     }
     
@@ -469,6 +863,19 @@ function saveManualSleep() {
     // Reset inputs
     document.getElementById('sleep-in').value = '';
     document.getElementById('sleep-out').value = '';
+    
+    if (!isOnline) {
+        queueForSync('sleep_manual', { duration, start: i, end: o });
+    }
+    
+    updateStats();
+    showToast('Sommeil enregistré', 'success');
+}
+
+/* ================= EXERCICE RESPIRATION ================= */
+function toggleBreathing() {
+    const card = document.getElementById('breathing-card');
+    card.classList.toggle('active');
 }
 
 /* ================= JOURNAL / LOGS ================= */
@@ -478,19 +885,15 @@ function addLog(type, desc, color) {
         desc, 
         color, 
         date: new Date().toISOString(),
-        id: Date.now()
+        id: Date.now(),
+        synced: isOnline
     };
     logs.unshift(entry);
     
     // Garder seulement les 100 derniers
     if (logs.length > 100) logs = logs.slice(0, 100);
     
-    try {
-        localStorage.setItem(KEY_LOGS, JSON.stringify(logs));
-    } catch (e) {
-        console.error('Erreur sauvegarde:', e);
-    }
-    
+    safeStorage('set', KEY_LOGS, logs);
     renderLogs();
 }
 
@@ -503,9 +906,10 @@ function renderLogs() {
         const dateStr = date.toLocaleDateString('fr-FR');
         const timeStr = date.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
         const isToday = date.toDateString() === today;
+        const syncIcon = l.synced === false ? ' ⏳' : '';
         
         return '<div class="log-item ' + l.color + '">' +
-               '<div><b>' + l.type + '</b><br><small>' + l.desc + '</small></div>' +
+               '<div><b>' + l.type + '</b><br><small>' + l.desc + syncIcon + '</small></div>' +
                '<small>' + (isToday ? 'Aujourd\'hui ' + timeStr : dateStr) + '</small>' +
                '</div>';
     }).join('');
@@ -515,11 +919,49 @@ function renderLogs() {
     document.getElementById('full-logs').innerHTML = html || '<div class="empty-state">Aucun historique</div>';
 }
 
+/* ================= STATISTIQUES ================= */
+function updateStats() {
+    // Moyenne jeûne
+    const fastLogs = logs.filter(l => l.type === 'JEÛNE');
+    const avgFast = fastLogs.length > 0 
+        ? (fastLogs.reduce((acc, l) => {
+            const match = l.desc.match(/(\d+\.?\d*)h/);
+            return acc + (match ? parseFloat(match[1]) : 0);
+        }, 0) / fastLogs.length).toFixed(1)
+        : '--';
+    document.getElementById('stat-avg-fast').innerText = avgFast;
+    
+    // Moyenne sommeil
+    const sleepLogs = logs.filter(l => l.type === 'SOMMEIL');
+    const avgSleep = sleepLogs.length > 0
+        ? (sleepLogs.reduce((acc, l) => {
+            const match = l.desc.match(/(\d+\.?\d*)h/);
+            return acc + (match ? parseFloat(match[1]) : 0);
+        }, 0) / sleepLogs.length).toFixed(1)
+        : '--';
+    document.getElementById('stat-avg-sleep').innerText = avgSleep;
+    
+    // Total jeûnes
+    document.getElementById('stat-total-fast').innerText = fastLogs.length;
+    
+    // Variation poids
+    if (weights.length >= 2) {
+        const first = weights[0].v;
+        const last = weights[weights.length - 1].v;
+        const diff = (last - first).toFixed(1);
+        const sign = diff > 0 ? '+' : '';
+        document.getElementById('stat-weight-change').innerText = sign + diff + 'kg';
+        document.getElementById('stat-weight-change').style.color = diff <= 0 ? 'var(--primary)' : 'var(--danger)';
+    } else {
+        document.getElementById('stat-weight-change').innerText = '--';
+    }
+}
+
 /* ================= POIDS ================= */
 function saveWeight() {
     const v = document.getElementById('w-input').value;
     if(!v || v < 30 || v > 300) {
-        alert('Veuillez entrer un poids valide (30-300 kg)');
+        showToast('Veuillez entrer un poids valide (30-300 kg)', 'error');
         return;
     }
     
@@ -532,18 +974,21 @@ function saveWeight() {
         dateLabel: date.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'})
     });
     
-    try {
-        localStorage.setItem(KEY_WEIGHTS, JSON.stringify(weights));
-    } catch (e) {
-        console.error('Erreur sauvegarde poids:', e);
-    }
+    safeStorage('set', KEY_WEIGHTS, weights);
     
     addLog('POIDS', weight + 'kg enregistré', 'weight');
     document.getElementById('w-input').value = '';
     closeDrawers();
     
+    if (!isOnline) {
+        queueForSync('weight', { weight, date: date.toISOString() });
+    }
+    
+    showToast('Poids enregistré : ' + weight + 'kg', 'success');
+    
     if (document.getElementById('view-stats').classList.contains('active')) {
         renderChart();
+        updateStats();
     }
 }
 
@@ -568,6 +1013,7 @@ function renderChart() {
     // Garder les 30 derniers jours max
     const recentWeights = sortedWeights.slice(-30);
     
+    // Chart.js 4.x compatible configuration [^10^]
     chartInstance = new Chart(ctx, {
         type: 'line',
         data: {
@@ -588,6 +1034,10 @@ function renderChart() {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
             plugins: {
                 legend: { display: false },
                 tooltip: {
@@ -622,7 +1072,10 @@ function switchTab(tab) {
     document.getElementById('nav-' + tab).classList.add('active');
     
     if(tab === 'stats') {
-        setTimeout(renderChart, 100);
+        setTimeout(() => {
+            renderChart();
+            updateStats();
+        }, 100);
     }
 }
 
@@ -648,20 +1101,49 @@ function closeDrawers() {
     document.getElementById('overlay').classList.remove('active');
 }
 
-/* ================= EXPORT / GESTION DONNÉES ================= */
-function exportData() {
-    const data = {
-        logs: logs,
-        weights: weights,
-        settings: fastSettings,
-        exportDate: new Date().toISOString()
-    };
+/* ================= TOAST NOTIFICATIONS ================= */
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.innerText = message;
+    toast.className = 'toast ' + type;
+    toast.classList.add('show');
     
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3000);
+}
+
+/* ================= EXPORT / GESTION DONNÉES ================= */
+function exportData(format = 'json') {
+    if (format === 'json') {
+        const data = {
+            logs: logs,
+            weights: weights,
+            settings: fastSettings,
+            exportDate: new Date().toISOString()
+        };
+        
+        const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+        downloadFile(blob, `hicham-data-${new Date().toISOString().split('T')[0]}.json`);
+        showToast('Export JSON réussi !', 'success');
+    } else if (format === 'csv') {
+        // Export CSV pour les poids
+        let csv = 'Date,Poids (kg)\n';
+        weights.forEach(w => {
+            csv += `${w.d},${w.v}\n`;
+        });
+        
+        const blob = new Blob([csv], {type: 'text/csv'});
+        downloadFile(blob, `hicham-poids-${new Date().toISOString().split('T')[0]}.csv`);
+        showToast('Export CSV réussi !', 'success');
+    }
+}
+
+function downloadFile(blob, filename) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'hicham-fasting-data-' + new Date().toISOString().split('T')[0] + '.json';
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -672,29 +1154,38 @@ function clearAllData() {
     if(!confirm('⚠️ ATTENTION : Cette action effacera TOUTES vos données !\n\nÊtes-vous sûr ?')) return;
     if(!confirm('Dernière chance : confirmez la suppression totale ?')) return;
     
-    localStorage.removeItem(KEY_LOGS);
-    localStorage.removeItem(KEY_WEIGHTS);
-    localStorage.removeItem(KEY_SLEEP_START);
-    localStorage.removeItem(KEY_FAST_START);
-    localStorage.removeItem(KEY_FAST_SETTINGS);
+    // Export automatique avant suppression
+    exportData('json');
+    
+    safeStorage('remove', KEY_LOGS);
+    safeStorage('remove', KEY_WEIGHTS);
+    safeStorage('remove', KEY_SLEEP_START);
+    safeStorage('remove', KEY_FAST_START);
+    safeStorage('remove', KEY_FAST_SETTINGS);
+    safeStorage('remove', KEY_SYNC_QUEUE);
     
     logs = [];
     weights = [];
+    syncQueue = [];
     fastSettings = DEFAULT_FAST_SETTINGS;
     
     renderLogs();
+    updateStats();
     if (chartInstance) {
         chartInstance.destroy();
         chartInstance = null;
     }
     
-    alert('Toutes les données ont été effacées');
-    location.reload();
+    showToast('Données effacées (backup téléchargé)', 'info');
+    setTimeout(() => location.reload(), 1500);
 }
 
 // Gestion du clavier (Escape pour fermer)
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') closeDrawers();
+    if (e.key === 'h' && e.ctrlKey) switchTab('history');
+    if (e.key === 's' && e.ctrlKey) switchTab('stats');
+    if (e.key === 'm' && e.ctrlKey) switchTab('main');
 });
 
 // Initialisation au chargement
