@@ -337,11 +337,33 @@
             padding-left: 20px;
         }
         .dropbox-instructions li {
-            margin-bottom: 5px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+        .dropbox-instructions a {
+            color: #0061FF;
+            text-decoration: none;
         }
         .dropbox-token-input {
             font-family: monospace;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+        }
+        
+        .error-details {
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--danger);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            margin-top: 10px;
+            color: #ff6b6b;
+        }
+        
+        .token-help {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-top: 5px;
+            font-style: italic;
         }
     </style>
 </head>
@@ -525,20 +547,32 @@
         
         <div id="dropbox-not-connected">
             <div class="dropbox-instructions">
-                <strong>Configuration Dropbox :</strong>
+                <strong>🔧 Configuration Dropbox (Étape par étape) :</strong>
                 <ol>
-                    <li>Allez sur <a href="https://www.dropbox.com/developers/apps" target="_blank" style="color:#0061FF;">Dropbox Developers</a></li>
-                    <li>Créez une nouvelle app "Scoped access"</li>
-                    <li>Choisissez "App folder" (recommandé) ou "Full Dropbox"</li>
-                    <li>Dans "Permissions", cochez <code>files.content.write</code> et <code>files.content.read</code></li>
-                    <li>Générez un "Access Token" (section OAuth2)</li>
-                    <li>Copiez le token ci-dessous</li>
+                    <li>Allez sur <a href="https://www.dropbox.com/developers/apps" target="_blank" onclick="window.open('https://www.dropbox.com/developers/apps', '_blank')">dropbox.com/developers/apps</a></li>
+                    <li>Cliquez <b>"Create app"</b> → Choisissez <b>"Scoped access"</b></li>
+                    <li><b>Type d'accès :</b> "App folder" (recommandé) ou "Full Dropbox"</li>
+                    <li>Nommez l'app : <code>HichamFastingApp</code> → Create</li>
+                    <li>Allez dans l'onglet <b>"Permissions"</b> (à gauche)</li>
+                    <li>Cochez : <code>files.content.write</code> et <code>files.content.read</code></li>
+                    <li>Cliquez <b>"Submit"</b> en bas (IMPORTANT !)</li>
+                    <li>Retournez dans <b>"Settings"</b> → Section <b>"OAuth 2"</b></li>
+                    <li>Cliquez <b>"Generate"</b> à côté de "Access token"</li>
+                    <li>Copiez le token (commence par <code>sl.</code>) ci-dessous 👇</li>
                 </ol>
             </div>
             
             <input type="password" id="dropbox-token" class="dropbox-token-input" placeholder="sl.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+            <p class="token-help">Le token doit commencer par "sl." et faire ~140 caractères</p>
+            
+            <div id="dropbox-error" class="error-details" style="display:none;"></div>
+            
             <button class="dropbox-connect" onclick="connectDropbox()">
                 <span>🔗</span> Connecter Dropbox
+            </button>
+            
+            <button class="btn-full bg-dark" onclick="testDropboxToken()" style="margin-top:10px;">
+                🧪 Tester le token
             </button>
         </div>
 
@@ -630,33 +664,86 @@ function init() {
         String(fastSettings.startMinute).padStart(2, '0');
     document.getElementById('fast-duration').value = fastSettings.duration;
     
-    // Check Dropbox auth from URL (after redirect)
-    checkDropboxAuth();
-    
     updateModeDisplay();
     updateDropboxStatus();
     renderLogs();
     update();
     setInterval(update, 1000);
     
-    // Auto-sync Dropbox si activé
     if (dropboxToken && localStorage.getItem(KEY_DROPBOX_AUTO) === 'true') {
         setTimeout(() => syncFromDropbox(true), 3000);
     }
 }
 
 /* ================= DROPBOX INTEGRATION ================= */
+async function testDropboxToken() {
+    const token = document.getElementById('dropbox-token').value.trim();
+    const errorDiv = document.getElementById('dropbox-error');
+    
+    if (!token) {
+        errorDiv.innerText = '⚠️ Veuillez entrer un token';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    if (!token.startsWith('sl.')) {
+        errorDiv.innerText = '⚠️ Le token doit commencer par "sl."';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    showSyncStatus('syncing', 'Test du token...');
+    errorDiv.style.display = 'none';
+    
+    try {
+        const response = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+            method: 'POST',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        if (response.ok) {
+            const account = await response.json();
+            showSyncStatus('success', 'Token valide ! ' + account.name.display_name);
+            errorDiv.innerHTML = '✅ Token valide pour : <b>' + account.name.display_name + '</b><br>Email: ' + account.email;
+            errorDiv.style.color = '#2ecc71';
+            errorDiv.style.borderColor = '#2ecc71';
+            errorDiv.style.background = 'rgba(46, 204, 113, 0.1)';
+            errorDiv.style.display = 'block';
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.error_summary || 'Token invalide');
+        }
+    } catch (e) {
+        showSyncStatus('error', 'Token invalide');
+        errorDiv.innerText = '❌ Erreur: ' + e.message + '\n\nVérifiez que vous avez bien cliqué "Submit" dans les Permissions de votre app Dropbox.';
+        errorDiv.style.color = '#ff6b6b';
+        errorDiv.style.borderColor = 'var(--danger)';
+        errorDiv.style.background = 'rgba(231, 76, 60, 0.1)';
+        errorDiv.style.display = 'block';
+    }
+}
+
 async function connectDropbox() {
     const token = document.getElementById('dropbox-token').value.trim();
+    const errorDiv = document.getElementById('dropbox-error');
+    
     if (!token) {
         alert('Veuillez entrer un token d\'accès Dropbox');
         return;
     }
     
+    if (!token.startsWith('sl.')) {
+        alert('Le token doit commencer par "sl."\n\nAssurez-vous de copier le token complet depuis Dropbox Developers.');
+        return;
+    }
+    
     showSyncStatus('syncing', 'Connexion à Dropbox...');
+    errorDiv.style.display = 'none';
     
     try {
-        // Vérifier le token avec un appel API
         const response = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
             method: 'POST',
             headers: {
@@ -673,14 +760,24 @@ async function connectDropbox() {
             updateDropboxStatus();
             closeDrawers();
             
-            // Premier sync auto
             setTimeout(() => syncToDropbox(), 1000);
         } else {
-            throw new Error('Token invalide');
+            const errorData = await response.json();
+            let errorMsg = errorData.error_summary || 'Token invalide';
+            
+            if (errorMsg.includes('expired')) {
+                errorMsg = 'Token expiré. Générez-en un nouveau dans Dropbox Developers.';
+            } else if (errorMsg.includes('invalid_access_token')) {
+                errorMsg = 'Token invalide. Vérifiez que vous avez bien cliqué "Submit" dans les Permissions.';
+            }
+            
+            throw new Error(errorMsg);
         }
     } catch (e) {
-        showSyncStatus('error', 'Erreur connexion Dropbox');
-        alert('Erreur de connexion: ' + e.message);
+        showSyncStatus('error', 'Erreur connexion');
+        errorDiv.innerText = '❌ ' + e.message;
+        errorDiv.style.display = 'block';
+        console.error('Dropbox connection error:', e);
     }
 }
 
@@ -692,21 +789,6 @@ function disconnectDropbox() {
     localStorage.removeItem(KEY_DROPBOX_AUTO);
     updateDropboxStatus();
     closeDrawers();
-}
-
-function checkDropboxAuth() {
-    // Vérifier si on revient d'une auth OAuth (si implémentée plus tard)
-    const hash = window.location.hash;
-    if (hash && hash.includes('access_token')) {
-        const params = new URLSearchParams(hash.substring(1));
-        const token = params.get('access_token');
-        if (token) {
-            dropboxToken = token;
-            localStorage.setItem(KEY_DROPBOX_TOKEN, token);
-            window.location.hash = ''; // Clean URL
-            showSyncStatus('success', 'Dropbox connecté !');
-        }
-    }
 }
 
 function updateDropboxStatus() {
@@ -734,13 +816,11 @@ function updateDropboxStatus() {
         if (notConnected) notConnected.style.display = 'none';
         if (connected) connected.style.display = 'block';
         
-        // Mettre à jour l'affichage du drawer si ouvert
         const autoSyncCheckbox = document.getElementById('dropbox-autosync');
         if (autoSyncCheckbox) {
             autoSyncCheckbox.checked = localStorage.getItem(KEY_DROPBOX_AUTO) === 'true';
         }
         
-        // Afficher dernier sync
         const lastSync = localStorage.getItem(KEY_LAST_SYNC);
         if (lastSync) {
             document.getElementById('last-sync-dropbox').innerText = 
@@ -791,7 +871,14 @@ async function syncToDropbox() {
             return true;
         } else {
             const error = await response.json();
-            throw new Error(error.error_summary || 'Erreur upload');
+            console.error('Dropbox error:', error);
+            
+            if (error.error && error.error['.tag'] === 'invalid_access_token') {
+                alert('Token Dropbox invalide ou expiré. Veuillez vous reconnecter.');
+                disconnectDropbox();
+            } else {
+                throw new Error(error.error_summary || 'Erreur upload');
+            }
         }
     } catch (e) {
         console.error('Dropbox upload error:', e);
@@ -822,7 +909,6 @@ async function syncFromDropbox(silent = false) {
             const data = JSON.parse(text);
             
             if (data.logs) {
-                // Merge intelligent : garder les entrées locales plus récentes
                 const existingIds = new Set(logs.map(l => l.id));
                 const newLogs = data.logs.filter(l => !existingIds.has(l.id));
                 logs = [...newLogs, ...logs].sort((a, b) => new Date(b.date) - new Date(a.date)).slice(0, 100);
@@ -849,10 +935,15 @@ async function syncFromDropbox(silent = false) {
             updateDropboxStatus();
             return true;
         } else if (response.status === 409) {
-            // Fichier n'existe pas encore
             if (!silent) showSyncStatus('error', 'Aucune sauvegarde trouvée');
             return false;
         } else {
+            const error = await response.json();
+            if (error.error && error.error['.tag'] === 'invalid_access_token') {
+                if (!silent) alert('Token Dropbox invalide. Veuillez vous reconnecter.');
+                disconnectDropbox();
+                return false;
+            }
             throw new Error('Erreur download');
         }
     } catch (e) {
@@ -1233,6 +1324,9 @@ function openDrawer(id) {
     }
     if (id === 'cloud') {
         updateDropboxStatus();
+        // Reset error message
+        const errorDiv = document.getElementById('dropbox-error');
+        if (errorDiv) errorDiv.style.display = 'none';
     }
 }
 
