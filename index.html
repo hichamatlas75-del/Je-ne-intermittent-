@@ -16,76 +16,91 @@
 
         body {
             margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text);
-            height: 100vh; display: flex; flex-direction: column; overflow: hidden;
+            height: 100vh; display: flex; flex-direction: column; 
+            overflow: hidden; /* Bloque le scroll du body pour gérer le scroll interne */
         }
 
-        /* GLASSMORPHISM HEADER */
+        /* HEADER FIXE */
         .header {
-            padding: 20px; display: flex; justify-content: space-between; align-items: center;
-            background: rgba(9, 14, 26, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.05);
-            position: sticky; top: 0; z-index: 100;
+            padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(9, 14, 26, 0.95); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 1000;
         }
 
-        .profile-area { display: flex; align-items: center; gap: 12px; }
-        .profile-area img { width: 45px; height: 45px; border-radius: 15px; border: 2px solid var(--primary); object-fit: cover; }
-        .streak-badge { background: rgba(243, 156, 18, 0.2); color: var(--accent); padding: 4px 10px; border-radius: 10px; font-size: 0.7rem; font-weight: 800; }
+        .profile-area { display: flex; align-items: center; gap: 10px; }
+        .profile-area img { width: 42px; height: 42px; border-radius: 12px; border: 2px solid var(--primary); object-fit: cover; }
+        .streak-badge { background: rgba(243, 156, 18, 0.15); color: var(--accent); padding: 4px 8px; border-radius: 8px; font-size: 0.65rem; font-weight: 800; }
 
-        .container { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 100px; display: flex; flex-direction: column; gap: 20px; }
+        /* ZONE DE SCROLL LIBÉRÉE */
+        .scroll-container {
+            flex: 1; 
+            overflow-y: auto; /* Active le scroll ici */
+            -webkit-overflow-scrolling: touch; /* Scroll fluide sur iPhone */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding-bottom: 120px; /* ESPACE CRUCIAL : pour ne pas être caché par la barre du bas */
+        }
 
-        /* CIRCULAR TIMER */
+        /* TIMER DYNAMIQUE */
         .timer-card {
-            background: var(--card-bg); padding: 30px 20px; border-radius: 35px; text-align: center;
-            position: relative; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            background: var(--card-bg); padding: 25px 20px; border-radius: 30px; text-align: center;
+            position: relative; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 15px 30px rgba(0,0,0,0.3);
         }
 
-        .progress-ring { position: relative; width: 220px; height: 220px; margin: 0 auto; }
-        .progress-ring svg { transform: rotate(-90deg); width: 220px; height: 220px; }
+        .progress-ring { position: relative; width: 200px; height: 200px; margin: 0 auto; }
+        .progress-ring svg { transform: rotate(-90deg); width: 200px; height: 200px; }
         .progress-ring circle { fill: none; stroke-width: 12; stroke-linecap: round; }
         .circle-bg { stroke: rgba(255,255,255,0.05); }
-        .circle-val { stroke: var(--primary); transition: stroke-dashoffset 1s linear; stroke-dasharray: 628; stroke-dashoffset: 628; }
+        .circle-val { stroke: var(--primary); transition: stroke-dashoffset 1s linear; stroke-dasharray: 565; stroke-dashoffset: 565; }
 
         .timer-content { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
-        #countdown { font-size: 2.8rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
-        .status-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: var(--primary); letter-spacing: 1px; }
+        #countdown { font-size: 2.5rem; font-weight: 800; margin: 0; letter-spacing: -1px; }
+        .status-label { font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: var(--primary); }
 
-        /* QUICK STATS */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .stat-card { background: var(--card-bg); padding: 15px; border-radius: 20px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
-        .stat-card span { display: block; font-size: 0.65rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
-        .stat-card b { font-size: 1.1rem; color: #fff; }
+        /* STATS & WATER */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .stat-card { background: var(--card-bg); padding: 12px; border-radius: 18px; text-align: center; border: 1px solid rgba(255,255,255,0.05); }
+        .stat-card span { display: block; font-size: 0.6rem; color: #64748b; font-weight: 800; text-transform: uppercase; }
+        .stat-card b { font-size: 1rem; color: #fff; }
 
-        /* WATER TRACKER */
-        .water-card { background: linear-gradient(135deg, #3498db, #2980b9); padding: 20px; border-radius: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .water-info h4 { margin: 0; font-size: 1rem; }
-        .water-info p { margin: 2px 0 0; font-size: 0.75rem; opacity: 0.8; }
-        .water-btn { background: white; color: #3498db; border: none; width: 45px; height: 45px; border-radius: 15px; font-size: 1.5rem; font-weight: 800; cursor: pointer; }
+        .water-card { background: linear-gradient(135deg, #3498db, #2980b9); padding: 18px; border-radius: 22px; display: flex; justify-content: space-between; align-items: center; }
+        .water-btn { background: white; color: #3498db; border: none; width: 40px; height: 40px; border-radius: 12px; font-size: 1.4rem; font-weight: 800; cursor: pointer; }
 
-        /* PHASES */
-        .section-title { font-size: 0.9rem; font-weight: 800; color: #64748b; margin-bottom: -10px; }
+        /* PHASES INTERACTIVES */
+        .section-title { font-size: 0.85rem; font-weight: 800; color: #64748b; margin-bottom: -10px; }
         .phases-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .ph-box { background: var(--card-bg); padding: 15px 5px; border-radius: 18px; text-align: center; border: 1px solid transparent; opacity: 0.4; transition: 0.3s; }
-        .ph-box.active { opacity: 1; border-color: var(--primary); background: rgba(46, 204, 113, 0.15); }
-        .ph-box span { font-size: 0.55rem; font-weight: 800; display: block; margin-top: 5px; }
+        .ph-box { background: var(--card-bg); padding: 12px 5px; border-radius: 15px; text-align: center; opacity: 0.3; transition: 0.3s; border: 1px solid transparent; }
+        .ph-box.active { opacity: 1; border-color: var(--primary); background: rgba(46, 204, 113, 0.1); }
+        .ph-box i { font-size: 1.2rem; display: block; }
+        .ph-box span { font-size: 0.5rem; font-weight: 800; display: block; margin-top: 4px; color: #94a3b8; }
 
-        /* BOTTOM NAV */
+        /* INFO CARD */
+        .info-card { background: var(--card-bg); padding: 20px; border-radius: 22px; border-left: 4px solid var(--primary); min-height: 100px; }
+        #info-title { margin: 0; color: var(--primary); font-size: 0.9rem; font-weight: 800; }
+        #info-desc { font-size: 0.8rem; color: #94a3b8; margin-top: 5px; line-height: 1.4; }
+
+        /* NAV BAR FIXE */
         .nav-bar {
-            position: fixed; bottom: 0; width: 100%; background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px); display: flex; justify-content: space-around;
-            padding: 15px 0 30px; border-top: 1px solid rgba(255,255,255,0.05);
+            position: fixed; bottom: 0; width: 100%; background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(15px); display: flex; justify-content: space-around;
+            padding: 12px 0 25px; border-top: 1px solid rgba(255,255,255,0.1); z-index: 2000;
         }
-        .nav-item { font-size: 1.5rem; opacity: 0.3; transition: 0.3s; cursor: pointer; }
-        .nav-item.active { opacity: 1; color: var(--primary); transform: translateY(-5px); }
+        .nav-item { font-size: 1.4rem; opacity: 0.3; transition: 0.2s; cursor: pointer; }
+        .nav-item.active { opacity: 1; color: var(--primary); }
 
-        /* DRAWER FOR WEIGHT */
+        /* DRAWER POIDS */
         .drawer {
-            position: fixed; bottom: 0; left:0; width: 100%; background: #0f172a; height: 75vh;
-            border-radius: 35px 35px 0 0; transform: translateY(100%); transition: 0.5s; z-index: 1000; padding: 25px;
+            position: fixed; bottom: 0; width: 100%; background: #0f172a; height: 60vh;
+            border-radius: 30px 30px 0 0; transform: translateY(100%); transition: 0.4s ease-out; z-index: 3000; padding: 25px;
         }
         .drawer.open { transform: translateY(0); }
-        .drawer-handle { width: 50px; height: 5px; background: #334155; border-radius: 10px; margin: -10px auto 20px; }
+        .drawer-handle { width: 40px; height: 4px; background: #334155; border-radius: 10px; margin: -10px auto 20px; }
+        
+        .btn-save { background: var(--primary); border: none; width: 100%; padding: 15px; border-radius: 15px; color: white; font-weight: 800; font-size: 1rem; margin-top: 15px; }
 
-        input { width: 100%; background: #1e293b; border: none; border-radius: 15px; padding: 18px; color: white; font-size: 1rem; margin-top: 10px; }
-        .btn-main { background: var(--primary); border: none; width: 100%; padding: 18px; border-radius: 18px; color: white; font-weight: 800; margin-top: 15px; font-size: 1rem; }
+        canvas { width: 100% !important; max-height: 220px; }
     </style>
 </head>
 <body>
@@ -94,20 +109,21 @@
         <div class="profile-area">
             <img src="votre-photo.jpg" onerror="this.src='https://ui-avatars.com/api/?name=Hicham&background=2ecc71&color=fff'">
             <div>
-                <div style="font-weight: 800; font-size: 1rem;">Bonjour Hicham</div>
-                <div class="streak-badge">🔥 12 JOURS DE SÉRIE</div>
+                <div style="font-weight: 800; font-size: 0.9rem;">Hicham</div>
+                <div class="streak-badge">🔥 12 JOURS</div>
             </div>
         </div>
-        <div id="top-clock" style="font-weight: 800; opacity: 0.5; font-size: 0.9rem;">00:00</div>
+        <div id="top-clock" style="font-weight: 800; opacity: 0.4; font-size: 0.8rem;">00:00</div>
     </div>
 
-    <div class="container" id="main-view">
-        <!-- TIMER -->
+    <!-- ZONE DE DÉFILEMENT -->
+    <div class="scroll-container" id="main-view">
+        
         <div class="timer-card">
             <div class="progress-ring">
-                <svg>
-                    <circle class="circle-bg" cx="110" cy="110" r="100"></circle>
-                    <circle id="circle-progress" class="circle-val" cx="110" cy="110" r="100"></circle>
+                <svg viewBox="0 0 200 200">
+                    <circle class="circle-bg" cx="100" cy="100" r="90"></circle>
+                    <circle id="circle-progress" class="circle-val" cx="100" cy="100" r="90" stroke-dasharray="565" stroke-dashoffset="565"></circle>
                 </svg>
                 <div class="timer-content">
                     <span id="status-label" class="status-label">JEÛNE ACTIF</span>
@@ -116,81 +132,77 @@
             </div>
         </div>
 
-        <!-- STATS -->
         <div class="stats-grid">
-            <div class="stat-card"><span>Fenêtre Repas</span><b>10h - 16h</b></div>
-            <div class="stat-card"><span>Objectif</span><b>18 Heures</b></div>
+            <div class="stat-card"><span>Manger</span><b>10h - 16h</b></div>
+            <div class="stat-card"><span>Jeûner</span><b>16h - 10h</b></div>
         </div>
 
-        <!-- WATER -->
         <div class="water-card">
-            <div class="water-info">
-                <h4>Hydratation</h4>
-                <p>Objectif: 2.5L (<span id="water-count">0</span> verres)</p>
+            <div style="color:white;">
+                <h4 style="margin:0; font-size:0.9rem;">Hydratation</h4>
+                <p style="margin:0; font-size:0.75rem; opacity:0.8;"><span id="water-count">0</span> verres bus</p>
             </div>
             <button class="water-btn" onclick="addWater()">+</button>
         </div>
 
-        <!-- PHASES -->
-        <div class="section-title">PHASE ACTUELLE</div>
+        <div class="section-title">PHASE DU MÉTABOLISME</div>
         <div class="phases-row">
-            <div id="p1" class="ph-box"><i>🧪</i><span>SUCRE</span></div>
-            <div id="p2" class="ph-box"><i>📉</i><span>INSULINE</span></div>
-            <div id="p3" class="ph-box"><i>🔥</i><span>KÉTOSE</span></div>
-            <div id="p4" class="ph-box"><i>✨</i><span>AUTO-P</span></div>
+            <div id="p1" class="ph-box" onclick="manualPhase(1)"><i>🧪</i><span>SUCRE</span></div>
+            <div id="p2" class="ph-box" onclick="manualPhase(2)"><i>📉</i><span>INSULINE</span></div>
+            <div id="p3" class="ph-box" onclick="manualPhase(3)"><i>🔥</i><span>KÉTOSE</span></div>
+            <div id="p4" class="ph-box" onclick="manualPhase(4)"><i>✨</i><span>AUTO-P</span></div>
         </div>
 
-        <!-- INFO CARD -->
-        <div id="info-card" style="background:var(--card-bg); padding:20px; border-radius:25px; border-left:4px solid var(--primary);">
-            <h4 id="info-title" style="margin:0; font-size:0.9rem; color:var(--primary);">Analyse en cours...</h4>
-            <p id="info-desc" style="font-size: 0.8rem; color: #94a3b8; margin: 5px 0 0; line-height: 1.4;"></p>
+        <div class="info-card" id="info-card">
+            <h4 id="info-title">Analyse...</h4>
+            <p id="info-desc">Mise à jour des données.</p>
         </div>
+
     </div>
 
-    <!-- GRAPH VIEW -->
-    <div class="container" id="graph-view" style="display:none;">
-        <h2 style="font-weight:800;">Tes progrès</h2>
-        <div style="background:var(--card-bg); padding:20px; border-radius:25px;">
+    <!-- VUE GRAPHIQUE (Cachée par défaut) -->
+    <div class="scroll-container" id="graph-view" style="display:none;">
+        <h3 style="font-weight:800;">Évolution du poids</h3>
+        <div style="background:var(--card-bg); padding:15px; border-radius:25px; border: 1px solid rgba(255,255,255,0.1);">
             <canvas id="weightChart"></canvas>
         </div>
     </div>
 
-    <!-- BOTTOM NAV -->
+    <!-- NAV BAR FIXE -->
     <div class="nav-bar">
-        <div class="nav-item active" onclick="showTab('main')">🏠</div>
+        <div class="nav-item active" id="nav-home" onclick="showTab('main')">🏠</div>
         <div class="nav-item" onclick="toggleDrawer()">⚖️</div>
-        <div class="nav-item" onclick="showTab('graph')">📈</div>
+        <div class="nav-item" id="nav-graph" onclick="showTab('graph')">📈</div>
     </div>
 
     <!-- DRAWER POIDS -->
     <div class="drawer" id="drawer">
         <div class="drawer-handle" onclick="toggleDrawer()"></div>
-        <h3 style="margin:0;">Nouveau poids</h3>
-        <p style="color:#64748b; font-size:0.8rem;">Enregistre ta pesée du matin.</p>
-        <input type="number" id="weight-input" placeholder="Ex: 84.5 kg" step="0.1">
-        <button class="btn-main" onclick="saveWeight()">ENREGISTRER</button>
+        <h3 style="margin:0;">Ta pesée</h3>
+        <input type="number" id="weight-input" placeholder="Poids en kg (ex: 83.4)" step="0.1">
+        <button class="btn-save" onclick="saveWeight()">ENREGISTRER</button>
     </div>
 
 <script>
-/* ================= LOGIQUE CORE 18/6 ================= */
+/* ================= LOGIQUE CORE ================= */
 const E_START = 10; const E_END = 16;
-let verresEau = parseInt(localStorage.getItem('h_eau') || 0);
-document.getElementById('water-count').innerText = verresEau;
+let water = parseInt(localStorage.getItem('h_eau') || 0);
+document.getElementById('water-count').innerText = water;
 
 function update() {
     const now = new Date();
     const h = now.getHours(); const m = now.getMinutes(); const s = now.getSeconds();
-    const totalS = h*3600 + m*60 + s;
+    const totS = h*3600 + m*60 + s;
     document.getElementById('top-clock').innerText = now.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
 
-    let isFasting = true; let rem = 0; let totalWin = 18*3600;
+    let isF = true; let rem = 0; let totWin = 18*3600;
 
     if(h >= E_START && h < E_END) {
-        isFasting = false; rem = (E_END*3600) - totalS; totalWin = 6*3600;
-        setUI("REPAS EN COURS 🍽️", "var(--accent)");
+        isF = false; rem = (E_END*3600) - totS; totWin = 6*3600;
+        setUI("FENÊTRE REPAS 🍽️", "var(--accent)");
         updatePhases(-1);
     } else {
-        isFasting = true; rem = h >= E_END ? (86400 - totalS + E_START*3600) : (E_START*3600 - totalS);
+        isF = true; rem = h >= E_END ? (86400 - totS + E_START*3600) : (E_START*3600 - totS);
         setUI("JEÛNE ACTIF 🔥", "var(--primary)");
         let fH = h >= 16 ? h - 16 : h + 8;
         updatePhases(fH);
@@ -199,72 +211,71 @@ function update() {
     const hr = Math.floor(rem/3600); const mn = Math.floor((rem%3600)/60); const sc = rem%60;
     document.getElementById('countdown').innerText = `${String(hr).padStart(2,'0')}:${String(mn).padStart(2,'0')}:${String(sc).padStart(2,'0')}`;
 
-    // Update Progress Ring
     const circle = document.getElementById('circle-progress');
-    const offset = 628 - (rem / totalWin) * 628;
+    const offset = 565 - (rem / totWin) * 565;
     circle.style.strokeDashoffset = offset;
-    circle.style.stroke = isFasting ? "var(--primary)" : "var(--accent)";
+    circle.style.stroke = isF ? "var(--primary)" : "var(--accent)";
 }
 
-function setUI(txt, col) {
-    document.getElementById('status-label').innerText = txt;
-    document.getElementById('status-label').style.color = col;
-    document.getElementById('countdown').style.color = col;
+function setUI(t, c) {
+    document.getElementById('status-label').innerText = t;
+    document.getElementById('status-label').style.color = c;
+    document.getElementById('countdown').style.color = c;
+    document.getElementById('info-card').style.borderColor = c;
 }
 
+const pTexts = {
+    1: ["Stabilisation", "Ton corps traite ton dernier repas. L'insuline est encore active."],
+    2: ["Baisse d'insuline", "Ton corps puise dans ses réserves de sucre stockées dans le foie."],
+    3: ["Kétose Active", "Brûlage des graisses ! Ton corps transforme ton gras en énergie pure."],
+    4: ["Autophagie", "Tes cellules se nettoient et se réparent. C'est l'étape de santé ultime."]
+};
+
+let userClick = false;
 function updatePhases(h) {
+    if(userClick) return;
     document.querySelectorAll('.ph-box').forEach(b => b.classList.remove('active'));
-    const t = document.getElementById('info-title'); const d = document.getElementById('info-desc');
-    
-    if(h < 0) {
-        t.innerText = "Recharge Nutritive"; d.innerText = "Focus sur les protéines et les fibres Hicham. Prépare ton corps pour le prochain jeûne.";
-    } else if(h < 4) {
-        document.getElementById('p1').classList.add('active');
-        t.innerText = "Stabilisation du Sucre"; d.innerText = "Ton sang se nettoie. Le corps termine sa digestion.";
-    } else if(h < 12) {
-        document.getElementById('p2').classList.add('active');
-        t.innerText = "Baisse d'Insuline"; d.innerText = "Phase cruciale: ton insuline baisse, ouvrant la porte aux graisses stockées.";
-    } else if(h < 16) {
-        document.getElementById('p3').classList.add('active');
-        t.innerText = "Mode Kétose"; d.innerText = "Énergie maximale ! Ton corps brûle tes graisses pour fonctionner.";
-    } else {
-        document.getElementById('p4').classList.add('active');
-        t.innerText = "Autophagie Cellulaire"; d.innerText = "Régénération profonde. Tes cellules s'auto-nettoient. Un boost de santé incroyable.";
-    }
+    let p = 1;
+    if(h < 0) { setP("Repas", "Nourris tes muscles Hicham !"); return; }
+    if(h >= 16) p = 4; else if(h >= 12) p = 3; else if(h >= 4) p = 2;
+    document.getElementById('p'+p).classList.add('active');
+    setP(pTexts[p][0], pTexts[p][1]);
 }
+
+function manualPhase(id) {
+    userClick = true;
+    document.querySelectorAll('.ph-box').forEach(b => b.classList.remove('active'));
+    document.getElementById('p'+id).classList.add('active');
+    setP(pTexts[id][0], pTexts[id][1]);
+    setTimeout(() => { userClick = false; }, 10000); // Repasse en auto après 10s
+}
+
+function setP(t, d) { document.getElementById('info-title').innerText = t; document.getElementById('info-desc').innerText = d; }
 
 /* ================= ACTIONS ================= */
-function addWater() {
-    verresEau++;
-    localStorage.setItem('h_eau', verresEau);
-    document.getElementById('water-count').innerText = verresEau;
-}
-
+function addWater() { water++; localStorage.setItem('h_eau', water); document.getElementById('water-count').innerText = water; }
 function toggleDrawer() { document.getElementById('drawer').classList.toggle('open'); }
-
-function showTab(name) {
-    document.getElementById('main-view').style.display = name === 'main' ? 'flex' : 'none';
-    document.getElementById('graph-view').style.display = name === 'graph' ? 'flex' : 'none';
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    event.currentTarget.classList.add('active');
-    if(name === 'graph') loadChart();
+function showTab(t) {
+    document.getElementById('main-view').style.display = t === 'main' ? 'flex' : 'none';
+    document.getElementById('graph-view').style.display = t === 'graph' ? 'flex' : 'none';
+    document.getElementById('nav-home').classList.toggle('active', t === 'main');
+    document.getElementById('nav-graph').classList.toggle('active', t === 'graph');
+    if(t === 'graph') loadChart();
 }
 
 let weights = JSON.parse(localStorage.getItem('h_w_pro') || '[]');
 function saveWeight() {
-    const val = document.getElementById('weight-input').value;
-    if(!val) return;
-    weights.push({d: new Date().toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}), v: parseFloat(val)});
+    const v = document.getElementById('weight-input').value; if(!v) return;
+    weights.push({d: new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'short'}), v: parseFloat(v)});
     localStorage.setItem('h_w_pro', JSON.stringify(weights));
-    toggleDrawer();
-    alert("Poids enregistré !");
+    toggleDrawer(); alert("Enregistré !");
 }
 
-let chart = null;
+let ch = null;
 function loadChart() {
     const ctx = document.getElementById('weightChart').getContext('2d');
-    if(chart) chart.destroy();
-    chart = new Chart(ctx, {
+    if(ch) ch.destroy();
+    ch = new Chart(ctx, {
         type: 'line',
         data: { labels: weights.slice(-7).map(x=>x.d), datasets: [{label:'kg', data:weights.slice(-7).map(x=>x.v), borderColor:'#2ecc71', tension:0.4, fill:true, backgroundColor:'rgba(46,204,113,0.1)'}]},
         options: { responsive:true, maintainAspectRatio:false, plugins: { legend: { display: false } } }
