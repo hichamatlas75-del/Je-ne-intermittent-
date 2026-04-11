@@ -299,7 +299,57 @@ input[type=password]{letter-spacing:.1em;}
 .sync-badge.err .sdot2{background:var(--danger);}
 .sync-badge.pending .sdot2{background:var(--amber);animation:pls 1.5s infinite;}
 
-/* ──────────────────────── NAV ──────────────────────── */
+/* ──────────────────────── TABLEAU POIDS HEBDOMADAIRE ──────────────────────── */
+.weight-section{background:var(--white);border-radius:22px;border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow);}
+.ws-header{padding:14px 16px;border-bottom:1px solid var(--ink-10);display:flex;justify-content:space-between;align-items:center;}
+.ws-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
+.ws-actions{display:flex;gap:7px;}
+.ws-btn{height:32px;padding:0 12px;border-radius:9px;border:none;font-size:.72rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;transition:all .18s;}
+.ws-btn-add{background:var(--amber);color:#fff;}
+.ws-btn-exp{background:var(--cream-deep);color:var(--ink-60);border:1px solid var(--ink-10);}
+.ws-btn:active{transform:scale(.95);}
+/* Formulaire saisie rapide */
+.ws-quick-form{padding:12px 14px;background:var(--amber-soft);border-bottom:1px solid rgba(200,128,58,.15);display:none;gap:8px;align-items:flex-end;flex-wrap:wrap;}
+.ws-quick-form.open{display:flex;}
+.ws-field{display:flex;flex-direction:column;gap:3px;flex:1;min-width:100px;}
+.ws-field label{font-size:.65rem;font-weight:800;color:var(--ink-60);text-transform:uppercase;letter-spacing:.05em;}
+.ws-field input{background:var(--white);border:1.5px solid rgba(200,128,58,.25);padding:9px 11px;border-radius:10px;font-size:.9rem;font-weight:700;color:var(--ink);font-family:'Nunito',sans-serif;margin:0;width:100%;}
+.ws-field input:focus{border-color:var(--amber);outline:none;}
+.ws-confirm{height:40px;padding:0 16px;border-radius:11px;background:var(--amber);color:#fff;border:none;font-weight:800;font-size:.82rem;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;transition:all .18s;align-self:flex-end;}
+.ws-confirm:active{transform:scale(.95);}
+/* Tableau */
+.ws-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.ws-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.ws-table thead tr{background:var(--cream-deep);}
+.ws-table th{padding:9px 12px;text-align:left;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-60);white-space:nowrap;}
+.ws-table th:last-child{text-align:center;}
+.ws-table td{padding:10px 12px;border-bottom:1px solid var(--ink-05);vertical-align:middle;}
+.ws-table tbody tr:last-child td{border-bottom:none;}
+.ws-table tbody tr:hover{background:var(--cream);}
+.td-week{font-size:.65rem;font-weight:800;color:var(--ink-30);white-space:nowrap;}
+.td-date{font-weight:700;color:var(--ink);white-space:nowrap;}
+.td-poids{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:var(--ink);}
+.td-delta{font-size:.8rem;font-weight:800;white-space:nowrap;}
+.td-delta.loss{color:var(--sage);}
+.td-delta.gain{color:var(--danger);}
+.td-delta.same{color:var(--ink-30);}
+.td-trend{text-align:center;font-size:1rem;}
+.td-del{text-align:center;}
+.btn-del{background:transparent;border:none;color:var(--ink-30);cursor:pointer;font-size:.9rem;padding:4px 8px;border-radius:6px;transition:all .18s;line-height:1;}
+.btn-del:hover{background:rgba(201,64,64,.1);color:var(--danger);}
+.ws-empty{padding:28px;text-align:center;color:var(--ink-60);font-size:.82rem;}
+.ws-empty .ei{font-size:2rem;margin-bottom:8px;opacity:.3;}
+/* BMI indicator */
+.bmi-strip{padding:10px 14px;background:var(--cream-deep);border-top:1px solid var(--ink-10);display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.bmi-label{font-size:.68rem;font-weight:800;color:var(--ink-60);text-transform:uppercase;letter-spacing:.06em;}
+.bmi-value{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;}
+.bmi-tag{font-size:.68rem;font-weight:800;padding:2px 8px;border-radius:10px;}
+.bmi-tag.under{background:var(--slate-light);color:var(--slate);}
+.bmi-tag.normal{background:var(--sage-light);color:var(--sage);}
+.bmi-tag.over{background:var(--amber-soft);color:var(--amber-dark);}
+.bmi-tag.obese{background:rgba(201,64,64,.1);color:var(--danger);}
+.ws-footer{padding:10px 14px;background:var(--cream-deep);border-top:1px solid var(--ink-10);font-size:.72rem;color:var(--ink-60);display:flex;justify-content:space-between;align-items:center;}
+.ws-footer strong{color:var(--ink);}
 .nav{position:fixed;bottom:0;left:0;right:0;background:rgba(250,247,242,.97);display:flex;justify-content:space-around;padding:8px 0;padding-bottom:max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--ink-10);z-index:500;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
 .ni{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink-30);cursor:pointer;padding:5px 12px;border-radius:13px;flex:1;transition:all .18s;user-select:none;}
 .ni-ic{font-size:1.2rem;} .ni-lb{font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;}
@@ -474,6 +524,60 @@ input[type=password]{letter-spacing:.1em;}
   </div>
   <div class="chart-card"><canvas id="weightChart"></canvas></div>
   <button class="btn btn-amber btn-full" onclick="openDrawer('poids')">⚖️ Enregistrer mon poids</button>
+
+  <!-- ═══ TABLEAU HEBDOMADAIRE POIDS ═══ -->
+  <div class="weight-section">
+    <!-- En-tête -->
+    <div class="ws-header">
+      <span class="ws-title">📊 Suivi Hebdomadaire du Poids</span>
+      <div class="ws-actions">
+        <button class="ws-btn ws-btn-exp" onclick="exportWeightCSV()" title="Exporter CSV">⬇️ CSV</button>
+        <button class="ws-btn ws-btn-add" onclick="toggleWeightForm()">+ Ajouter</button>
+      </div>
+    </div>
+    <!-- Formulaire saisie rapide -->
+    <div class="ws-quick-form" id="ws-quick-form">
+      <div class="ws-field">
+        <label>Date</label>
+        <input type="date" id="wt-date-inp">
+      </div>
+      <div class="ws-field" style="max-width:110px;">
+        <label>Poids (kg)</label>
+        <input type="number" id="wt-poids-inp" step="0.1" min="30" max="300" placeholder="72.5" inputmode="decimal">
+      </div>
+      <div class="ws-field" style="max-width:110px;">
+        <label>Taille (cm)</label>
+        <input type="number" id="wt-height-inp" step="1" min="100" max="250" placeholder="175" inputmode="numeric">
+      </div>
+      <button class="ws-confirm" onclick="saveWeightManual()">✓ Valider</button>
+    </div>
+    <!-- Tableau -->
+    <div class="ws-table-wrap">
+      <table class="ws-table">
+        <thead>
+          <tr>
+            <th>Semaine</th>
+            <th>Date</th>
+            <th>Poids</th>
+            <th>Évolution</th>
+            <th>Tendance</th>
+            <th>IMC</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="wt-tbody">
+          <tr><td colspan="7"><div class="ws-empty"><div class="ei">⚖️</div><p>Aucune pesée enregistrée</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Récap stats en bas -->
+    <div class="ws-footer" id="wt-footer" style="display:none;">
+      <span>Total pesées : <strong id="wt-count">0</strong></span>
+      <span>Perte/gain : <strong id="wt-total-delta">--</strong></span>
+      <span>Moyenne : <strong id="wt-avg">--</strong> kg</span>
+    </div>
+  </div>
+
   <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex-shrink:0;">Les 8 Phases Métaboliques</div>
 
   <div class="phase-sheet">
@@ -855,7 +959,7 @@ function switchTab(t) {
     $(`nav-${v}`)?.classList.toggle('active', v===t);
   });
   if(t==='ai')      { setAIMode(S.aiMode); scrollChat(); }
-  else if(t==='stats')   { setTimeout(() => { initChart(); updateStats(); }, 80); }
+  else if(t==='stats')   { setTimeout(() => { initChart(); updateStats(); renderWeightTable(); }, 80); }
   else if(t==='history') { updateFullLogs(); updateCloudUI(); }
 }
 
@@ -1111,12 +1215,13 @@ function saveManualSleep() {
 function saveWeight() {
   const v=parseFloat($('w-input')?.value);
   if(!v||isNaN(v)||v<30||v>300){alert('Poids entre 30 et 300 kg');return;}
-  S.weights.push({d:new Date().toISOString(),v:parseFloat(v.toFixed(1))});
+  S.weights.push({d:new Date().toISOString(),v:parseFloat(v.toFixed(1)),h:null});
+  S.weights.sort((a,b)=>new Date(a.d)-new Date(b.d));
   DB.sj(K.W,S.weights);
   $('w-input').value='';
   closeDrawers();
   addLog('POIDS',`${v.toFixed(1)} kg`,'weight');
-  initChart(); updateStats();
+  initChart(); updateStats(); renderWeightTable();
   toast('Poids enregistré ⚖️',true);
 }
 function saveSettings() {
@@ -1148,6 +1253,204 @@ function updateStats() {
   set('sv-streak',calcStreak());
   set('sv-best',S.bestFast>0?F.h(S.bestFast):'--');
 }
+// ─── TABLEAU POIDS HEBDOMADAIRE ───
+function toggleWeightForm() {
+  const form = $('ws-quick-form');
+  if (!form) return;
+  const isOpen = form.classList.contains('open');
+  form.classList.toggle('open', !isOpen);
+  if (!isOpen) {
+    // Pré-remplir date d'aujourd'hui
+    const today = new Date();
+    const di = $('wt-date-inp');
+    if (di) di.value = today.toISOString().slice(0,10);
+    // Pré-remplir taille si déjà mémorisée
+    const savedH = DB.g('HICHAM_HEIGHT_v4', null);
+    const hi = $('wt-height-inp');
+    if (hi && savedH) hi.value = savedH;
+    $('wt-poids-inp')?.focus();
+  }
+}
+
+function saveWeightManual() {
+  const dateVal  = $('wt-date-inp')?.value;
+  const poidsVal = parseFloat($('wt-poids-inp')?.value);
+  const hauteur  = parseInt($('wt-height-inp')?.value || '0');
+
+  if (!dateVal) { alert('Sélectionnez une date'); return; }
+  if (!poidsVal || isNaN(poidsVal) || poidsVal < 30 || poidsVal > 300) {
+    alert('Poids invalide (30–300 kg)'); return;
+  }
+
+  // Mémoriser la taille pour les prochaines fois
+  if (hauteur >= 100 && hauteur <= 250) {
+    DB.s('HICHAM_HEIGHT_v4', String(hauteur));
+  }
+
+  // Construire l'entrée
+  const entry = {
+    d: new Date(dateVal + 'T12:00:00').toISOString(),
+    v: parseFloat(poidsVal.toFixed(1)),
+    h: hauteur || null  // taille optionnelle pour IMC
+  };
+
+  // Éviter doublons sur même date
+  const sameDateIdx = S.weights.findIndex(w =>
+    new Date(w.d).toDateString() === new Date(entry.d).toDateString()
+  );
+  if (sameDateIdx >= 0) {
+    if (!confirm('Une pesée existe déjà pour cette date. Remplacer ?')) return;
+    S.weights[sameDateIdx] = entry;
+  } else {
+    S.weights.push(entry);
+  }
+
+  // Trier par date
+  S.weights.sort((a,b) => new Date(a.d) - new Date(b.d));
+  DB.sj(K.W, S.weights);
+
+  // Reset form
+  $('wt-poids-inp').value = '';
+  $('ws-quick-form')?.classList.remove('open');
+
+  renderWeightTable();
+  initChart();
+  updateStats();
+  addLog('POIDS', `${poidsVal.toFixed(1)} kg · ${new Date(dateVal).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`, 'weight');
+  toast(`Pesée enregistrée : ${poidsVal.toFixed(1)} kg ⚖️`, true);
+}
+
+function deleteWeight(idx) {
+  if (!confirm('Supprimer cette pesée ?')) return;
+  S.weights.splice(idx, 1);
+  DB.sj(K.W, S.weights);
+  renderWeightTable();
+  initChart();
+  updateStats();
+  toast('Pesée supprimée', true);
+}
+
+function calcIMC(poids, hauteurCm) {
+  if (!hauteurCm || hauteurCm < 100) return null;
+  const h = hauteurCm / 100;
+  return +(poids / (h * h)).toFixed(1);
+}
+
+function imcTag(imc) {
+  if (!imc) return '';
+  if (imc < 18.5) return `<span class="bmi-tag under">${imc} — Insuffisant</span>`;
+  if (imc < 25)   return `<span class="bmi-tag normal">${imc} — Normal ✓</span>`;
+  if (imc < 30)   return `<span class="bmi-tag over">${imc} — Surpoids</span>`;
+  return `<span class="bmi-tag obese">${imc} — Obésité</span>`;
+}
+
+function getWeekNumber(date) {
+  const d = new Date(date);
+  d.setHours(0,0,0,0);
+  d.setDate(d.getDate() + 4 - (d.getDay() || 7));
+  const yearStart = new Date(d.getFullYear(), 0, 1);
+  return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+}
+
+function renderWeightTable() {
+  const tbody = $('wt-tbody');
+  const footer = $('wt-footer');
+  if (!tbody) return;
+
+  const weights = S.weights;
+  const savedH = parseInt(DB.g('HICHAM_HEIGHT_v4', '0') || '0');
+
+  if (!weights.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="ws-empty"><div class="ei">⚖️</div><p>Aucune pesée — cliquez sur "+ Ajouter"</p></div></td></tr>`;
+    if (footer) footer.style.display = 'none';
+    return;
+  }
+
+  // Afficher les 16 dernières entrées (ordre décroissant)
+  const display = [...weights].reverse().slice(0, 16);
+
+  let html = '';
+  display.forEach((w, i) => {
+    const realIdx = weights.length - 1 - i; // index réel pour suppression
+    const date = new Date(w.d);
+    const dateStr = date.toLocaleDateString('fr-FR', {day:'numeric', month:'short', year:'2-digit'});
+    const weekNum = getWeekNumber(date);
+    const weekStr = `S${String(weekNum).padStart(2,'0')}`;
+
+    // Évolution par rapport à l'entrée précédente (dans l'ordre original)
+    const prevIdx = realIdx - 1;
+    let deltaHtml = '<span class="td-delta same">—</span>';
+    let trendIcon = '→';
+    if (prevIdx >= 0) {
+      const delta = +(w.v - weights[prevIdx].v).toFixed(1);
+      if (delta < 0) {
+        deltaHtml = `<span class="td-delta loss">▼ ${Math.abs(delta)} kg</span>`;
+        trendIcon = '📉';
+      } else if (delta > 0) {
+        deltaHtml = `<span class="td-delta gain">▲ ${delta} kg</span>`;
+        trendIcon = '📈';
+      } else {
+        trendIcon = '➡️';
+      }
+    }
+
+    // IMC
+    const hgt = w.h || savedH;
+    const imc = calcIMC(w.v, hgt);
+    const imcCell = imc ? imcTag(imc) : '<span style="color:var(--ink-30);font-size:.7rem;">—</span>';
+
+    html += `<tr>
+      <td><span class="td-week">${weekStr}</span></td>
+      <td><span class="td-date">${dateStr}</span></td>
+      <td><span class="td-poids">${w.v}</span> <span style="font-size:.7rem;color:var(--ink-60);">kg</span></td>
+      <td>${deltaHtml}</td>
+      <td class="td-trend">${trendIcon}</td>
+      <td>${imcCell}</td>
+      <td class="td-del"><button class="btn-del" onclick="deleteWeight(${realIdx})" title="Supprimer">✕</button></td>
+    </tr>`;
+  });
+
+  tbody.innerHTML = html;
+
+  // Footer récap
+  if (footer && weights.length > 0) {
+    footer.style.display = 'flex';
+    const total = weights.length;
+    const first = weights[0].v;
+    const last  = weights[weights.length - 1].v;
+    const totalDelta = +(last - first).toFixed(1);
+    const avg = +(weights.reduce((s,w) => s + w.v, 0) / total).toFixed(1);
+    const deltaClass = totalDelta < 0 ? 'color:var(--sage)' : totalDelta > 0 ? 'color:var(--danger)' : '';
+    set('wt-count', total);
+    const de = $('wt-total-delta');
+    if (de) de.innerHTML = `<span style="${deltaClass}">${totalDelta > 0 ? '+' : ''}${totalDelta} kg</span>`;
+    set('wt-avg', avg);
+  }
+}
+
+function exportWeightCSV() {
+  if (!S.weights.length) { toast('Aucune donnée à exporter', false); return; }
+  const savedH = DB.g('HICHAM_HEIGHT_v4', '');
+  const rows = ['Semaine,Date,Poids (kg),Évolution,IMC'];
+  S.weights.forEach((w, i) => {
+    const date = new Date(w.d);
+    const dateStr = date.toLocaleDateString('fr-FR');
+    const week = 'S' + String(getWeekNumber(date)).padStart(2,'0');
+    const delta = i > 0 ? (+(w.v - S.weights[i-1].v).toFixed(1)) : '';
+    const deltaStr = delta !== '' ? (delta > 0 ? '+'+delta : delta) : '—';
+    const hgt = w.h || parseInt(savedH || '0');
+    const imc = calcIMC(w.v, hgt);
+    rows.push(`${week},${dateStr},${w.v},${deltaStr},${imc || '—'}`);
+  });
+  const csv = rows.join('\n');
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'hicham-poids-' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click(); URL.revokeObjectURL(url);
+  toast('Export CSV téléchargé ⬇️', true);
+}
+
 function calcStreak() {
   let n=0; const d=new Date(); d.setHours(0,0,0,0);
   const done=new Set(S.logs.filter(l=>['FIN JEÛNE','OBJECTIF 18H'].includes(l.type)).map(l=>new Date(l.time).toDateString()));
@@ -1308,7 +1611,9 @@ async function syncUp() {
   const payload = JSON.stringify({
     version:'4.3', timestamp:new Date().toISOString(),
     weights:S.weights, logs:S.logs, settings:S.settings,
-    fast:S.fast, phase:S.phase, bestFast:S.bestFast, checkin:DB.gj(K.CI,null)
+    fast:S.fast, phase:S.phase, bestFast:S.bestFast,
+    checkin:DB.gj(K.CI,null),
+    height:DB.g('HICHAM_HEIGHT_v4', null)   // taille pour calcul IMC
   });
   try {
     const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
@@ -1361,10 +1666,11 @@ async function syncDown() {
     if(typeof data.phase==='number')    S.phase   = data.phase;
     if(typeof data.bestFast==='number') S.bestFast= data.bestFast;
     if(data.checkin) DB.sj(K.CI, data.checkin);
+    if(data.height)  DB.s('HICHAM_HEIGHT_v4', String(data.height)); // restaure la taille
     DB.sj(K.W,S.weights); DB.sj(K.L,S.logs);
     DB.sj(K.SET,S.settings); DB.sj(K.FS,S.fast); DB.sj(K.BEST,S.bestFast);
     if(S.fast.isFasting&&S.fast.startTime){applyPhaseUI();startTimer();}else resetUI();
-    updateLogs(); updateFullLogs(); checkCheckin(); updateStats();
+    updateLogs(); updateFullLogs(); checkCheckin(); updateStats(); renderWeightTable();
     DB.s(K.SYNC_TS, new Date().toISOString());
     updateCloudUI();
     toast('Données restaurées ✅', true);
