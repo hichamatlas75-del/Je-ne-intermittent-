@@ -233,18 +233,28 @@ input[type=password]{letter-spacing:.1em;}
 .inp-lbl{font-size:.75rem;font-weight:800;color:var(--ink-60);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;}
 
 /* ──────────────────────── AI VIEW ──────────────────────── */
-.ai-sw{display:flex;gap:3px;background:var(--parchment);padding:3px;border-radius:15px;margin-bottom:11px;flex-shrink:0;}
+.ai-sw{display:flex;gap:3px;background:var(--parchment);padding:3px;border-radius:15px;margin-bottom:10px;flex-shrink:0;}
 .aisw{flex:1;padding:10px 7px;border:none;background:transparent;border-radius:11px;font-weight:800;font-size:.76rem;color:var(--ink-60);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .18s;font-family:'Nunito',sans-serif;}
 .aisw.active{background:var(--white);color:var(--violet);box-shadow:0 2px 7px var(--ink-10);}
 .aisw.sr.active{color:var(--slate);}
-.ai-hero{background:linear-gradient(135deg,var(--violet-light),var(--cream));border:1.5px solid rgba(138,109,174,.16);padding:20px;border-radius:24px;text-align:center;flex-shrink:0;transition:all .4s;}
-.ai-hero.sm{background:linear-gradient(135deg,var(--slate-light),var(--cream));border-color:rgba(123,140,174,.16);}
-.ai-orb{width:64px;height:64px;border-radius:50%;margin:0 auto 11px;background:linear-gradient(135deg,var(--violet),#B09ACE);display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 5px 20px var(--violet-glow);transition:all .4s;}
+/* AI hero — compact bar (pas de grande carte) */
+.ai-hero{
+  background:var(--violet-light);border:1.5px solid rgba(138,109,174,.16);
+  padding:10px 14px;border-radius:16px;
+  display:flex;align-items:center;gap:10px;
+  flex-shrink:0;transition:all .3s;
+}
+.ai-hero.sm{background:var(--slate-light);border-color:rgba(123,140,174,.16);}
+.ai-orb{width:36px;height:36px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--violet),#B09ACE);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  box-shadow:0 3px 10px var(--violet-glow);transition:all .3s;}
 .ai-hero.sm .ai-orb{background:linear-gradient(135deg,var(--slate),#9FB5D4);}
-.ai-hero h2{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;}
-.ai-hero p{font-size:.76rem;color:var(--ink-60);}
-.ai-sbadge{display:inline-flex;align-items:center;gap:4px;margin-top:7px;background:var(--white);border:1px solid var(--ink-10);padding:3px 9px;border-radius:18px;font-size:.66rem;font-weight:800;color:var(--ink-60);}
-.ai-sbadge .sdot{width:5px;height:5px;border-radius:50%;background:var(--sage);animation:pls 2s infinite;}
+.ai-hero-txt{flex:1;min-width:0;}
+.ai-hero h2{font-family:'Cormorant Garamond',serif;font-size:.95rem;font-weight:700;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ai-hero p{font-size:.68rem;color:var(--ink-60);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ai-sbadge{display:inline-flex;align-items:center;gap:3px;background:var(--white);border:1px solid var(--ink-10);padding:2px 7px;border-radius:14px;font-size:.6rem;font-weight:800;color:var(--ink-60);white-space:nowrap;}
+.ai-sbadge .sdot{width:5px;height:5px;border-radius:50%;background:var(--sage);animation:pls 2s infinite;flex-shrink:0;}
 .ai-sbadge.off .sdot{background:var(--amber);}
 @keyframes pls{0%,100%{opacity:1;}50%{opacity:.4;}}
 .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 5px;flex-shrink:0;scrollbar-width:none;}
@@ -287,7 +297,7 @@ input[type=password]{letter-spacing:.1em;}
 .ks-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:12px;font-size:.67rem;font-weight:800;background:var(--sage-light);color:var(--sage);margin-top:7px;}
 .ks-badge.nok{background:var(--amber-soft);color:var(--amber);}
 /* search info banner */
-.srch-info{background:var(--slate-light);border:1px solid rgba(123,140,174,.16);padding:8px 12px;border-radius:12px;font-size:.76rem;color:var(--ink-60);display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:5px;}
+.srch-info{background:var(--slate-light);border:1px solid rgba(123,140,174,.16);padding:6px 11px;border-radius:10px;font-size:.72rem;color:var(--ink-60);display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:4px;}
 /* Dropbox drawer */
 .dbx-token-box{background:linear-gradient(135deg,rgba(0,97,255,.05),rgba(0,97,255,.1));border:2px solid rgba(0,97,255,.18);padding:16px;border-radius:18px;margin-bottom:14px;}
 .dbx-token-box h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;}
@@ -678,9 +688,11 @@ input[type=password]{letter-spacing:.1em;}
   <div class="srch-info hidden" id="srch-info">🌐 Open Food Facts & Wikipedia — gratuit</div>
   <div class="ai-hero" id="ai-hero">
     <div class="ai-orb" id="ai-orb">🧠</div>
-    <h2 id="ai-title">NutriAI — Gemini Pro</h2>
-    <p id="ai-sub">IA connectée · Expert jeûne 18:6</p>
-    <div class="ai-sbadge" id="ai-sbadge"><span class="sdot"></span><span id="ai-stxt">Gemini actif</span></div>
+    <div class="ai-hero-txt">
+      <h2 id="ai-title">NutriAI — Gemini Pro</h2>
+      <p id="ai-sub">IA connectée · Expert jeûne 18:6</p>
+    </div>
+    <div class="ai-sbadge" id="ai-sbadge"><span class="sdot"></span><span id="ai-stxt">Gemini</span></div>
   </div>
   <div class="chips" id="ai-chips"></div>
   <div class="chat-box">
@@ -931,6 +943,7 @@ function bootApp() {
 
   setAIMode(S.aiMode);
   updateCloudUI();
+  renderWeightTable(); // tableau poids visible dès l'ouverture de l'onglet Phases
 }
 
 // ─── UTILS ───
