@@ -1223,7 +1223,7 @@ function dbxRedirectUri() {
 // ── 1. Lancer le flow OAuth → redirige vers Dropbox ──
 async function startDropboxOAuth() {
   const appKey = DB.g(K.DBX_APPKEY, null);
-  if (!appKey) { toast('Entrez et sauvegardez votre App Key d'abord', false); return; }
+  if (!appKey) { toast('Entrez et sauvegardez votre App Key d\'abord', false); return; }
   const { verifier, challenge } = await pkceGenerate();
   sessionStorage.setItem('dbx_pkce_verifier', verifier);
   const p = new URLSearchParams({
@@ -1301,7 +1301,7 @@ function dbxDisconnect() {
 async function syncUp() {
   if (!S.on) { toast('Pas de connexion internet', false); return; }
   const tok = await dbxGetToken();
-  if (!tok) { toast('Connectez-vous à Dropbox d'abord', false); return; }
+  if (!tok) { toast('Connectez-vous à Dropbox d\'abord', false); return; }
   const btn = $('btn-sync-up');
   if(btn){btn.textContent='⏳ Sauvegarde…';btn.disabled=true;}
   setSyncBadge('pending','Sauvegarde en cours…');
@@ -1337,7 +1337,7 @@ async function syncUp() {
 async function syncDown() {
   if (!S.on) { toast('Pas de connexion internet', false); return; }
   const tok = await dbxGetToken();
-  if (!tok) { toast('Connectez-vous à Dropbox d'abord', false); return; }
+  if (!tok) { toast('Connectez-vous à Dropbox d\'abord', false); return; }
   const btn = $('btn-sync-down');
   if(btn){btn.textContent='⏳ Restauration…';btn.disabled=true;}
   setSyncBadge('pending','Téléchargement…');
@@ -1350,7 +1350,7 @@ async function syncDown() {
       }
     });
     if (!res.ok) {
-      if(res.status===409) throw new Error('Fichier introuvable — faites d'abord une sauvegarde.');
+      if(res.status===409) throw new Error("Fichier introuvable — faites d'abord une sauvegarde.");
       const e=await res.json().catch(()=>({})); throw new Error(e?.error_summary||`HTTP ${res.status}`);
     }
     const data = JSON.parse(await res.text());
@@ -1465,11 +1465,11 @@ async function callGemini(msg) {
 }
 
 const LOCAL={
-  faim:`La faim en jeûne vient par vagues de 20 min maximum. Buvez de l'eau chaude + citron, thé vert ou café noir. Rappelez-vous : ce n'est pas une urgence, c'est une habitude qui se reprogramme.`,
+  faim:"La faim en jeûne vient par vagues de 20 min maximum. Buvez de l'eau chaude + citron, thé vert ou café noir. Rappelez-vous : ce n'est pas une urgence, c'est une habitude qui se reprogramme.",
   cafe:`☕ Le café noir est 100% autorisé. Il accélère la cétose et augmente les corps cétoniques (BHB). Évitez sucre, lait, crème. Comptez-le dans votre hydratation quotidienne.`,
-  sport:`L'exercice à jeun brûle jusqu'à 20% plus de graisses. Cardio léger à modéré est idéal en phase 4-12h. Évitez l'intensité maximale les 2 premières semaines d'adaptation.`,
+  sport:"L'exercice à jeun brûle jusqu'à 20% plus de graisses. Cardio léger à modéré est idéal en phase 4-12h. Évitez l'intensité maximale les 2 premières semaines d'adaptation.",
   fatigue:`Cause principale : électrolytes. Ajoutez du sel de l'Himalaya dans l'eau, magnésium le soir, potassium. Dormez 7-9h. La fatigue initiale dure 1-3 semaines puis disparaît complètement.`,
-  casser:`Casser le jeûne optimal : protéine légère d'abord (œufs, poisson, fromage blanc). Attendez 20-30 min. Ensuite repas normal. Évitez les sucres rapides en premier — spike insulinique à éviter.`
+  casser:"Casser le jeûne optimal : protéine légère d'abord (œufs, poisson, fromage blanc). Attendez 20-30 min. Ensuite repas normal. Évitez les sucres rapides en premier — spike insulinique à éviter."
 };
 function localResp(q) {
   const l=q.toLowerCase();
