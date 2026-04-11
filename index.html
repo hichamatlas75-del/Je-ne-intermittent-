@@ -648,37 +648,45 @@ input[type=password]{letter-spacing:.1em;}
   <button class="btn btn-ghost btn-full" onclick="closeDrawers()">Annuler</button>
 </div>
 
-<!-- DRAWER DROPBOX — SYNC RÉELLE -->
+<!-- DRAWER DROPBOX — OAuth2 PKCE (Connexion permanente) -->
 <div class="drawer" id="drawer-cloud">
   <div class="handle" onclick="closeDrawers()"></div>
   <div class="dr-title">Synchronisation Dropbox</div>
 
-  <!-- Statut sync -->
+  <!-- Statut -->
   <div class="sync-badge" id="sync-badge">
     <div class="sdot2"></div>
-    <span id="sync-badge-txt">Non connecté</span>
+    <span id="sync-badge-txt">Vérification…</span>
   </div>
 
-  <!-- Section token -->
-  <div class="dbx-token-box">
-    <h3>🔑 Token d'accès Dropbox</h3>
-    <p>Pour une sync réelle et sécurisée, obtenez votre token sur Dropbox.</p>
-    <div class="dbx-steps">
-      <b>1.</b> Allez sur <b>dropbox.com/developers</b><br>
-      <b>2.</b> My Apps → créez une app (ou ouvrez la vôtre)<br>
-      <b>3.</b> Onglet Settings → <b>Generated access token → Generate</b><br>
-      <b>4.</b> Copiez et collez ci-dessous
+  <!-- ÉTAPE 1 : App Key (si pas encore connecté) -->
+  <div id="dbx-appkey-row">
+    <div class="dbx-token-box">
+      <h3>🔑 Étape 1 — App Key Dropbox</h3>
+      <p>Obtenez votre App Key sur Dropbox (gratuit, pas le secret).</p>
+      <div class="dbx-steps">
+        <b>1.</b> Allez sur <b>dropbox.com/developers/apps</b><br>
+        <b>2.</b> Create app → Scoped → Full Dropbox<br>
+        <b>3.</b> Onglet Settings → Copiez l'<b>App key</b><br>
+        <b>4.</b> Ajoutez ce Redirect URI dans <b>OAuth 2 → Redirect URIs</b> :<br>
+        <code id="redirect-uri-display" style="font-size:.7rem;word-break:break-all;display:block;margin-top:5px;color:var(--dropbox);font-family:monospace;">Chargement…</code>
+      </div>
     </div>
+    <div class="inp-lbl">App Key (pas le secret !)</div>
+    <input type="text" id="dbx-appkey-input" placeholder="ex: abc123xyz456" autocomplete="off">
+    <button class="btn btn-ghost btn-full btn-sm" onclick="saveAppKey()">💾 Sauvegarder l'App Key</button>
   </div>
-  <div class="inp-lbl">Access Token Dropbox</div>
-  <input type="password" id="dbx-token-input" placeholder="sl.B…" autocomplete="off">
-  <button class="btn btn-dropbox btn-full" onclick="saveDropboxToken()">💾 Sauvegarder le token</button>
+
+  <!-- ÉTAPE 2 : Bouton OAuth -->
+  <button class="btn btn-dropbox btn-full" id="dbx-oauth-btn" onclick="startDropboxOAuth()" disabled>
+    🔐 Connexion Dropbox
+  </button>
 
   <!-- Section connecté -->
   <div id="dbx-connected" style="display:none;">
-    <button class="btn btn-dropbox btn-full" id="btn-sync-up" onclick="syncUp()">⬆️ Sauvegarder vers Dropbox</button>
-    <button class="btn btn-start btn-full" id="btn-sync-down" onclick="syncDown()">⬇️ Restaurer depuis Dropbox</button>
-    <button class="btn btn-danger btn-full btn-sm" onclick="clearDropboxToken()">🗑 Supprimer le token</button>
+    <button class="btn btn-dropbox btn-full" id="btn-sync-up" onclick="syncUp()">⬆️ Sauvegarder</button>
+    <button class="btn btn-start btn-full" id="btn-sync-down" onclick="syncDown()">⬇️ Restaurer</button>
+    <button class="btn btn-danger btn-full btn-sm" onclick="dbxDisconnect()">🗑 Déconnecter</button>
   </div>
 </div>
 
@@ -714,7 +722,12 @@ input[type=password]{letter-spacing:.1em;}
 const K = {
   W:'HICHAM_WEIGHTS_v4', L:'HICHAM_LOGS_v4', SET:'HICHAM_SETTINGS_v4',
   FS:'HICHAM_FAST_v4',   CI:'HICHAM_CHECKIN_v4', SL:'HICHAM_SLEEP_v4',
-  AIM:'HICHAM_AI_MODE_v4', DBX_TOKEN:'HICHAM_DBX_TOKEN_v4',
+  AIM:'HICHAM_AI_MODE_v4',
+  // OAuth2 PKCE Dropbox — tokens permanents
+  DBX_APPKEY:   'HICHAM_DBX_APPKEY_v4',   // App Key (public, pas le secret)
+  DBX_REFRESH:  'HICHAM_DBX_REFRESH_v4',  // Refresh token (permanent)
+  DBX_ACCESS:   'HICHAM_DBX_ACCESS_v4',   // Access token (cache ~4h)
+  DBX_EXPIRES:  'HICHAM_DBX_EXPIRES_v4',  // Expiry timestamp
   GEM:'HICHAM_GEMINI_KEY_v4', BEST:'HICHAM_BEST_FAST_v4',
   SYNC_TS:'HICHAM_LAST_SYNC_v4'
 };
@@ -767,6 +780,25 @@ const F = {
 
 // ─── INIT ───
 function init() {
+  // ① Vérifier si on revient d'un callback OAuth Dropbox
+  const urlParams = new URLSearchParams(window.location.search);
+  const oauthCode = urlParams.get('code');
+  const oauthError = urlParams.get('error');
+  if (oauthCode) {
+    // Nettoyer l'URL immédiatement (UX propre)
+    window.history.replaceState({}, document.title, window.location.pathname);
+    // Échanger le code contre les tokens (async, avant le reste)
+    exchangeOAuthCode(oauthCode).then(() => bootApp());
+    return;
+  }
+  if (oauthError) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    alert('Connexion Dropbox annulée : ' + oauthError);
+  }
+  bootApp();
+}
+
+function bootApp() {
   S.weights  = DB.gj(K.W,  []);
   S.logs     = DB.gj(K.L,  []);
   S.settings = DB.gj(K.SET, {startTime:'20:00'}) || {startTime:'20:00'};
@@ -1148,28 +1180,226 @@ function updateFullLogs() {
   c.innerHTML=S.logs.length?S.logs.slice(0,60).map(l=>renderLog(l,true)).join(''):`<div class="empty-state"><div class="ei">📜</div><p>Aucun historique</p></div>`;
 }
 
-// ════════════════════════════════════════════════════
-//  DROPBOX API v2 RÉELLE
-//  Utilise l'access token saisi par l'utilisateur
-//  Fichier cible: /hicham-master-data.json sur Dropbox
-// ════════════════════════════════════════════════════
-const DBX_FILE_PATH = '/hicham-master-data.json';
+// ════════════════════════════════════════════════════════════════
+//  DROPBOX OAUTH2 PKCE — CONNEXION PERMANENTE (v4.3)
+//  ✅ Aucun token temporaire — refresh_token définitif
+//  ✅ Renouvellement automatique de l'access_token (~4h)
+//  ✅ Fonctionne navigateur + WebView APK sans toucher l'APK
+//
+//  SETUP (une seule fois) :
+//  1. dropbox.com/developers/apps → Create app
+//  2. Scoped access → Full Dropbox
+//  3. Settings → OAuth 2 → Redirect URIs → ajouter l'URL de ce fichier HTML
+//     Exemple : https://monsite.github.io/hicham.html
+//  4. Copiez votre "App key" (PAS le secret !)
+//  5. Entrez-la dans l'app → Historique → Dropbox → App Key
+// ════════════════════════════════════════════════════════════════
 
-function getDbxToken() { return DB.g(K.DBX_TOKEN, null); }
+const DBX_FILE = '/hicham-master-data.json';
 
-function saveDropboxToken() {
-  const v = $('dbx-token-input')?.value.trim();
-  if(!v) { toast('Token vide', false); return; }
-  DB.s(K.DBX_TOKEN, v);
-  updateCloudUI();
-  toast('Token Dropbox sauvegardé ✅', true);
-  // Ferme pas immédiatement — laisse l'user voir le résultat
+// ── Helpers PKCE (Web Crypto API natif) ──
+async function pkceGenerate() {
+  const rand = crypto.getRandomValues(new Uint8Array(48));
+  const verifier = btoa(String.fromCharCode(...rand))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  const data = new TextEncoder().encode(verifier);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  const challenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+  return { verifier, challenge };
 }
-function clearDropboxToken() {
-  DB.rm(K.DBX_TOKEN);
-  $('dbx-token-input').value='';
+
+// L'URI de redirection = exactement cette page (sans query/hash)
+function dbxRedirectUri() {
+  return window.location.origin + window.location.pathname;
+}
+
+// ── 1. Lancer le flow OAuth → redirige vers Dropbox ──
+async function startDropboxOAuth() {
+  const appKey = DB.g(K.DBX_APPKEY, null);
+  if (!appKey) { toast('Entrez et sauvegardez votre App Key d'abord', false); return; }
+  const { verifier, challenge } = await pkceGenerate();
+  sessionStorage.setItem('dbx_pkce_verifier', verifier);
+  const p = new URLSearchParams({
+    client_id: appKey, response_type: 'code',
+    code_challenge: challenge, code_challenge_method: 'S256',
+    redirect_uri: dbxRedirectUri(), token_access_type: 'offline'
+  });
+  window.location.href = 'https://www.dropbox.com/oauth2/authorize?' + p;
+}
+
+// ── 2. Échange du code → appelé automatiquement au retour ──
+async function exchangeOAuthCode(code) {
+  const appKey   = DB.g(K.DBX_APPKEY, null);
+  const verifier = sessionStorage.getItem('dbx_pkce_verifier');
+  sessionStorage.removeItem('dbx_pkce_verifier');
+  if (!appKey || !verifier) { console.error('[DBX] App key ou verifier manquant'); return; }
+  try {
+    const res = await fetch('https://api.dropboxapi.com/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code, grant_type: 'authorization_code', client_id: appKey,
+        code_verifier: verifier, redirect_uri: dbxRedirectUri()
+      })
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d?.error_description || d?.error || `HTTP ${res.status}`);
+    DB.s(K.DBX_REFRESH, d.refresh_token);
+    DB.s(K.DBX_ACCESS,  d.access_token);
+    DB.s(K.DBX_EXPIRES, String(Date.now() + (d.expires_in - 60) * 1000));
+    console.log('[DBX] OAuth OK — refresh_token permanent stocké');
+  } catch(e) {
+    console.error('[DBX] Échange OAuth échoué:', e);
+    toast('Erreur OAuth : ' + e.message, false);
+  }
+}
+
+// ── 3. Obtenir un access_token valide (renouvellement auto) ──
+async function dbxGetToken() {
+  const refresh = DB.g(K.DBX_REFRESH, null);
+  if (!refresh) return null;
+  const access  = DB.g(K.DBX_ACCESS,  null);
+  const expires = parseInt(DB.g(K.DBX_EXPIRES, '0'));
+  if (access && Date.now() < expires) return access;  // Encore valide
+  // Renouvellement silencieux
+  try {
+    const res = await fetch('https://api.dropboxapi.com/oauth2/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        grant_type: 'refresh_token', refresh_token: refresh,
+        client_id: DB.g(K.DBX_APPKEY, '')
+      })
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d?.error_description || `HTTP ${res.status}`);
+    DB.s(K.DBX_ACCESS,  d.access_token);
+    DB.s(K.DBX_EXPIRES, String(Date.now() + (d.expires_in - 60) * 1000));
+    console.log('[DBX] Access token renouvelé automatiquement');
+    return d.access_token;
+  } catch(e) {
+    if (e.message.includes('invalid_grant')) { dbxDisconnect(); toast('Session Dropbox expirée — reconnectez-vous', false); }
+    return null;
+  }
+}
+
+// ── Déconnexion ──
+function dbxDisconnect() {
+  [K.DBX_REFRESH, K.DBX_ACCESS, K.DBX_EXPIRES, K.SYNC_TS].forEach(k => DB.rm(k));
   updateCloudUI();
-  toast('Token supprimé', true);
+  toast('Déconnecté de Dropbox', true);
+}
+
+// ── Sauvegarde Dropbox ──
+async function syncUp() {
+  if (!S.on) { toast('Pas de connexion internet', false); return; }
+  const tok = await dbxGetToken();
+  if (!tok) { toast('Connectez-vous à Dropbox d'abord', false); return; }
+  const btn = $('btn-sync-up');
+  if(btn){btn.textContent='⏳ Sauvegarde…';btn.disabled=true;}
+  setSyncBadge('pending','Sauvegarde en cours…');
+  const payload = JSON.stringify({
+    version:'4.3', timestamp:new Date().toISOString(),
+    weights:S.weights, logs:S.logs, settings:S.settings,
+    fast:S.fast, phase:S.phase, bestFast:S.bestFast, checkin:DB.gj(K.CI,null)
+  });
+  try {
+    const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+tok,
+        'Dropbox-API-Arg':JSON.stringify({path:DBX_FILE,mode:'overwrite',mute:true}),
+        'Content-Type':'application/octet-stream'
+      },
+      body: payload
+    });
+    if (!res.ok) { const e=await res.json().catch(()=>({})); throw new Error(e?.error_summary||`HTTP ${res.status}`); }
+    DB.s(K.SYNC_TS, new Date().toISOString());
+    addLog('DROPBOX',`Sauvegardé (${(payload.length/1024).toFixed(1)} KB)`,'ai');
+    updateCloudUI();
+    toast('Sauvegardé sur Dropbox ✅', true);
+  } catch(e) {
+    setSyncBadge('err','Erreur : '+e.message);
+    toast('Erreur upload : '+e.message.substring(0,60), false);
+  } finally {
+    if(btn){btn.textContent='⬆️ Sauvegarder';btn.disabled=false;}
+  }
+}
+
+// ── Restauration Dropbox ──
+async function syncDown() {
+  if (!S.on) { toast('Pas de connexion internet', false); return; }
+  const tok = await dbxGetToken();
+  if (!tok) { toast('Connectez-vous à Dropbox d'abord', false); return; }
+  const btn = $('btn-sync-down');
+  if(btn){btn.textContent='⏳ Restauration…';btn.disabled=true;}
+  setSyncBadge('pending','Téléchargement…');
+  try {
+    const res = await fetch('https://content.dropboxapi.com/2/files/download', {
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+tok,
+        'Dropbox-API-Arg':JSON.stringify({path:DBX_FILE})
+      }
+    });
+    if (!res.ok) {
+      if(res.status===409) throw new Error('Fichier introuvable — faites d'abord une sauvegarde.');
+      const e=await res.json().catch(()=>({})); throw new Error(e?.error_summary||`HTTP ${res.status}`);
+    }
+    const data = JSON.parse(await res.text());
+    if(Array.isArray(data.weights))     S.weights = data.weights;
+    if(Array.isArray(data.logs))        S.logs    = data.logs;
+    if(data.settings) S.settings = {...S.settings,...data.settings};
+    if(data.fast)     S.fast     = data.fast;
+    if(typeof data.phase==='number')    S.phase   = data.phase;
+    if(typeof data.bestFast==='number') S.bestFast= data.bestFast;
+    if(data.checkin) DB.sj(K.CI, data.checkin);
+    DB.sj(K.W,S.weights); DB.sj(K.L,S.logs);
+    DB.sj(K.SET,S.settings); DB.sj(K.FS,S.fast); DB.sj(K.BEST,S.bestFast);
+    if(S.fast.isFasting&&S.fast.startTime){applyPhaseUI();startTimer();}else resetUI();
+    updateLogs(); updateFullLogs(); checkCheckin(); updateStats();
+    DB.s(K.SYNC_TS, new Date().toISOString());
+    updateCloudUI();
+    toast('Données restaurées ✅', true);
+    closeDrawers(); switchTab('main');
+  } catch(e) {
+    setSyncBadge('err','Erreur : '+e.message);
+    toast('Erreur restauration : '+e.message.substring(0,80), false);
+  } finally {
+    if(btn){btn.textContent='⬇️ Restaurer';btn.disabled=false;}
+  }
+}
+
+// ── UI Cloud ──
+function setSyncBadge(state,txt) {
+  const b=$('sync-badge'),t=$('sync-badge-txt');
+  if(b) b.className='sync-badge'+(state==='err'?' err':state==='pending'?' pending':'');
+  if(t) t.textContent=txt;
+}
+function updateCloudUI() {
+  const connected = !!DB.g(K.DBX_REFRESH,null);
+  const lastSync  = DB.g(K.SYNC_TS,null);
+  const appKey    = DB.g(K.DBX_APPKEY,null);
+  const st=$('cloud-status-text'), sec=$('dbx-connected');
+  const oBtn=$('dbx-oauth-btn'), akRow=$('dbx-appkey-row'), akInp=$('dbx-appkey-input');
+  if(st) st.textContent = connected ? (lastSync?'Sync : '+F.t(new Date(lastSync)):'Connecté') : 'Non connecté';
+  if(sec) sec.style.display = connected ? 'block' : 'none';
+  if(oBtn) { oBtn.textContent = connected ? '🔄 Reconnecter Dropbox' : '🔐 Connexion Dropbox'; oBtn.disabled = !appKey; }
+  if(akRow) akRow.style.display = connected ? 'none' : 'block';
+  if(akInp&&appKey) akInp.placeholder = 'App Key : '+appKey.substring(0,6)+'…';
+  setSyncBadge(
+    connected ? '' : 'err',
+    connected
+      ? (lastSync?'Dernière sync : '+F.t(new Date(lastSync)):'Connecté — prêt à synchroniser')
+      : (appKey?'Cliquez sur "Connexion Dropbox" pour autoriser':'Entrez votre App Key Dropbox ci-dessous')
+  );
+}
+function saveAppKey() {
+  const v=$('dbx-appkey-input')?.value.trim();
+  if(!v){toast('App Key vide',false);return;}
+  DB.s(K.DBX_APPKEY,v); updateCloudUI();
+  toast('App Key sauvegardée — cliquez maintenant sur Connexion',true);
 }
 
 function updateCloudUI() {
@@ -1532,7 +1762,12 @@ function scrollChat(){setTimeout(()=>{const c=$('chat-msgs');if(c)c.scrollTop=c.
 // ─── DRAWERS ───
 function openDrawer(t) {
   if(t==='sleep-manual') openSleepManual();
-  if(t==='cloud')  updateCloudUI();
+  if(t==='cloud') {
+    updateCloudUI();
+    // Afficher l'URI de redirection pour que l'user puisse la copier
+    const el=$('redirect-uri-display');
+    if(el) el.textContent=dbxRedirectUri();
+  }
   if(t==='gemini') updateGemStatus();
   $(`drawer-${t}`)?.classList.add('open');
   $('overlay')?.classList.add('active');
