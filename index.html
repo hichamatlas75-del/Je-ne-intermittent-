@@ -1,33 +1,18 @@
 <!DOCTYPE html>
 <!--
-╔══════════════════════════════════════════════════════════════════╗
-║           HICHAM MASTER — JEÛNE 18:6 PREMIUM                   ║
-║           Version APK-Ready / WebView Android Studio            ║
-╠══════════════════════════════════════════════════════════════════╣
-║  ARCHITECTURE MISE À JOUR SANS TOUCHER À L'APK :               ║
-║                                                                  ║
-║  1. Hébergez ce fichier sur GitHub Pages ou Dropbox             ║
-║     Ex: https://raw.githubusercontent.com/USER/REPO/main/       ║
-║         hicham-master.html                                       ║
-║                                                                  ║
-║  2. Dans Android Studio — MainActivity.java :                    ║
-║  ────────────────────────────────────────────                    ║
-║  WebView webView = findViewById(R.id.webview);                  ║
-║  WebSettings s = webView.getSettings();                         ║
-║  s.setJavaScriptEnabled(true);                                  ║
-║  s.setDomStorageEnabled(true);       // localStorage           ║
-║  s.setCacheMode(WebSettings.LOAD_DEFAULT); // cache offline     ║
-║  s.setAllowFileAccess(true);                                    ║
-║  s.setMediaPlaybackRequiresUserGesture(false);                  ║
-║  webView.setWebChromeClient(new WebChromeClient());             ║
-║  webView.loadUrl("https://VOTRE-URL/hicham-master.html");      ║
-║                                                                  ║
-║  3. AndroidManifest.xml :                                        ║
-║  <uses-permission android:name="android.permission.INTERNET"/>  ║
-║  <application android:usesCleartextTraffic="true" ...>          ║
-║                                                                  ║
-║  4. Mettez à jour ce fichier HTML → l'APK se met à jour seul   ║
-╚══════════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════╗
+║  HICHAM MASTER · JEÛNE 18:6 — VERSION CORRIGÉE v4.2        ║
+╠══════════════════════════════════════════════════════════════╣
+║  DROPBOX RÉEL : obtenez votre token sur                     ║
+║  dropbox.com/developers → My Apps → votre app               ║
+║  → Settings → Generated access token                        ║
+╠══════════════════════════════════════════════════════════════╣
+║  APK Android Studio — MainActivity.java :                   ║
+║  webView.getSettings().setJavaScriptEnabled(true);          ║
+║  webView.getSettings().setDomStorageEnabled(true);          ║
+║  webView.setWebChromeClient(new WebChromeClient());         ║
+║  webView.loadUrl("https://VOTRE-URL/hicham.html");          ║
+╚══════════════════════════════════════════════════════════════╝
 -->
 <html lang="fr">
 <head>
@@ -35,388 +20,356 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#FAF7F2">
 <title>Hicham · Jeûne 18:6</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 <style>
-/* ═══════════════════════════════════════════
-   DESIGN SYSTEM — HICHAM MASTER PREMIUM
-═══════════════════════════════════════════ */
-:root {
-  --cream: #FAF7F2;
-  --cream-deep: #F2EDE4;
-  --parchment: #E8E0D4;
-  --amber: #C8803A;
-  --amber-dark: #A86428;
-  --amber-light: #F5C882;
-  --amber-soft: #FDF0DC;
-  --amber-glow: rgba(200,128,58,0.2);
-  --terracotta: #C26B4A;
-  --sage: #6A8C6A;
-  --sage-light: #E4EDE4;
-  --sage-glow: rgba(106,140,106,0.2);
-  --slate: #7B8CAE;
-  --slate-light: #EBF0FA;
-  --slate-glow: rgba(123,140,174,0.2);
-  --violet: #8A6DAE;
-  --violet-light: #F0EAFB;
-  --violet-dark: #6B4F8E;
-  --violet-glow: rgba(138,109,174,0.2);
-  --gold: #D4A830;
-  --gold-light: #FBF4DC;
-  --ink: #2A2520;
-  --ink-80: rgba(42,37,32,0.8);
-  --ink-60: rgba(42,37,32,0.6);
-  --ink-30: rgba(42,37,32,0.3);
-  --ink-10: rgba(42,37,32,0.08);
-  --ink-05: rgba(42,37,32,0.04);
-  --white: #FFFFFF;
-  --danger: #C94040;
-  --dropbox: #0061FF;
-  --gemini: #4285F4;
-  --r: 20px; --r-lg: 28px; --r-xl: 36px;
-  --shadow: 0 2px 24px rgba(42,37,32,0.07);
-  --shadow-lg: 0 6px 32px rgba(42,37,32,0.11);
-  --btn-h: 60px;
+:root{
+  --cream:#FAF7F2; --cream-deep:#F2EDE4; --parchment:#E8E0D4;
+  --amber:#C8803A; --amber-dark:#A86428; --amber-soft:#FDF0DC; --amber-glow:rgba(200,128,58,.18);
+  --terra:#C26B4A;
+  --sage:#6A8C6A; --sage-light:#E4EDE4; --sage-glow:rgba(106,140,106,.18);
+  --slate:#7B8CAE; --slate-light:#EBF0FA;
+  --violet:#8A6DAE; --violet-light:#F0EAFB; --violet-glow:rgba(138,109,174,.18);
+  --gold:#D4A830; --gold-light:#FBF4DC;
+  --ink:#2A2520; --ink-60:rgba(42,37,32,.6); --ink-30:rgba(42,37,32,.3); --ink-10:rgba(42,37,32,.08); --ink-05:rgba(42,37,32,.04);
+  --white:#fff; --danger:#C94040; --dropbox:#0061FF; --gemini:#4285F4;
+  --shadow:0 2px 20px rgba(42,37,32,.07); --shadow-lg:0 6px 30px rgba(42,37,32,.11);
 }
-
-/* ── RESET ── */
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;outline:none;margin:0;padding:0;}
-body,html{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);height:100%;width:100%;overflow:hidden;position:fixed;touch-action:manipulation;-webkit-font-smoothing:antialiased;}
-.app{display:flex;flex-direction:column;height:100vh;height:100dvh;width:100%;overflow:hidden;}
+html,body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);height:100%;width:100%;overflow:hidden;position:fixed;touch-action:manipulation;-webkit-font-smoothing:antialiased;}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden;}
 
-/* ── HEADER ── */
+/* ──────────────────────── HEADER ──────────────────────── */
 .header{
-  padding:14px 22px;padding-top:max(14px,env(safe-area-inset-top));
-  display:flex;justify-content:space-between;align-items:center;
-  background:var(--cream);border-bottom:1px solid var(--ink-10);
-  flex-shrink:0;z-index:100;
+  padding:12px 16px; padding-top:max(12px,env(safe-area-inset-top));
+  display:grid; grid-template-columns:1fr auto 1fr;
+  align-items:center; gap:10px;
+  background:var(--cream); border-bottom:1px solid var(--ink-10);
+  flex-shrink:0; z-index:100;
 }
-.h-name{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:700;letter-spacing:-0.01em;}
-.h-sub{font-size:0.68rem;color:var(--ink-60);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-top:1px;}
-.h-right{display:flex;align-items:center;gap:10px;}
-.avatar{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--amber),var(--terracotta));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:white;}
-.ai-pill{background:var(--violet-light);color:var(--violet);border:1.5px solid rgba(138,109,174,0.2);padding:8px 13px;border-radius:30px;font-size:0.78rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.18s;box-shadow:0 2px 8px var(--violet-glow);}
-.ai-pill:active{transform:scale(0.93);}
-.protocol-badge{background:var(--amber-soft);color:var(--amber-dark);border:1.5px solid rgba(200,128,58,0.25);padding:6px 12px;border-radius:20px;font-size:0.72rem;font-weight:800;letter-spacing:0.06em;}
+.h-left{display:flex;flex-direction:column;}
+.h-name{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;letter-spacing:-.01em;line-height:1.1;}
+.h-sub{font-size:.65rem;color:var(--ink-60);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-top:2px;}
+/* PHOTO — centre du header */
+.h-photo-wrap{display:flex;justify-content:center;align-items:center;}
+.h-photo{
+  width:52px;height:52px;border-radius:50%;
+  border:2.5px solid var(--amber);
+  object-fit:cover; background:linear-gradient(135deg,var(--amber),var(--terra));
+  display:block; box-shadow:0 3px 12px var(--amber-glow);
+}
+.h-photo-fallback{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--amber),var(--terra));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:#fff;
+  border:2.5px solid var(--amber); box-shadow:0 3px 12px var(--amber-glow);
+}
+.h-right{display:flex;align-items:center;justify-content:flex-end;gap:8px;}
+.badge-186{background:var(--amber-soft);color:var(--amber-dark);border:1.5px solid rgba(200,128,58,.25);padding:5px 10px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:.06em;}
+.ai-pill{background:var(--violet-light);color:var(--violet);border:1.5px solid rgba(138,109,174,.2);padding:7px 12px;border-radius:30px;font-size:.75rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .18s;box-shadow:0 2px 8px var(--violet-glow);}
+.ai-pill:active{transform:scale(.93);}
 
-/* ── VIEWS ── */
-.view{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 18px;padding-bottom:calc(96px + env(safe-area-inset-bottom));display:none;flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
+/* ──────────────────────── VIEWS ──────────────────────── */
+.view{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 16px;padding-bottom:calc(92px + env(safe-area-inset-bottom));display:none;flex-direction:column;gap:13px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
 .view.active{display:flex;}
-#view-ai{padding-bottom:calc(110px + env(safe-area-inset-bottom));height:100%;}
+#view-ai{padding-bottom:calc(106px + env(safe-area-inset-bottom));height:100%;}
 
-/* ── CHECKIN ── */
-.checkin-card{
-  background:linear-gradient(135deg,var(--amber-soft),var(--cream));
-  border:1.5px solid rgba(200,128,58,0.22);padding:22px 18px;border-radius:var(--r-lg);
-  flex-shrink:0;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;
-}
-.checkin-card::after{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(200,128,58,0.1),transparent 70%);pointer-events:none;}
-@keyframes popIn{from{opacity:0;transform:translateY(-14px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
-.ci-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
-.ci-orb{width:50px;height:50px;border-radius:16px;background:linear-gradient(135deg,var(--amber),var(--terracotta));display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 14px var(--amber-glow);flex-shrink:0;}
-.ci-label{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;line-height:1.2;}
-.ci-sub{font-size:0.75rem;color:var(--ink-60);margin-top:3px;font-weight:600;}
-.mood-row{display:flex;gap:7px;}
-.mood-btn{flex:1;height:62px;border:1.5px solid var(--ink-10);background:var(--white);border-radius:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);}
-.mood-btn .me{font-size:1.35rem;}
-.mood-btn .ml{font-size:0.58rem;font-weight:800;color:var(--ink-60);text-transform:uppercase;letter-spacing:0.04em;}
-.mood-btn:hover{transform:translateY(-3px);box-shadow:0 6px 16px var(--amber-glow);}
-.mood-btn.sel{background:var(--amber);border-color:var(--amber);transform:scale(1.08);box-shadow:0 6px 18px var(--amber-glow);}
-.mood-btn.sel .ml{color:rgba(255,255,255,0.85);}
+/* ──────────────────────── CHECK-IN ──────────────────────── */
+.checkin-card{background:linear-gradient(135deg,var(--amber-soft),var(--cream));border:1.5px solid rgba(200,128,58,.2);padding:20px 16px;border-radius:26px;flex-shrink:0;animation:popIn .45s cubic-bezier(.34,1.56,.64,1);}
+@keyframes popIn{from{opacity:0;transform:translateY(-12px) scale(.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ci-row{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.ci-orb{width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,var(--amber),var(--terra));display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.ci-label{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;}
+.ci-sub{font-size:.72rem;color:var(--ink-60);font-weight:600;margin-top:2px;}
+.mood-row{display:flex;gap:6px;}
+.mood-btn{flex:1;height:60px;border:1.5px solid var(--ink-10);background:var(--white);border-radius:15px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .2s cubic-bezier(.34,1.56,.64,1);}
+.mood-btn .me{font-size:1.3rem;}
+.mood-btn .ml{font-size:.58rem;font-weight:800;color:var(--ink-60);text-transform:uppercase;letter-spacing:.04em;}
+.mood-btn:hover{transform:translateY(-2px);}
+.mood-btn.sel{background:var(--amber);border-color:var(--amber);transform:scale(1.06);box-shadow:0 4px 14px var(--amber-glow);}
+.mood-btn.sel .ml{color:rgba(255,255,255,.85);}
 
-/* ── TIMER CARD ── */
-.timer-card{background:var(--white);padding:22px 18px 18px;border-radius:var(--r-lg);border:1px solid var(--ink-10);box-shadow:var(--shadow);flex-shrink:0;text-align:center;position:relative;overflow:hidden;}
-.tc-stripe{position:absolute;top:0;left:0;right:0;height:3.5px;border-radius:var(--r-lg) var(--r-lg) 0 0;background:linear-gradient(90deg,var(--amber),var(--terracotta));transition:background 1s ease;}
-.tc-stripe.s-fat{background:linear-gradient(90deg,#5A8A5A,var(--sage));}
-.tc-stripe.s-ketosis{background:linear-gradient(90deg,var(--slate),#9FB5D4);}
-.tc-stripe.s-deep-ketosis{background:linear-gradient(90deg,#6070AA,var(--slate));}
-.tc-stripe.s-autophagy{background:linear-gradient(90deg,var(--violet),#B09ACE);}
-.tc-stripe.s-peak{background:linear-gradient(90deg,var(--gold),var(--violet));}
-
-.tc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
-.fast-badge{padding:5px 12px;border-radius:24px;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;background:var(--amber-soft);color:var(--amber-dark);border:1px solid rgba(200,128,58,0.2);transition:all 0.4s ease;}
-.fast-badge.active{background:var(--sage-light);color:var(--sage);border-color:rgba(106,140,106,0.2);}
-.clock-txt{font-size:0.82rem;color:var(--ink-60);font-weight:700;font-variant-numeric:tabular-nums;}
-
-/* ── RING SVG ── */
-.ring-wrap{position:relative;width:214px;height:214px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
+/* ──────────────────────── TIMER CARD ──────────────────────── */
+.timer-card{background:var(--white);padding:20px 16px 16px;border-radius:26px;border:1px solid var(--ink-10);box-shadow:var(--shadow);flex-shrink:0;text-align:center;position:relative;overflow:hidden;}
+.tc-stripe{position:absolute;top:0;left:0;right:0;height:3px;border-radius:26px 26px 0 0;background:linear-gradient(90deg,var(--amber),var(--terra));transition:background 1s ease;}
+.tc-stripe.sf{background:linear-gradient(90deg,#5A8A5A,var(--sage));}
+.tc-stripe.sk{background:linear-gradient(90deg,var(--slate),#9FB5D4);}
+.tc-stripe.sa{background:linear-gradient(90deg,var(--violet),#B09ACE);}
+.tc-stripe.sg{background:linear-gradient(90deg,var(--gold),var(--violet));}
+.tc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.fast-badge{padding:4px 11px;border-radius:22px;font-size:.66rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;background:var(--amber-soft);color:var(--amber-dark);border:1px solid rgba(200,128,58,.2);transition:all .4s ease;}
+.fast-badge.on{background:var(--sage-light);color:var(--sage);border-color:rgba(106,140,106,.2);}
+.clk{font-size:.8rem;color:var(--ink-60);font-weight:700;font-variant-numeric:tabular-nums;}
+/* mode toggle */
+.mode-toggle{display:flex;gap:3px;background:var(--cream-deep);padding:3px;border-radius:12px;margin-bottom:14px;}
+.mb{flex:1;padding:8px;border:none;background:transparent;border-radius:9px;font-size:.75rem;font-weight:800;color:var(--ink-60);cursor:pointer;font-family:'Nunito',sans-serif;transition:all .18s;}
+.mb.active{background:var(--white);color:var(--ink);box-shadow:0 2px 6px var(--ink-10);}
+/* start row */
+.start-row{display:none;background:var(--cream-deep);padding:8px 12px;border-radius:11px;margin-bottom:12px;justify-content:space-between;align-items:center;}
+.sr-lbl{font-size:.72rem;color:var(--ink-60);font-weight:700;}
+.sr-val{font-size:.82rem;font-weight:800;display:flex;align-items:center;gap:6px;}
+.btn-tiny{background:transparent;border:1px solid var(--ink-10);width:26px;height:26px;border-radius:7px;cursor:pointer;font-size:.75rem;display:flex;align-items:center;justify-content:center;color:var(--amber);}
+/* ring */
+.ring-wrap{position:relative;width:210px;height:210px;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;}
 .ring-wrap svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg);}
 .r-bg{fill:none;stroke:var(--parchment);stroke-width:9;}
-.r-glow{fill:none;stroke-width:16;stroke-linecap:round;opacity:0;stroke-dasharray:565;stroke-dashoffset:565;transition:stroke-dashoffset 1s linear,stroke 0.8s ease,opacity 0.5s ease;filter:blur(4px);}
-.r-fill{fill:none;stroke:var(--amber);stroke-width:9;stroke-linecap:round;stroke-dasharray:565;stroke-dashoffset:565;transition:stroke-dashoffset 1s linear,stroke 0.9s ease;}
-/* Phase ring colors */
-.r-fill.p1{stroke:var(--amber);}
-.r-fill.p2{stroke:var(--amber);}
-.r-fill.p3{stroke:var(--sage);}
-.r-fill.p4{stroke:var(--sage);}
-.r-fill.p5{stroke:var(--slate);}
-.r-fill.p6{stroke:var(--slate);}
+.r-glow{fill:none;stroke-width:15;stroke-linecap:round;opacity:0;stroke-dasharray:572;stroke-dashoffset:572;transition:stroke-dashoffset 1s linear,stroke .8s,opacity .5s;filter:blur(4px);}
+.r-fill{fill:none;stroke:var(--amber);stroke-width:9;stroke-linecap:round;stroke-dasharray:572;stroke-dashoffset:572;transition:stroke-dashoffset 1s linear,stroke .9s;}
+.r-fill.p1,.r-fill.p2{stroke:var(--amber);}
+.r-fill.p3,.r-fill.p4{stroke:var(--sage);}
+.r-fill.p5,.r-fill.p6{stroke:var(--slate);}
 .r-fill.p7{stroke:var(--violet);}
 .r-fill.p8{stroke:var(--gold);}
-.r-glow.p1,.r-glow.p2{stroke:var(--amber);opacity:0.3;}
-.r-glow.p3,.r-glow.p4{stroke:var(--sage);opacity:0.3;}
-.r-glow.p5,.r-glow.p6{stroke:var(--slate);opacity:0.3;}
-.r-glow.p7{stroke:var(--violet);opacity:0.3;}
-.r-glow.p8{stroke:var(--gold);opacity:0.3;}
-
-/* Phase tick marks on ring */
-.r-tick{stroke:var(--cream-deep);stroke-width:3;}
-
+.r-glow.p1,.r-glow.p2{stroke:var(--amber);opacity:.28;}
+.r-glow.p3,.r-glow.p4{stroke:var(--sage);opacity:.28;}
+.r-glow.p5,.r-glow.p6{stroke:var(--slate);opacity:.28;}
+.r-glow.p7{stroke:var(--violet);opacity:.28;}
+.r-glow.p8{stroke:var(--gold);opacity:.28;}
 .timer-inner{z-index:10;position:relative;text-align:center;}
-.t-lbl{font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-30);margin-bottom:3px;}
-#countdown{font-family:'Cormorant Garamond',serif;font-size:2.9rem;font-weight:700;letter-spacing:-0.03em;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1;transition:color 0.8s ease;margin-bottom:2px;}
+.t-lbl{font-size:.62rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-30);margin-bottom:2px;}
+#countdown{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1;transition:color .8s;margin-bottom:2px;}
 #countdown.cp3,#countdown.cp4{color:var(--sage);}
 #countdown.cp5,#countdown.cp6{color:var(--slate);}
 #countdown.cp7{color:var(--violet);}
 #countdown.cp8{color:var(--gold);}
-.prog-lbl{font-size:0.72rem;color:var(--ink-30);font-weight:700;margin-bottom:16px;min-height:18px;}
+.prog-lbl{font-size:.7rem;color:var(--ink-30);font-weight:700;margin-bottom:14px;min-height:16px;}
+/* phase bar */
+.phase-bar{display:flex;gap:2px;height:7px;background:var(--parchment);border-radius:8px;margin:10px 0 4px;}
+.pseg{flex:1;border-radius:2px;opacity:.22;transition:opacity .4s,background .4s;}
+.pseg.done{opacity:.88;}
+.pseg.cur{opacity:1;animation:segP 2s infinite;}
+@keyframes segP{0%,100%{opacity:1;}50%{opacity:.65;}}
+.ps0,.ps1{background:var(--amber);}
+.ps2,.ps3{background:var(--sage);}
+.ps4,.ps5{background:var(--slate);}
+.ps6{background:var(--violet);}
+.ps7{background:var(--gold);}
+.bar-lbls{display:flex;justify-content:space-between;margin-bottom:2px;}
+.bl{font-size:.56rem;font-weight:800;color:var(--ink-30);text-transform:uppercase;}
+/* phase info */
+.phase-info{background:var(--cream);padding:14px 13px;border-radius:17px;border:1.5px solid var(--ink-10);margin-top:10px;display:flex;align-items:flex-start;gap:12px;text-align:left;transition:all .5s ease;}
+.pi-orb{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;background:var(--amber-soft);flex-shrink:0;transition:background .5s;}
+.pi-orb.of{background:var(--sage-light);}
+.pi-orb.ok{background:var(--slate-light);}
+.pi-orb.oa{background:var(--violet-light);}
+.pi-orb.og{background:var(--gold-light);}
+.pi-name{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;margin-bottom:2px;}
+.pi-time{font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--amber);margin-bottom:5px;display:block;}
+.pi-time.tf{color:var(--sage);} .pi-time.tk{color:var(--slate);} .pi-time.ta{color:var(--violet);} .pi-time.tg{color:var(--gold);}
+.pi-desc{font-size:.76rem;color:var(--ink-60);line-height:1.5;}
+.pi-tags{margin-top:7px;display:flex;flex-wrap:wrap;gap:4px;}
+.pi-tag{background:var(--white);border:1px solid var(--ink-10);padding:2px 8px;border-radius:18px;font-size:.62rem;font-weight:700;color:var(--ink-60);}
 
-/* ── PHASE PROGRESS BAR ── */
-.phase-bar-wrap{margin:12px 0;position:relative;}
-.phase-bar-track{height:8px;background:var(--parchment);border-radius:10px;overflow:visible;position:relative;display:flex;gap:2px;}
-.phase-seg{flex:1;height:100%;border-radius:2px;opacity:0.25;transition:opacity 0.5s ease,background 0.5s ease;position:relative;}
-.phase-seg.done{opacity:0.9;}
-.phase-seg.cur{opacity:1;animation:segPulse 2s infinite;}
-@keyframes segPulse{0%,100%{opacity:1;}50%{opacity:0.7;}}
-.ps-0,.ps-1{background:var(--amber);}
-.ps-2,.ps-3{background:var(--sage);}
-.ps-4,.ps-5{background:var(--slate);}
-.ps-6{background:var(--violet);}
-.ps-7{background:var(--gold);}
-.phase-bar-labels{display:flex;justify-content:space-between;margin-top:5px;padding:0 2px;}
-.pbl{font-size:0.58rem;font-weight:800;color:var(--ink-30);text-transform:uppercase;letter-spacing:0.04em;}
-
-/* ── PHASE INFO CARD ── */
-.phase-info-card{
-  background:var(--cream);padding:16px 14px;border-radius:18px;
-  border:1.5px solid var(--ink-10);margin-top:12px;
-  display:flex;align-items:flex-start;gap:14px;text-align:left;
-  transition:all 0.5s ease;
-}
-.pi-orb{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--amber-soft);flex-shrink:0;transition:background 0.5s ease;}
-.pi-orb.orf{background:var(--sage-light);}
-.pi-orb.ork{background:var(--slate-light);}
-.pi-orb.ora{background:var(--violet-light);}
-.pi-orb.org{background:var(--gold-light);}
-.pi-content{}
-.pi-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:3px;}
-.pi-time{font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--amber);margin-bottom:6px;display:inline-block;}
-.pi-time.tf{color:var(--sage);}
-.pi-time.tk{color:var(--slate);}
-.pi-time.ta{color:var(--violet);}
-.pi-time.tg{color:var(--gold);}
-.pi-desc{font-size:0.78rem;color:var(--ink-60);line-height:1.55;}
-.pi-benefits{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;}
-.pi-tag{background:var(--white);border:1px solid var(--ink-10);padding:3px 9px;border-radius:20px;font-size:0.65rem;font-weight:700;color:var(--ink-60);}
-
-/* ── START TIME ROW ── */
-.start-row{display:none;background:var(--cream-deep);padding:9px 13px;border-radius:12px;margin-bottom:12px;justify-content:space-between;align-items:center;}
-.sr-lbl{font-size:0.75rem;color:var(--ink-60);font-weight:700;}
-.sr-val{font-size:0.85rem;font-weight:800;display:flex;align-items:center;gap:7px;}
-.btn-tiny{background:transparent;border:1px solid var(--ink-10);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;color:var(--amber);transition:all 0.2s;}
-.btn-tiny:hover{background:var(--amber-soft);}
-
-/* ── BUTTONS ── */
-.btn{height:var(--btn-h);padding:0 26px;border-radius:20px;border:none;font-weight:800;font-size:0.92rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:300px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);font-family:'Nunito',sans-serif;position:relative;overflow:hidden;letter-spacing:0.01em;}
-.btn::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(rgba(255,255,255,0.12),transparent);pointer-events:none;}
-.btn:active{transform:scale(0.95);}
-.btn-start{background:linear-gradient(135deg,var(--sage),#7FAF7F);color:white;box-shadow:0 4px 18px var(--sage-glow);}
-.btn-stop{background:linear-gradient(135deg,var(--terracotta),#D4845A);color:white;box-shadow:0 4px 18px rgba(194,107,74,0.3);}
-.btn-amber{background:linear-gradient(135deg,var(--amber),var(--terracotta));color:white;box-shadow:0 4px 18px var(--amber-glow);}
+/* ──────────────────────── BUTTONS ──────────────────────── */
+.btn{height:60px;padding:0 24px;border-radius:19px;border:none;font-weight:800;font-size:.9rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;width:100%;max-width:300px;transition:all .2s cubic-bezier(.34,1.56,.64,1);font-family:'Nunito',sans-serif;position:relative;overflow:hidden;}
+.btn::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(rgba(255,255,255,.1),transparent);pointer-events:none;}
+.btn:active{transform:scale(.95);}
+.btn-start{background:linear-gradient(135deg,var(--sage),#7FAF7F);color:#fff;box-shadow:0 4px 16px var(--sage-glow);}
+.btn-stop{background:linear-gradient(135deg,var(--terra),#D4845A);color:#fff;box-shadow:0 4px 16px rgba(194,107,74,.28);}
+.btn-amber{background:linear-gradient(135deg,var(--amber),var(--terra));color:#fff;box-shadow:0 4px 16px var(--amber-glow);}
 .btn-ghost{background:var(--cream-deep);color:var(--ink-60);border:1.5px solid var(--ink-10);}
-.btn-violet{background:linear-gradient(135deg,var(--violet),#B09ACE);color:white;box-shadow:0 4px 18px var(--violet-glow);}
-.btn-dropbox{background:var(--dropbox);color:white;}
-.btn-gemini{background:linear-gradient(135deg,var(--gemini),#34A853);color:white;box-shadow:0 4px 18px rgba(66,133,244,0.25);}
-.btn-full{width:100%;max-width:none;margin-bottom:10px;}
+.btn-violet{background:linear-gradient(135deg,var(--violet),#B09ACE);color:#fff;box-shadow:0 4px 16px var(--violet-glow);}
+.btn-dropbox{background:var(--dropbox);color:#fff;box-shadow:0 4px 16px rgba(0,97,255,.25);}
+.btn-gemini{background:linear-gradient(135deg,var(--gemini),#34A853);color:#fff;}
+.btn-full{width:100%;max-width:none;margin-bottom:9px;}
+.btn-sm{height:46px;font-size:.82rem;border-radius:14px;}
+.btn-danger{background:rgba(201,64,64,.1);color:var(--danger);border:1.5px solid rgba(201,64,64,.2);}
 
-/* ── MODE TOGGLE ── */
-.mode-toggle{display:flex;gap:4px;background:var(--cream-deep);padding:4px;border-radius:14px;margin-bottom:16px;}
-.mb{flex:1;padding:9px;border:none;background:transparent;border-radius:10px;font-size:0.78rem;font-weight:800;color:var(--ink-60);cursor:pointer;transition:all 0.2s;}
-.mb.active{background:var(--white);color:var(--ink);box-shadow:0 2px 8px var(--ink-10);}
+/* ──────────────────────── SLEEP CARD ──────────────────────── */
+.sleep-card{background:linear-gradient(135deg,#EEF0FA,#F4EFF8);padding:16px;border-radius:24px;border:1.5px solid rgba(123,140,174,.15);flex-shrink:0;}
+.sc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:0;}
+.sc-t h3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
+.sc-t p{font-size:.72rem;color:var(--ink-60);margin-top:2px;}
+.sc-btns{display:flex;gap:7px;margin-top:10px;}
+.btn-sleep{height:44px;padding:0 14px;border-radius:12px;background:var(--white);color:var(--slate);border:1.5px solid rgba(123,140,174,.2);font-weight:800;font-size:.78rem;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:5px;font-family:'Nunito',sans-serif;flex:1;justify-content:center;}
+.btn-sleep:hover{transform:translateY(-1px);}
+.btn-sleep.add-manual{color:var(--amber);border-color:rgba(200,128,58,.25);background:var(--amber-soft);}
 
-/* ── SLEEP CARD ── */
-.sleep-card{background:linear-gradient(135deg,#EEF0FA,#F4EFF8);padding:18px;border-radius:var(--r-lg);border:1.5px solid rgba(123,140,174,0.15);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
-.sc-t h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;}
-.sc-t p{font-size:0.75rem;color:var(--ink-60);margin-top:2px;}
-.btn-sleep{height:46px;padding:0 16px;border-radius:13px;background:var(--white);color:var(--slate);border:1.5px solid rgba(123,140,174,0.2);font-weight:800;font-size:0.8rem;cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;}
-.btn-sleep:hover{transform:translateY(-2px);}
-
-/* ── LOGS ── */
-.log-item{background:var(--white);padding:12px 14px;border-radius:16px;border:1px solid var(--ink-10);display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 8px var(--ink-05);flex-shrink:0;position:relative;overflow:hidden;}
+/* ──────────────────────── LOGS ──────────────────────── */
+.log-item{background:var(--white);padding:11px 13px;border-radius:15px;border:1px solid var(--ink-10);display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 6px var(--ink-05);flex-shrink:0;position:relative;overflow:hidden;}
 .log-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber);}
 .log-item.sleep::before{background:var(--slate);}
-.log-item.weight::before{background:var(--terracotta);}
+.log-item.weight::before{background:var(--terra);}
 .log-item.mood::before{background:var(--gold);}
 .log-item.success::before{background:var(--sage);}
-.log-item.search::before{background:var(--gemini);}
-.log-item.ai::before{background:var(--violet);}
-.lc h4{font-size:0.83rem;font-weight:800;margin-bottom:2px;}
-.lc p{font-size:0.7rem;color:var(--ink-60);}
-.lt{font-size:0.65rem;color:var(--ink-30);font-weight:700;text-align:right;white-space:nowrap;}
-.empty-state{text-align:center;padding:32px 16px;color:var(--ink-60);}
-.ei{font-size:2.5rem;margin-bottom:10px;opacity:0.35;}
+.log-item.search::before,.log-item.ai::before{background:var(--gemini);}
+.log-item:active{transform:scale(.98);}
+.lc h4{font-size:.82rem;font-weight:800;margin-bottom:1px;}
+.lc p{font-size:.7rem;color:var(--ink-60);}
+.lt{font-size:.64rem;color:var(--ink-30);font-weight:700;text-align:right;white-space:nowrap;margin-left:8px;}
+.empty-state{text-align:center;padding:28px 12px;color:var(--ink-60);}
+.ei{font-size:2.4rem;margin-bottom:8px;opacity:.3;}
 
-/* ── PHASE DETAIL SHEETS (vue Stats) ── */
-.phase-sheet{background:var(--white);border-radius:var(--r-lg);border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow);}
-.ps-header{padding:16px 16px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ink-10);}
-.ps-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
-.ps-head-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
-.ps-head-sub{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
-.ps-body{padding:14px 16px;}
-.ps-row{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--ink-05);}
-.ps-row:last-child{border-bottom:none;}
-.ps-bullet{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
-.ps-row-text{font-size:0.8rem;color:var(--ink-60);line-height:1.45;}
-.ps-row-text strong{color:var(--ink);font-weight:700;}
-
-/* ── STATS ── */
-.chart-card{background:var(--white);padding:18px;border-radius:var(--r-lg);height:240px;box-shadow:var(--shadow);border:1px solid var(--ink-10);}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.stat-card{background:var(--white);padding:14px;border-radius:18px;border:1px solid var(--ink-10);box-shadow:var(--shadow);}
-.stat-card .sv{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--ink);}
-.stat-card .sl{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-60);margin-top:2px;}
-.settings-card{background:var(--white);border-radius:var(--r-lg);border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow);}
-.set-row{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--ink-10);}
+/* ──────────────────────── STATS / PHASES VIEW ──────────────────────── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.stat-card{background:var(--white);padding:13px;border-radius:16px;border:1px solid var(--ink-10);box-shadow:var(--shadow);}
+.stat-card .sv{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;}
+.stat-card .sl{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-60);margin-top:2px;}
+.chart-card{background:var(--white);padding:16px;border-radius:24px;height:220px;box-shadow:var(--shadow);border:1px solid var(--ink-10);}
+.phase-sheet{background:var(--white);border-radius:22px;border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow);}
+.psh-head{padding:14px 14px 10px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--ink-10);}
+.psh-icon{width:44px;height:44px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;}
+.psh-title{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;}
+.psh-sub{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+.psh-body{padding:12px 14px;}
+.psh-row{display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid var(--ink-05);}
+.psh-row:last-child{border-bottom:none;}
+.psh-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.psh-txt{font-size:.77rem;color:var(--ink-60);line-height:1.45;}
+.psh-txt strong{color:var(--ink);font-weight:700;}
+.settings-card{background:var(--white);border-radius:22px;border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow);}
+.set-row{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid var(--ink-10);}
 .set-row:last-child{border-bottom:none;}
-.set-lbl{font-weight:800;font-size:0.86rem;}
-.set-desc{font-size:0.7rem;color:var(--ink-60);margin-top:2px;}
+.set-lbl{font-weight:800;font-size:.84rem;}
+.set-desc{font-size:.68rem;color:var(--ink-60);margin-top:2px;}
 
-/* ── INPUTS ── */
-input[type=time],input[type=number],input[type=text],input[type=datetime-local],input[type=password]{background:var(--cream-deep);border:1.5px solid transparent;padding:12px 14px;color:var(--ink);border-radius:14px;font-size:16px;font-weight:700;transition:all 0.2s;-webkit-appearance:none;font-family:'Nunito',sans-serif;width:100%;margin-bottom:12px;}
-input:focus{border-color:var(--amber);background:var(--white);outline:none;}
-input[type=number]{width:auto;margin:0;width:72px;}
+/* ──────────────────────── INPUTS ──────────────────────── */
+input,select{background:var(--cream-deep);border:1.5px solid transparent;padding:12px 13px;color:var(--ink);border-radius:13px;font-size:16px;font-weight:700;transition:all .2s;-webkit-appearance:none;font-family:'Nunito',sans-serif;width:100%;margin-bottom:11px;}
+input:focus,select:focus{border-color:var(--amber);background:var(--white);outline:none;}
+input[type=number],input[type=time]{width:auto;margin:0;}
 input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
-input[type=password]{letter-spacing:0.1em;}
+input[type=password]{letter-spacing:.1em;}
+.inp-lbl{font-size:.75rem;font-weight:800;color:var(--ink-60);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em;}
 
-/* ── AI VIEW ── */
-.ai-switcher{display:flex;gap:4px;background:var(--parchment);padding:4px;border-radius:16px;margin-bottom:12px;flex-shrink:0;}
-.aisw-btn{flex:1;padding:11px 8px;border:none;background:transparent;border-radius:12px;font-weight:800;font-size:0.78rem;color:var(--ink-60);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;font-family:'Nunito',sans-serif;}
-.aisw-btn.active{background:var(--white);color:var(--violet);box-shadow:0 2px 8px var(--ink-10);}
-.aisw-btn.sr.active{color:var(--slate);}
-.ai-hero{background:linear-gradient(135deg,var(--violet-light),var(--cream));border:1.5px solid rgba(138,109,174,0.18);padding:22px;border-radius:var(--r-lg);text-align:center;flex-shrink:0;transition:all 0.4s ease;}
-.ai-hero.sm{background:linear-gradient(135deg,var(--slate-light),var(--cream));border-color:rgba(123,140,174,0.18);}
-.ai-orb{width:68px;height:68px;border-radius:50%;margin:0 auto 12px;background:linear-gradient(135deg,var(--violet),#B09ACE);display:flex;align-items:center;justify-content:center;font-size:1.9rem;box-shadow:0 6px 24px var(--violet-glow);transition:all 0.4s ease;}
+/* ──────────────────────── AI VIEW ──────────────────────── */
+.ai-sw{display:flex;gap:3px;background:var(--parchment);padding:3px;border-radius:15px;margin-bottom:11px;flex-shrink:0;}
+.aisw{flex:1;padding:10px 7px;border:none;background:transparent;border-radius:11px;font-weight:800;font-size:.76rem;color:var(--ink-60);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .18s;font-family:'Nunito',sans-serif;}
+.aisw.active{background:var(--white);color:var(--violet);box-shadow:0 2px 7px var(--ink-10);}
+.aisw.sr.active{color:var(--slate);}
+.ai-hero{background:linear-gradient(135deg,var(--violet-light),var(--cream));border:1.5px solid rgba(138,109,174,.16);padding:20px;border-radius:24px;text-align:center;flex-shrink:0;transition:all .4s;}
+.ai-hero.sm{background:linear-gradient(135deg,var(--slate-light),var(--cream));border-color:rgba(123,140,174,.16);}
+.ai-orb{width:64px;height:64px;border-radius:50%;margin:0 auto 11px;background:linear-gradient(135deg,var(--violet),#B09ACE);display:flex;align-items:center;justify-content:center;font-size:1.8rem;box-shadow:0 5px 20px var(--violet-glow);transition:all .4s;}
 .ai-hero.sm .ai-orb{background:linear-gradient(135deg,var(--slate),#9FB5D4);}
-.ai-hero h2{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;margin-bottom:5px;}
-.ai-hero p{font-size:0.78rem;color:var(--ink-60);}
-.ai-status{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:var(--white);border:1px solid var(--ink-10);padding:4px 10px;border-radius:20px;font-size:0.68rem;font-weight:800;color:var(--ink-60);}
-.ai-status .dot{width:6px;height:6px;border-radius:50%;background:var(--sage);animation:pls 2s infinite;}
-.ai-status.offline .dot{background:var(--amber);}
-@keyframes pls{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;flex-shrink:0;scrollbar-width:none;}
+.ai-hero h2{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;margin-bottom:4px;}
+.ai-hero p{font-size:.76rem;color:var(--ink-60);}
+.ai-sbadge{display:inline-flex;align-items:center;gap:4px;margin-top:7px;background:var(--white);border:1px solid var(--ink-10);padding:3px 9px;border-radius:18px;font-size:.66rem;font-weight:800;color:var(--ink-60);}
+.ai-sbadge .sdot{width:5px;height:5px;border-radius:50%;background:var(--sage);animation:pls 2s infinite;}
+.ai-sbadge.off .sdot{background:var(--amber);}
+@keyframes pls{0%,100%{opacity:1;}50%{opacity:.4;}}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 5px;flex-shrink:0;scrollbar-width:none;}
 .chips::-webkit-scrollbar{display:none;}
-.chip{background:var(--white);border:1.5px solid rgba(138,109,174,0.22);color:var(--violet);padding:8px 14px;border-radius:22px;font-size:0.78rem;font-weight:800;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all 0.18s;box-shadow:0 1px 5px var(--ink-05);font-family:'Nunito',sans-serif;}
-.chip.sr{border-color:rgba(123,140,174,0.22);color:var(--slate);}
-.chip:active{transform:scale(0.93);}
-.chat-box{background:var(--white);border-radius:var(--r-lg);flex:1;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--ink-10);min-height:240px;margin-bottom:10px;}
-.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+.chip{background:var(--white);border:1.5px solid rgba(138,109,174,.2);color:var(--violet);padding:7px 13px;border-radius:20px;font-size:.76rem;font-weight:800;white-space:nowrap;cursor:pointer;flex-shrink:0;font-family:'Nunito',sans-serif;transition:transform .15s;}
+.chip.sr{border-color:rgba(123,140,174,.2);color:var(--slate);}
+.chip:active{transform:scale(.93);}
+.chat-box{background:var(--white);border-radius:24px;flex:1;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--ink-10);min-height:220px;margin-bottom:9px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:11px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
 .chat-msgs::-webkit-scrollbar{width:3px;}
-.chat-msgs::-webkit-scrollbar-thumb{background:var(--parchment);border-radius:10px;}
-.msg{max-width:88%;padding:12px 15px;border-radius:20px;font-size:0.87rem;line-height:1.55;animation:msgPop 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-@keyframes msgPop{from{opacity:0;transform:translateY(8px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
-.msg.user{align-self:flex-end;background:var(--violet);color:white;border-bottom-right-radius:5px;margin-left:auto;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--parchment);border-radius:8px;}
+.msg{max-width:88%;padding:11px 14px;border-radius:19px;font-size:.85rem;line-height:1.55;animation:msgP .28s cubic-bezier(.34,1.56,.64,1);}
+@keyframes msgP{from{opacity:0;transform:translateY(7px) scale(.95);}to{opacity:1;transform:none;}}
+.msg.user{align-self:flex-end;background:var(--violet);color:#fff;border-bottom-right-radius:5px;margin-left:auto;}
 .msg.bot{align-self:flex-start;background:var(--cream-deep);color:var(--ink);border-bottom-left-radius:5px;border:1px solid var(--ink-05);}
-.msg.sr{align-self:flex-start;background:var(--slate-light);border:1px solid rgba(123,140,174,0.18);border-bottom-left-radius:5px;max-width:96%;}
-.msg .ts{font-size:0.63rem;opacity:0.55;margin-top:7px;display:block;text-align:right;}
-.chat-input-row{padding:12px 14px;background:var(--cream);border-top:1px solid var(--ink-10);display:flex;gap:9px;flex-shrink:0;}
-.chat-inp{flex:1;background:var(--white);border:1.5px solid var(--ink-10);padding:12px 15px;border-radius:22px;font-size:0.93rem;color:var(--ink);transition:all 0.2s;font-family:'Nunito',sans-serif;margin:0;font-weight:600;}
+.msg.sr{align-self:flex-start;background:var(--slate-light);border:1px solid rgba(123,140,174,.16);border-bottom-left-radius:5px;max-width:96%;}
+.msg .ts{font-size:.61rem;opacity:.5;margin-top:6px;display:block;text-align:right;}
+.chat-in-row{padding:11px 13px;background:var(--cream);border-top:1px solid var(--ink-10);display:flex;gap:8px;flex-shrink:0;}
+.chat-inp{flex:1;background:var(--white);border:1.5px solid var(--ink-10);padding:11px 14px;border-radius:20px;font-size:.92rem;color:var(--ink);font-family:'Nunito',sans-serif;margin:0;font-weight:600;transition:border-color .2s;}
 .chat-inp:focus{border-color:var(--violet);outline:none;}
 .chat-inp.sm:focus{border-color:var(--slate);}
-.btn-send{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--violet),#B09ACE);color:white;border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px var(--violet-glow);transition:all 0.18s;flex-shrink:0;}
+.btn-send{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--violet),#B09ACE);color:#fff;border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px var(--violet-glow);flex-shrink:0;transition:transform .15s;}
 .btn-send.sm{background:linear-gradient(135deg,var(--slate),#9FB5D4);}
-.btn-send:active{transform:scale(0.89);}
-.typing-w{display:flex;gap:4px;padding:10px 14px;background:var(--cream-deep);border-radius:18px;border-bottom-left-radius:4px;width:fit-content;align-self:flex-start;}
-.tdot{width:7px;height:7px;background:var(--violet);border-radius:50%;animation:bounce 1.4s infinite ease-in-out;}
-.tdot:nth-child(1){animation-delay:-.32s;}
-.tdot:nth-child(2){animation-delay:-.16s;}
-@keyframes bounce{0%,80%,100%{transform:scale(0);}40%{transform:scale(1);}}
-.s-load{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--slate-light);border-radius:18px;align-self:flex-start;font-size:0.83rem;color:var(--slate);width:fit-content;}
-.spin{width:14px;height:14px;border:2px solid var(--slate);border-top-color:transparent;border-radius:50%;animation:sp 0.8s linear infinite;flex-shrink:0;}
+.btn-send:active{transform:scale(.88);}
+.typing-w{display:flex;gap:4px;padding:10px 13px;background:var(--cream-deep);border-radius:17px;border-bottom-left-radius:4px;width:fit-content;align-self:flex-start;}
+.tdot{width:6px;height:6px;background:var(--violet);border-radius:50%;animation:bnc 1.4s infinite ease-in-out;}
+.tdot:nth-child(1){animation-delay:-.32s;} .tdot:nth-child(2){animation-delay:-.16s;}
+@keyframes bnc{0%,80%,100%{transform:scale(0);}40%{transform:scale(1);}}
+.s-load{display:flex;align-items:center;gap:7px;padding:10px 13px;background:var(--slate-light);border-radius:17px;align-self:flex-start;font-size:.81rem;color:var(--slate);width:fit-content;}
+.spin{width:13px;height:13px;border:2px solid var(--slate);border-top-color:transparent;border-radius:50%;animation:sp .8s linear infinite;flex-shrink:0;}
 @keyframes sp{to{transform:rotate(360deg);}}
-.nutr-card{background:var(--cream);padding:10px;border-radius:10px;margin-top:8px;font-size:0.76rem;border:1px solid var(--ink-10);}
-.nutr-r{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ink-05);}
+.nutr-card{background:var(--cream);padding:9px;border-radius:9px;margin-top:7px;font-size:.75rem;border:1px solid var(--ink-10);}
+.nutr-r{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--ink-05);}
 .nutr-r:last-child{border-bottom:none;}
-.sr-title{font-weight:800;color:var(--slate);margin-bottom:6px;font-size:0.88rem;}
-.sr-meta{margin-top:9px;padding-top:7px;border-top:1px solid rgba(123,140,174,0.12);font-size:0.68rem;color:var(--ink-30);display:flex;justify-content:space-between;}
-.gemini-key-box{background:var(--violet-light);border:1.5px solid rgba(138,109,174,0.2);padding:16px;border-radius:16px;margin-bottom:12px;font-size:0.82rem;color:var(--ink-60);line-height:1.5;}
-.gemini-key-box strong{color:var(--violet);display:block;margin-bottom:6px;font-size:0.9rem;}
-.key-status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:14px;font-size:0.7rem;font-weight:800;background:var(--sage-light);color:var(--sage);margin-top:8px;}
-.key-status.nok{background:var(--amber-soft);color:var(--amber);}
-.search-info{background:var(--slate-light);border:1px solid rgba(123,140,174,0.18);padding:9px 13px;border-radius:13px;font-size:0.78rem;color:var(--ink-60);display:flex;align-items:center;gap:7px;flex-shrink:0;margin-bottom:6px;}
+.sr-title{font-weight:800;color:var(--slate);margin-bottom:5px;font-size:.86rem;}
+.sr-meta{margin-top:8px;padding-top:6px;border-top:1px solid rgba(123,140,174,.12);font-size:.66rem;color:var(--ink-30);display:flex;justify-content:space-between;}
+/* Gemini config */
+.gemini-box{background:var(--violet-light);border:1.5px solid rgba(138,109,174,.18);padding:14px;border-radius:15px;margin-bottom:11px;font-size:.8rem;color:var(--ink-60);line-height:1.5;}
+.gemini-box strong{color:var(--violet);display:block;margin-bottom:5px;}
+.ks-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:12px;font-size:.67rem;font-weight:800;background:var(--sage-light);color:var(--sage);margin-top:7px;}
+.ks-badge.nok{background:var(--amber-soft);color:var(--amber);}
+/* search info banner */
+.srch-info{background:var(--slate-light);border:1px solid rgba(123,140,174,.16);padding:8px 12px;border-radius:12px;font-size:.76rem;color:var(--ink-60);display:flex;align-items:center;gap:6px;flex-shrink:0;margin-bottom:5px;}
+/* Dropbox drawer */
+.dbx-token-box{background:linear-gradient(135deg,rgba(0,97,255,.05),rgba(0,97,255,.1));border:2px solid rgba(0,97,255,.18);padding:16px;border-radius:18px;margin-bottom:14px;}
+.dbx-token-box h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;margin-bottom:6px;}
+.dbx-token-box p{font-size:.78rem;color:var(--ink-60);line-height:1.55;margin-bottom:11px;}
+.dbx-steps{background:var(--white);padding:11px;border-radius:11px;font-size:.76rem;color:var(--ink-60);line-height:1.7;}
+.dbx-steps b{color:var(--dropbox);}
+.sync-badge{display:flex;align-items:center;gap:7px;background:var(--cream-deep);padding:10px 13px;border-radius:12px;margin-bottom:13px;font-size:.8rem;font-weight:700;}
+.sync-badge .sdot2{width:8px;height:8px;border-radius:50%;background:var(--sage);flex-shrink:0;}
+.sync-badge.err .sdot2{background:var(--danger);}
+.sync-badge.pending .sdot2{background:var(--amber);animation:pls 1.5s infinite;}
 
-/* ── NAV ── */
-.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(250,247,242,0.97);display:flex;justify-content:space-around;padding:8px 0;padding-bottom:max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--ink-10);z-index:500;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
-.ni{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink-30);cursor:pointer;padding:6px 14px;border-radius:14px;flex:1;transition:all 0.18s;user-select:none;}
-.ni-icon{font-size:1.25rem;}
-.ni-lbl{font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;}
+/* ──────────────────────── NAV ──────────────────────── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(250,247,242,.97);display:flex;justify-content:space-around;padding:8px 0;padding-bottom:max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--ink-10);z-index:500;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink-30);cursor:pointer;padding:5px 12px;border-radius:13px;flex:1;transition:all .18s;user-select:none;}
+.ni-ic{font-size:1.2rem;} .ni-lb{font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;}
 .ni.active{color:var(--amber);background:var(--amber-glow);}
 .ni.ain.active{color:var(--violet);background:var(--violet-glow);}
 
-/* ── OVERLAY & DRAWERS ── */
-.overlay{position:fixed;inset:0;background:rgba(42,37,32,0.48);opacity:0;visibility:hidden;transition:all 0.3s;z-index:900;backdrop-filter:blur(3px);}
+/* ──────────────────────── OVERLAY & DRAWERS ──────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(42,37,32,.46);opacity:0;visibility:hidden;transition:all .28s;z-index:900;backdrop-filter:blur(3px);}
 .overlay.active{opacity:1;visibility:visible;}
-.drawer{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:28px 28px 0 0;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);z-index:1000;padding:18px 20px calc(36px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -8px 40px rgba(42,37,32,0.1);}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:26px 26px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);z-index:1000;padding:16px 18px calc(34px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -8px 36px rgba(42,37,32,.1);}
 .drawer.open{transform:translateY(0);}
-.handle{width:34px;height:4px;background:var(--parchment);border-radius:10px;margin:0 auto 18px;cursor:pointer;}
-.dr-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:16px;}
-.adj-info{background:var(--amber-soft);border-left:3px solid var(--amber);padding:13px;border-radius:12px;margin-bottom:14px;font-size:0.83rem;line-height:1.5;color:var(--ink-60);}
+.handle{width:32px;height:4px;background:var(--parchment);border-radius:8px;margin:0 auto 16px;cursor:pointer;}
+.dr-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;margin-bottom:14px;}
+.adj-info{background:var(--amber-soft);border-left:3px solid var(--amber);padding:11px;border-radius:11px;margin-bottom:13px;font-size:.8rem;line-height:1.5;color:var(--ink-60);}
 .adj-info strong{color:var(--amber);}
-.oauth-box{background:linear-gradient(135deg,rgba(0,97,255,0.05),rgba(0,97,255,0.1));border:2px solid rgba(0,97,255,0.18);padding:24px 18px;border-radius:20px;text-align:center;margin-bottom:16px;}
-.oauth-box h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-bottom:7px;}
-.oauth-box p{font-size:0.82rem;color:var(--ink-60);margin-bottom:16px;line-height:1.5;}
 
-/* ── TOAST ── */
-.toast{position:fixed;top:72px;right:14px;background:var(--white);padding:10px 15px;border-radius:14px;font-size:0.82rem;font-weight:700;display:none;align-items:center;gap:7px;z-index:800;box-shadow:var(--shadow-lg);border:1px solid var(--ink-10);animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);}
-@keyframes toastIn{from{transform:translateX(26px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+/* ──────────────────────── TOAST ──────────────────────── */
+.toast{position:fixed;top:70px;right:13px;background:var(--white);padding:9px 14px;border-radius:13px;font-size:.8rem;font-weight:700;display:none;align-items:center;gap:6px;z-index:800;box-shadow:var(--shadow-lg);border:1px solid var(--ink-10);animation:toastIn .28s cubic-bezier(.34,1.56,.64,1);}
+@keyframes toastIn{from{transform:translateX(24px);opacity:0;}to{transform:translateX(0);opacity:1;}}
 .toast.show{display:flex;}
 
-/* ── CLOUD & SYNC ── */
-.cloud-card{background:var(--white);padding:14px;border-radius:var(--r-lg);display:flex;align-items:center;gap:13px;box-shadow:var(--shadow);border:1px solid var(--ink-10);border-left:4px solid var(--sage);}
-.co-orb{width:42px;height:42px;background:var(--sage-light);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
-.co-info h4{font-size:0.88rem;font-weight:800;margin-bottom:2px;}
-.co-info p{font-size:0.72rem;color:var(--ink-60);}
-.btn-sync{height:36px;padding:0 13px;border-radius:10px;background:var(--dropbox);color:white;border:none;font-weight:800;font-size:0.75rem;cursor:pointer;transition:all 0.18s;font-family:'Nunito',sans-serif;}
-
-/* ── MISC ── */
+/* ──────────────────────── MISC ──────────────────────── */
 .hidden{display:none!important;}
-.section-head{display:flex;justify-content:space-between;align-items:baseline;flex-shrink:0;}
-.section-head h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;}
-.btn-report{background:linear-gradient(135deg,var(--violet),#B09ACE);color:white;height:54px;border-radius:18px;border:none;font-weight:800;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:8px;margin-bottom:14px;flex-shrink:0;box-shadow:0 4px 18px var(--violet-glow);transition:all 0.2s;font-family:'Nunito',sans-serif;}
-.btn-report:hover{transform:translateY(-2px);}
-.sync-phase{background:var(--cream-deep);padding:11px;border-radius:12px;margin:10px 0;font-size:0.83rem;color:var(--ink-60);text-align:center;}
-@media(max-height:700px){.ring-wrap{width:174px;height:174px;}#countdown{font-size:2.2rem;}.ai-hero{padding:16px;}.ai-orb{width:54px;height:54px;font-size:1.5rem;}}
+.sec-head{display:flex;justify-content:space-between;align-items:baseline;flex-shrink:0;}
+.sec-head h3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
+.cloud-row{background:var(--white);padding:12px 13px;border-radius:22px;display:flex;align-items:center;gap:11px;box-shadow:var(--shadow);border:1px solid var(--ink-10);border-left:4px solid var(--sage);}
+.co-ic{width:40px;height:40px;background:var(--sage-light);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;}
+.co-info h4{font-size:.86rem;font-weight:800;margin-bottom:1px;}
+.co-info p{font-size:.7rem;color:var(--ink-60);}
+.btn-sync-sm{height:34px;padding:0 12px;border-radius:9px;background:var(--dropbox);color:#fff;border:none;font-weight:800;font-size:.73rem;cursor:pointer;font-family:'Nunito',sans-serif;}
+.btn-report{background:linear-gradient(135deg,var(--violet),#B09ACE);color:#fff;height:52px;border-radius:17px;border:none;font-weight:800;font-size:.88rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;margin-top:7px;margin-bottom:12px;flex-shrink:0;box-shadow:0 4px 16px var(--violet-glow);transition:all .2s;font-family:'Nunito',sans-serif;}
+@media(max-height:700px){.ring-wrap{width:172px;height:172px;}#countdown{font-size:2.2rem;}.ai-hero{padding:14px;}.ai-orb{width:50px;height:50px;font-size:1.5rem;}}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- ═══════ HEADER ═══════ -->
+<!-- ══════════════════════ HEADER ══════════════════════ -->
 <header class="header">
-  <div>
+  <!-- GAUCHE -->
+  <div class="h-left">
     <div class="h-name" id="h-name">Bonjour, Hicham</div>
-    <div class="h-sub" id="h-sub">Protocole Jeûne 18:6</div>
+    <div class="h-sub">Jeûne 18:6</div>
   </div>
+  <!-- CENTRE — photo -->
+  <div class="h-photo-wrap">
+    <img class="h-photo" src="votre-photo.jpg"
+         alt="Hicham"
+         onerror="this.style.display='none';document.getElementById('h-avatar').style.display='flex';">
+    <div class="h-photo-fallback" id="h-avatar" style="display:none;">H</div>
+  </div>
+  <!-- DROITE -->
   <div class="h-right">
-    <span class="protocol-badge">18:6</span>
-    <button class="ai-pill" onclick="switchTab('ai')">✨ IA Pro</button>
-    <div class="avatar">H</div>
+    <span class="badge-186">18:6</span>
+    <button class="ai-pill" onclick="switchTab('ai')">✨ IA</button>
   </div>
 </header>
 
-<!-- ═══════ VUE ACCUEIL ═══════ -->
+<!-- ══════════════════════ VUE ACCUEIL ══════════════════════ -->
 <main class="view active" id="view-main">
 
-  <!-- CHECK-IN MATINAL -->
+  <!-- CHECK-IN -->
   <div id="checkin-card" class="checkin-card hidden">
     <div class="ci-row">
       <div class="ci-orb">🌅</div>
       <div>
-        <div class="ci-label">Rituel matinal — Comment allez-vous ?</div>
-        <div class="ci-sub">Évaluez votre énergie du matin</div>
+        <div class="ci-label">Comment vous sentez-vous ?</div>
+        <div class="ci-sub">Rituel matinal · énergie du jour</div>
       </div>
     </div>
     <div class="mood-row">
@@ -428,12 +381,12 @@ input[type=password]{letter-spacing:0.1em;}
     </div>
   </div>
 
-  <!-- TIMER CARD -->
+  <!-- TIMER -->
   <div class="timer-card" id="timer-card">
     <div class="tc-stripe" id="tc-stripe"></div>
     <div class="tc-top">
       <span class="fast-badge" id="fast-badge">Fenêtre alimentaire</span>
-      <span class="clock-txt" id="clock">--:--</span>
+      <span class="clk" id="clk">--:--</span>
     </div>
     <div class="mode-toggle">
       <button class="mb active" id="mode-auto" onclick="setMode('auto')">⏰ Auto 18:6</button>
@@ -443,22 +396,15 @@ input[type=password]{letter-spacing:0.1em;}
       <span class="sr-lbl">Début du jeûne</span>
       <span class="sr-val">
         <time id="start-disp">--:--</time>
-        <button class="btn-tiny" onclick="openAdjust()">✏️</button>
+        <button class="btn-tiny" onclick="openDrawer('adjust')">✏️</button>
       </span>
     </div>
-    <!-- RING -->
+    <!-- RING SVG -->
     <div class="ring-wrap">
-      <svg viewBox="0 0 214 214">
-        <circle cx="107" cy="107" r="92" class="r-bg"/>
-        <!-- Tick marks at phase boundaries -->
-        <line x1="107" y1="15" x2="107" y2="26" class="r-tick"/>
-        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(40,107,107)"/>
-        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(80,107,107)"/>
-        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(120,107,107)"/>
-        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(160,107,107)"/>
-        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(200,107,107)"/>
-        <circle id="r-glow" cx="107" cy="107" r="92" class="r-glow" pathLength="565"/>
-        <circle id="r-fill" cx="107" cy="107" r="92" class="r-fill" pathLength="565"/>
+      <svg viewBox="0 0 210 210">
+        <circle cx="105" cy="105" r="91" class="r-bg"/>
+        <circle id="r-glow" cx="105" cy="105" r="91" class="r-glow" pathLength="572"/>
+        <circle id="r-fill" cx="105" cy="105" r="91" class="r-fill" pathLength="572"/>
       </svg>
       <div class="timer-inner">
         <div class="t-lbl">TEMPS RESTANT</div>
@@ -467,609 +413,607 @@ input[type=password]{letter-spacing:0.1em;}
         <button class="btn btn-start" id="action-btn" onclick="handleFastAction()">Démarrer le jeûne 18h</button>
       </div>
     </div>
-    <!-- PHASE PROGRESS BAR -->
-    <div class="phase-bar-wrap">
-      <div class="phase-bar-track">
-        <div class="phase-seg ps-0" id="seg0"></div>
-        <div class="phase-seg ps-1" id="seg1"></div>
-        <div class="phase-seg ps-2" id="seg2"></div>
-        <div class="phase-seg ps-3" id="seg3"></div>
-        <div class="phase-seg ps-4" id="seg4"></div>
-        <div class="phase-seg ps-5" id="seg5"></div>
-        <div class="phase-seg ps-6" id="seg6"></div>
-        <div class="phase-seg ps-7" id="seg7"></div>
-      </div>
-      <div class="phase-bar-labels">
-        <span class="pbl">0h</span>
-        <span class="pbl">4h</span>
-        <span class="pbl">8h</span>
-        <span class="pbl">12h</span>
-        <span class="pbl">18h</span>
-      </div>
+    <!-- PHASE BAR -->
+    <div class="phase-bar" id="phase-bar">
+      <div class="pseg ps0" id="sg0"></div><div class="pseg ps1" id="sg1"></div>
+      <div class="pseg ps2" id="sg2"></div><div class="pseg ps3" id="sg3"></div>
+      <div class="pseg ps4" id="sg4"></div><div class="pseg ps5" id="sg5"></div>
+      <div class="pseg ps6" id="sg6"></div><div class="pseg ps7" id="sg7"></div>
     </div>
+    <div class="bar-lbls"><span class="bl">0h</span><span class="bl">4h</span><span class="bl">8h</span><span class="bl">12h</span><span class="bl">18h</span></div>
     <!-- PHASE INFO -->
-    <div class="phase-info-card" id="phase-card">
+    <div class="phase-info">
       <div class="pi-orb" id="pi-orb">🍽️</div>
-      <div class="pi-content">
+      <div>
         <div class="pi-name" id="pi-name">Fenêtre Alimentaire</div>
-        <div class="pi-time" id="pi-time">MAINTENANT</div>
-        <div class="pi-desc" id="pi-desc">Profitez de votre fenêtre de 6 heures. Privilégiez des repas riches en protéines, légumes et bonnes graisses pour maximiser les bénéfices du jeûne.</div>
-        <div class="pi-benefits" id="pi-benefits">
-          <span class="pi-tag">🥗 Repas équilibré</span>
-          <span class="pi-tag">💧 Hydratation</span>
-          <span class="pi-tag">🥩 Protéines</span>
+        <span class="pi-time" id="pi-time">6H DISPONIBLES</span>
+        <div class="pi-desc" id="pi-desc">Profitez de votre fenêtre de 6h. Protéines, légumes, bonnes graisses pour maximiser les bénéfices du jeûne.</div>
+        <div class="pi-tags" id="pi-tags">
+          <span class="pi-tag">🥗 Repas équilibré</span><span class="pi-tag">💧 Hydratation</span><span class="pi-tag">🥩 Protéines</span>
         </div>
       </div>
     </div>
-    <div id="early-container" style="display:none;text-align:center;margin-top:12px;">
-      <button class="btn btn-amber" onclick="startFast()" style="height:50px;font-size:0.88rem;max-width:none;">⚡ Commencer maintenant</button>
+    <!-- Early start (mode manuel) -->
+    <div id="early-box" style="display:none;text-align:center;margin-top:10px;">
+      <button class="btn btn-amber btn-sm" onclick="startFast()" style="max-width:none;">⚡ Commencer maintenant</button>
     </div>
   </div>
 
-  <!-- SLEEP -->
+  <!-- SLEEP CARD -->
   <div class="sleep-card">
-    <div class="sc-t"><h3>Sommeil</h3><p id="sleep-status">Aucune donnée enregistrée</p></div>
-    <button class="btn-sleep" onclick="toggleSleep()" id="sleep-btn">🛌 Se coucher</button>
+    <div class="sc-top">
+      <div class="sc-t">
+        <h3>Sommeil</h3>
+        <p id="sleep-status">Aucune donnée enregistrée</p>
+      </div>
+      <button class="btn-sleep" onclick="toggleSleep()" id="sleep-btn">🛌 Se coucher</button>
+    </div>
+    <!-- bouton saisie manuelle -->
+    <div class="sc-btns">
+      <button class="btn-sleep add-manual" onclick="openDrawer('sleep-manual')">✏️ Ajouter manuellement</button>
+    </div>
   </div>
 
-  <!-- LOGS -->
-  <div class="section-head">
+  <!-- LOGS DU JOUR -->
+  <div class="sec-head">
     <h3>Aujourd'hui</h3>
-    <time id="today-date" style="font-size:0.68rem;color:var(--ink-60);">--</time>
+    <time id="today-date" style="font-size:.66rem;color:var(--ink-60);">--</time>
   </div>
-  <div id="recent-logs"><div class="empty-state"><div class="ei">📋</div><p>Aucune activité pour l'instant</p></div></div>
+  <div id="recent-logs">
+    <div class="empty-state"><div class="ei">📋</div><p>Aucune activité pour l'instant</p></div>
+  </div>
 
 </main>
 
-<!-- ═══════ VUE PHASES DÉTAILLÉES ═══════ -->
+<!-- ══════════════════════ VUE PHASES ══════════════════════ -->
 <main class="view" id="view-stats">
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;flex-shrink:0;">Votre Jeûne 18:6</div>
-
-  <!-- STATS RAPIDES -->
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:700;flex-shrink:0;">Votre Jeûne 18:6</div>
   <div class="stat-grid">
     <div class="stat-card"><div class="sv" id="sv-fasts">0</div><div class="sl">Jeûnes réalisés</div></div>
-    <div class="stat-card"><div class="sv" id="sv-weight">--</div><div class="sl">Dernier poids (kg)</div></div>
+    <div class="stat-card"><div class="sv" id="sv-weight">--</div><div class="sl">Dernier poids</div></div>
     <div class="stat-card"><div class="sv" id="sv-streak">0</div><div class="sl">Jours consécutifs</div></div>
     <div class="stat-card"><div class="sv" id="sv-best">--</div><div class="sl">Meilleur jeûne</div></div>
   </div>
-
-  <!-- GRAPHIQUE -->
   <div class="chart-card"><canvas id="weightChart"></canvas></div>
   <button class="btn btn-amber btn-full" onclick="openDrawer('poids')">⚖️ Enregistrer mon poids</button>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex-shrink:0;">Les 8 Phases Métaboliques</div>
 
-  <!-- PHASES DÉTAILLÉES -->
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;flex-shrink:0;margin-top:6px;">Les 8 Phases Métaboliques</div>
-
-  <!-- Phase 1 -->
   <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--amber-soft);">🍽️</div><div><div class="ps-head-title">Absorption & Digestion</div><div class="ps-head-sub" style="color:var(--amber);">0 — 2 heures</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Pic insulinique :</strong> L'insuline monte pour stocker le glucose dans les cellules musculaires et hépatiques.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Glycogène chargé :</strong> Le foie et les muscles reconstituent leurs réserves de glycogène (énergie rapide).</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text">Conseil : Privilégiez les protéines et fibres pour ralentir l'absorption et prolonger la satiété.</div></div>
+    <div class="psh-head"><div class="psh-icon" style="background:var(--amber-soft);">🍽️</div><div><div class="psh-title">Absorption & Digestion</div><div class="psh-sub" style="color:var(--amber);">0 — 2 heures</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt"><strong>Pic insulinique :</strong> l'insuline monte pour stocker le glucose dans les muscles et le foie.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt"><strong>Glycogène rechargé :</strong> les réserves d'énergie rapide se reconstituent complètement.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt">Conseil : protéines + fibres pour ralentir l'absorption et prolonger la satiété.</div></div>
+    </div>
+  </div>
+  <div class="phase-sheet">
+    <div class="psh-head"><div class="psh-icon" style="background:var(--amber-soft);">📉</div><div><div class="psh-title">Chute de l'Insuline</div><div class="psh-sub" style="color:var(--amber);">2 — 4 heures</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt"><strong>Glucagon monte :</strong> hormone antagoniste, signal de mobilisation énergétique.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt">Légère faim possible — buvez de l'eau ou du thé vert, elle passe en 20 min.</div></div>
+    </div>
+  </div>
+  <div class="phase-sheet">
+    <div class="psh-head"><div class="psh-icon" style="background:var(--sage-light);">🔥</div><div><div class="psh-title">Combustion des Graisses</div><div class="psh-sub" style="color:var(--sage);">4 — 8 heures</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt"><strong>Lipolyse déclenchée :</strong> les triglycérides stockés sont libérés dans le sang.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt"><strong>β-oxydation :</strong> conversion des acides gras en énergie mitochondriale.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt">Clarté mentale en hausse. Excellent moment pour le travail cognitif.</div></div>
+    </div>
+  </div>
+  <div class="phase-sheet">
+    <div class="psh-head"><div class="psh-icon" style="background:var(--sage-light);">⚡</div><div><div class="psh-title">Cétose Légère</div><div class="psh-sub" style="color:var(--sage);">8 — 12 heures</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt"><strong>Corps cétoniques (BHB) :</strong> le foie produit du carburant premium pour le cerveau.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt">Énergie stable, pas de crash. Exercice modéré à jeun optimal maintenant.</div></div>
+    </div>
+  </div>
+  <div class="phase-sheet">
+    <div class="psh-head"><div class="psh-icon" style="background:var(--slate-light);">🧬</div><div><div class="psh-title">Cétose Profonde & BDNF</div><div class="psh-sub" style="color:var(--slate);">12 — 15 heures</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt"><strong>BDNF élevé :</strong> hormone de croissance du cerveau. Mémoire et neuroprotection.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt"><strong>Insulino-sensibilité maximale :</strong> prévention naturelle du diabète de type 2.</div></div>
+    </div>
+  </div>
+  <div class="phase-sheet">
+    <div class="psh-head"><div class="psh-icon" style="background:var(--slate-light);">🛡️</div><div><div class="psh-title">Anti-Inflammatoire</div><div class="psh-sub" style="color:var(--slate);">15 — 17 heures</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt"><strong>IL-6 & TNF-α en baisse :</strong> marqueurs inflammatoires chroniques qui diminuent.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt">Bénéfique pour douleurs chroniques, arthrite, maladies auto-immunes.</div></div>
+    </div>
+  </div>
+  <div class="phase-sheet">
+    <div class="psh-head"><div class="psh-icon" style="background:var(--violet-light);">✨</div><div><div class="psh-title">Autophagie — Régénération</div><div class="psh-sub" style="color:var(--violet);">17 — 18 heures</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--violet)"></div><div class="psh-txt"><strong>Autophagie activée</strong> (Prix Nobel 2016). Les cellules recyclent leurs composants endommagés.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--violet)"></div><div class="psh-txt"><strong>Mitophagie :</strong> renouvellement des mitochondries pour plus d'énergie cellulaire.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--violet)"></div><div class="psh-txt">Prévention Alzheimer, Parkinson, cancers. C'est l'objectif du 18:6 !</div></div>
+    </div>
+  </div>
+  <div class="phase-sheet">
+    <div class="psh-head"><div class="psh-icon" style="background:var(--gold-light);">👑</div><div><div class="psh-title">Pic Hormones de Croissance</div><div class="psh-sub" style="color:var(--gold);">18h — OBJECTIF ATTEINT</div></div></div>
+    <div class="psh-body">
+      <div class="psh-row"><div class="psh-dot" style="background:var(--gold)"></div><div class="psh-txt"><strong>GH x2000% :</strong> Growth Hormone au maximum — préservation musculaire et lipolyse accélérée.</div></div>
+      <div class="psh-row"><div class="psh-dot" style="background:var(--gold)"></div><div class="psh-txt"><strong>Casser le jeûne idéal :</strong> œufs, poisson, fromage blanc. Évitez les glucides rapides.</div></div>
     </div>
   </div>
 
-  <!-- Phase 2 -->
-  <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--amber-soft);">📉</div><div><div class="ps-head-title">Chute de l'Insuline</div><div class="ps-head-sub" style="color:var(--amber);">2 — 4 heures</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Insuline en baisse :</strong> Le corps arrête de stocker et commence à libérer des nutriments.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Glucagon monte :</strong> Hormone antagoniste de l'insuline, signal du début de la mobilisation énergétique.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text">Légère faim possible — elle passe. Buvez de l'eau ou du thé vert.</div></div>
-    </div>
-  </div>
-
-  <!-- Phase 3 -->
-  <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--sage-light);">🔄</div><div><div class="ps-head-title">Transition Métabolique</div><div class="ps-head-sub" style="color:var(--sage);">4 — 8 heures</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>Lipolyse déclenchée :</strong> Les graisses stockées (triglycérides) sont libérées dans le sang comme carburant.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>β-oxydation :</strong> Les acides gras libres sont convertis en énergie dans les mitochondries.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text">Clarté mentale qui augmente. Excellent moment pour travailler ou méditer.</div></div>
-    </div>
-  </div>
-
-  <!-- Phase 4 -->
-  <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--sage-light);">🔥</div><div><div class="ps-head-title">Combustion des Graisses</div><div class="ps-head-sub" style="color:var(--sage);">8 — 12 heures</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>Cétose légère :</strong> Le foie produit des corps cétoniques (BHB, AcAc) à partir des graisses — carburant premium pour le cerveau.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>Glycogène épuisé :</strong> Les réserves hépatiques de glycogène sont presque vides — retour impossible sans nourriture.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text">Énergie stable, pas de crash. Exercice modéré à jeun optimal ici.</div></div>
-    </div>
-  </div>
-
-  <!-- Phase 5 -->
-  <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--slate-light);">⚡</div><div><div class="ps-head-title">Cétose Profonde & BDNF</div><div class="ps-head-sub" style="color:var(--slate);">12 — 15 heures</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>BDNF élevé :</strong> "Brain-Derived Neurotrophic Factor" — hormone de croissance du cerveau. Améliore la mémoire et protège contre la neurodégénérescence.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>Sensibilité insulinique :</strong> Les cellules deviennent beaucoup plus sensibles à l'insuline — anti-diabète naturel.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text">Vous êtes dans la zone. Concentration maximale, productivité optimale.</div></div>
-    </div>
-  </div>
-
-  <!-- Phase 6 -->
-  <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--slate-light);">🛡️</div><div><div class="ps-head-title">Réponse Anti-Inflammatoire</div><div class="ps-head-sub" style="color:var(--slate);">15 — 17 heures</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>IL-6 & TNF-α en baisse :</strong> Les marqueurs inflammatoires chroniques diminuent significativement.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>Lymphocytes T régulateurs :</strong> Le système immunitaire se recalibre et renforce ses défenses.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text">Bénéfique pour les douleurs chroniques, arthrite, maladies auto-immunes.</div></div>
-    </div>
-  </div>
-
-  <!-- Phase 7 -->
-  <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--violet-light);">✨</div><div><div class="ps-head-title">Autophagie — Régénération</div><div class="ps-head-sub" style="color:var(--violet);">17 — 18 heures</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text"><strong>Autophagie activée :</strong> (Prix Nobel 2016 — Yoshinori Ohsumi) Les cellules digèrent leurs composants endommagés et les recyclent.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text"><strong>Protéines mal repliées :</strong> Éliminées — prévention Alzheimer, Parkinson, cancers.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text"><strong>Mitophagie :</strong> Les mitochondries endommagées sont renouvelées — plus d'énergie cellulaire.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text">C'est pour ça que vous faites du 18:6. Vous avez atteint le but ultime !</div></div>
-    </div>
-  </div>
-
-  <!-- Phase 8 -->
-  <div class="phase-sheet">
-    <div class="ps-header"><div class="ps-icon" style="background:var(--gold-light);">👑</div><div><div class="ps-head-title">Pic Hormones de Croissance</div><div class="ps-head-sub" style="color:var(--gold);">18 heures — OBJECTIF</div></div></div>
-    <div class="ps-body">
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--gold);"></div><div class="ps-row-text"><strong>GH x2000% :</strong> La Growth Hormone monte jusqu'à 20x la normale. Préservation musculaire maximale, lipolyse accélérée.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--gold);"></div><div class="ps-row-text"><strong>IGF-1 optimisé :</strong> Facteur de croissance insulinique — régénération cellulaire, peau, os, muscles.</div></div>
-      <div class="ps-row"><div class="ps-bullet" style="background:var(--gold);"></div><div class="ps-row-text"><strong>Casser le jeûne :</strong> Idéal avec protéines légères (œufs, poisson) + légumes. Évitez les glucides rapides.</div></div>
-    </div>
-  </div>
-
-  <!-- SETTINGS -->
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex-shrink:0;">Paramètres 18:6</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;flex-shrink:0;">Paramètres</div>
   <div class="settings-card">
     <div class="set-row">
-      <div><div class="set-lbl">Début du jeûne</div><div class="set-desc">Heure de début automatique</div></div>
-      <input type="time" id="fast-start-time" value="20:00" style="width:auto;margin:0;" onchange="updateSettings()">
+      <div><div class="set-lbl">Début auto du jeûne</div><div class="set-desc">Heure de référence</div></div>
+      <input type="time" id="fast-start-time" value="20:00" style="width:auto;margin:0;" onchange="saveSettings()">
     </div>
     <div class="set-row">
       <div><div class="set-lbl">Protocole</div><div class="set-desc">18h jeûne · 6h fenêtre alimentaire</div></div>
-      <span style="font-weight:800;color:var(--amber);font-size:0.9rem;">18:6 ✓</span>
+      <span style="font-weight:800;color:var(--amber);font-size:.88rem;">18:6 ✓</span>
     </div>
   </div>
 </main>
 
-<!-- ═══════ VUE HISTORIQUE ═══════ -->
+<!-- ══════════════════════ VUE HISTORIQUE ══════════════════════ -->
 <main class="view" id="view-history">
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;flex-shrink:0;">Historique</div>
-  <div class="cloud-card" id="cloud-card">
-    <div class="co-orb">☁️</div>
-    <div class="co-info" style="flex:1;"><h4>Dropbox Sync</h4><p id="cloud-status-text">Non connecté</p></div>
-    <button class="btn-sync" onclick="openDrawer('cloud')">Connecter</button>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:700;flex-shrink:0;">Historique</div>
+  <div class="cloud-row" id="cloud-row">
+    <div class="co-ic">☁️</div>
+    <div class="co-info" style="flex:1;">
+      <h4>Dropbox</h4>
+      <p id="cloud-status-text">Non connecté</p>
+    </div>
+    <button class="btn-sync-sm" onclick="openDrawer('cloud')">Gérer</button>
   </div>
-  <div id="full-logs"><div class="empty-state"><div class="ei">📜</div><p>Aucun historique</p></div></div>
+  <div id="full-logs">
+    <div class="empty-state"><div class="ei">📜</div><p>Aucun historique</p></div>
+  </div>
 </main>
 
-<!-- ═══════ VUE IA PRO ═══════ -->
+<!-- ══════════════════════ VUE IA ══════════════════════ -->
 <main class="view" id="view-ai">
-  <div class="ai-switcher">
-    <button class="aisw-btn active" id="btn-ai" onclick="setAIMode('ai')">🧠 Gemini Pro</button>
-    <button class="aisw-btn sr" id="btn-sr" onclick="setAIMode('search')">🔍 Aliments</button>
-    <button class="aisw-btn" id="btn-cfg" onclick="setAIMode('config')" style="flex:0.6;">⚙️</button>
+  <div class="ai-sw">
+    <button class="aisw active" id="btn-ai" onclick="setAIMode('ai')">🧠 Gemini Pro</button>
+    <button class="aisw sr" id="btn-sr" onclick="setAIMode('search')">🔍 Aliments</button>
+    <button class="aisw" id="btn-cfg" onclick="openDrawer('gemini')" style="flex:.55;">⚙️</button>
   </div>
-  <div class="search-info hidden" id="search-info">🌐 Recherche Open Food Facts & Wikipedia — 100% gratuit</div>
+  <div class="srch-info hidden" id="srch-info">🌐 Open Food Facts & Wikipedia — gratuit</div>
   <div class="ai-hero" id="ai-hero">
     <div class="ai-orb" id="ai-orb">🧠</div>
     <h2 id="ai-title">NutriAI — Gemini Pro</h2>
-    <p id="ai-sub">IA connectée · Spécialiste jeûne 18:6 & nutrition</p>
-    <div class="ai-status" id="ai-status-badge"><span class="dot"></span><span id="ai-status-txt">Gemini actif</span></div>
+    <p id="ai-sub">IA connectée · Expert jeûne 18:6</p>
+    <div class="ai-sbadge" id="ai-sbadge"><span class="sdot"></span><span id="ai-stxt">Gemini actif</span></div>
   </div>
   <div class="chips" id="ai-chips"></div>
   <div class="chat-box">
     <div class="chat-msgs" id="chat-msgs">
-      <div class="msg bot">Bonjour Hicham ! 👋 Je suis votre assistant IA personnel propulsé par <strong>Gemini Pro</strong>. Je connais votre protocole <strong>18:6</strong>, vos phases métaboliques, et je peux analyser votre progression en temps réel.<br><br>Comment puis-je vous aider aujourd'hui ?<span class="ts">Maintenant</span></div>
+      <div class="msg bot">Bonjour Hicham ! 👋 Je suis votre assistant <strong>Gemini Pro</strong> spécialisé en jeûne 18:6. Je connais votre protocole, vos phases métaboliques et votre progression. Comment puis-je vous aider ?<span class="ts">Maintenant</span></div>
     </div>
-    <div class="chat-input-row">
-      <input type="text" class="chat-inp" id="ai-input" placeholder="Posez votre question à Gemini..." onkeypress="if(event.key==='Enter')handleAI()" autocomplete="off">
+    <div class="chat-in-row">
+      <input type="text" class="chat-inp" id="ai-input" placeholder="Posez votre question…" onkeypress="if(event.key==='Enter')handleAI()" autocomplete="off">
       <button class="btn-send" id="btn-send" onclick="handleAI()">➤</button>
     </div>
   </div>
   <button class="btn-report" onclick="genReport()">📊 Bilan hebdomadaire IA</button>
 </main>
 
-<!-- ═══════ NAV ═══════ -->
+<!-- ══════════════════════ NAV ══════════════════════ -->
 <nav class="nav">
-  <button class="ni active" id="nav-main" onclick="switchTab('main')"><span class="ni-icon">🏠</span><span class="ni-lbl">Accueil</span></button>
-  <button class="ni" id="nav-stats" onclick="switchTab('stats')"><span class="ni-icon">🔬</span><span class="ni-lbl">Phases</span></button>
-  <button class="ni ain" id="nav-ai" onclick="switchTab('ai')"><span class="ni-icon">🧠</span><span class="ni-lbl">IA Pro</span></button>
-  <button class="ni" id="nav-history" onclick="switchTab('history')"><span class="ni-icon">📜</span><span class="ni-lbl">Historique</span></button>
+  <button class="ni active" id="nav-main" onclick="switchTab('main')"><span class="ni-ic">🏠</span><span class="ni-lb">Accueil</span></button>
+  <button class="ni" id="nav-stats" onclick="switchTab('stats')"><span class="ni-ic">🔬</span><span class="ni-lb">Phases</span></button>
+  <button class="ni ain" id="nav-ai" onclick="switchTab('ai')"><span class="ni-ic">🧠</span><span class="ni-lb">IA Pro</span></button>
+  <button class="ni" id="nav-history" onclick="switchTab('history')"><span class="ni-ic">📜</span><span class="ni-lb">Historique</span></button>
 </nav>
 
 <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
-<div class="toast" id="toast"><span id="t-icon">✅</span><span id="t-text"></span></div>
+<div class="toast" id="toast"><span id="t-ic">✅</span><span id="t-tx"></span></div>
+
+<!-- ══════════ DRAWERS ══════════ -->
 
 <!-- DRAWER POIDS -->
 <div class="drawer" id="drawer-poids">
   <div class="handle" onclick="closeDrawers()"></div>
   <div class="dr-title">Nouvelle pesée</div>
-  <input type="number" id="w-input" step="0.1" placeholder="72.5 kg" min="30" max="300" inputmode="decimal">
+  <div class="inp-lbl">Poids en kg</div>
+  <input type="number" id="w-input" step="0.1" placeholder="72.5" min="30" max="300" inputmode="decimal">
   <button class="btn btn-start btn-full" onclick="saveWeight()">Enregistrer</button>
   <button class="btn btn-ghost btn-full" onclick="closeDrawers()">Annuler</button>
 </div>
 
-<!-- DRAWER CLOUD -->
-<div class="drawer" id="drawer-cloud">
+<!-- DRAWER SOMMEIL MANUEL -->
+<div class="drawer" id="drawer-sleep-manual">
   <div class="handle" onclick="closeDrawers()"></div>
-  <div class="dr-title">Synchronisation Cloud</div>
-  <div class="sync-phase" id="sync-phase">Phase : <strong id="cur-phase-txt">—</strong></div>
-  <div id="oauth-box">
-    <div class="oauth-box">
-      <div style="font-size:2.8rem;margin-bottom:10px;">☁️</div>
-      <h3>Dropbox Connect</h3>
-      <p>Synchronisation sécurisée de vos données de jeûne et de poids.</p>
-      <button class="btn btn-dropbox" style="max-width:none;width:100%;height:56px;" onclick="startOAuth()">🔐 Se connecter à Dropbox</button>
-    </div>
-  </div>
-  <div id="cloud-connected" style="display:none;">
-    <div class="cloud-card" style="margin-bottom:16px;"><div class="co-orb" style="color:var(--sage);">✅</div><div class="co-info" style="flex:1;"><h4 style="color:var(--sage);">Connecté</h4><p>Compte Dropbox actif</p></div></div>
-    <button class="btn btn-dropbox btn-full" onclick="syncUp()">⬆️ Sauvegarder</button>
-    <button class="btn btn-start btn-full" onclick="syncDown()">⬇️ Restaurer</button>
-    <button class="btn btn-ghost btn-full" style="color:var(--danger);" onclick="disconnect()">Se déconnecter</button>
-  </div>
+  <div class="dr-title">Ajouter une nuit de sommeil</div>
+  <div class="adj-info">Saisissez manuellement les heures de début et de fin de votre sommeil. <strong>Les données seront ajoutées à votre historique.</strong></div>
+  <div class="inp-lbl">Date et heure de coucher</div>
+  <input type="datetime-local" id="sleep-start-input">
+  <div class="inp-lbl">Date et heure de réveil</div>
+  <input type="datetime-local" id="sleep-end-input">
+  <div class="inp-lbl">Qualité du sommeil</div>
+  <select id="sleep-quality">
+    <option value="5">⭐⭐⭐⭐⭐ Excellente</option>
+    <option value="4">⭐⭐⭐⭐ Bonne</option>
+    <option value="3" selected>⭐⭐⭐ Correcte</option>
+    <option value="2">⭐⭐ Perturbée</option>
+    <option value="1">⭐ Mauvaise</option>
+  </select>
+  <button class="btn btn-start btn-full" onclick="saveManualSleep()">Enregistrer la nuit</button>
+  <button class="btn btn-ghost btn-full" onclick="closeDrawers()">Annuler</button>
 </div>
 
-<!-- DRAWER ADJUST -->
+<!-- DRAWER ADJUST TIME -->
 <div class="drawer" id="drawer-adjust">
   <div class="handle" onclick="closeDrawers()"></div>
   <div class="dr-title">Ajuster l'heure de début</div>
-  <div class="adj-info">Modifiez l'heure de début de votre jeûne en cours. <strong>La progression sera recalculée.</strong></div>
-  <input type="datetime-local" id="adjust-input" style="margin-bottom:16px;">
+  <div class="adj-info">Modifiez l'heure de début du jeûne en cours. <strong>La progression sera recalculée automatiquement.</strong></div>
+  <input type="datetime-local" id="adjust-input">
   <button class="btn btn-start btn-full" onclick="saveAdjust()">Confirmer</button>
   <button class="btn btn-ghost btn-full" onclick="closeDrawers()">Annuler</button>
 </div>
 
-<!-- DRAWER CONFIG GEMINI -->
-<div class="drawer" id="drawer-config">
+<!-- DRAWER DROPBOX — SYNC RÉELLE -->
+<div class="drawer" id="drawer-cloud">
+  <div class="handle" onclick="closeDrawers()"></div>
+  <div class="dr-title">Synchronisation Dropbox</div>
+
+  <!-- Statut sync -->
+  <div class="sync-badge" id="sync-badge">
+    <div class="sdot2"></div>
+    <span id="sync-badge-txt">Non connecté</span>
+  </div>
+
+  <!-- Section token -->
+  <div class="dbx-token-box">
+    <h3>🔑 Token d'accès Dropbox</h3>
+    <p>Pour une sync réelle et sécurisée, obtenez votre token sur Dropbox.</p>
+    <div class="dbx-steps">
+      <b>1.</b> Allez sur <b>dropbox.com/developers</b><br>
+      <b>2.</b> My Apps → créez une app (ou ouvrez la vôtre)<br>
+      <b>3.</b> Onglet Settings → <b>Generated access token → Generate</b><br>
+      <b>4.</b> Copiez et collez ci-dessous
+    </div>
+  </div>
+  <div class="inp-lbl">Access Token Dropbox</div>
+  <input type="password" id="dbx-token-input" placeholder="sl.B…" autocomplete="off">
+  <button class="btn btn-dropbox btn-full" onclick="saveDropboxToken()">💾 Sauvegarder le token</button>
+
+  <!-- Section connecté -->
+  <div id="dbx-connected" style="display:none;">
+    <button class="btn btn-dropbox btn-full" id="btn-sync-up" onclick="syncUp()">⬆️ Sauvegarder vers Dropbox</button>
+    <button class="btn btn-start btn-full" id="btn-sync-down" onclick="syncDown()">⬇️ Restaurer depuis Dropbox</button>
+    <button class="btn btn-danger btn-full btn-sm" onclick="clearDropboxToken()">🗑 Supprimer le token</button>
+  </div>
+</div>
+
+<!-- DRAWER GEMINI CONFIG -->
+<div class="drawer" id="drawer-gemini">
   <div class="handle" onclick="closeDrawers()"></div>
   <div class="dr-title">Configuration IA Gemini</div>
-  <div class="gemini-key-box">
-    <strong>🔑 Clé API Gemini (Gratuite)</strong>
-    Obtenez votre clé gratuite sur <strong>aistudio.google.com</strong> → "Get API Key" → Copiez et collez ci-dessous.<br>La clé est stockée localement sur votre appareil uniquement.
-    <div id="key-status-badge" class="key-status nok">⚠ Aucune clé configurée</div>
+  <div class="gemini-box">
+    <strong>🔑 Clé API Gemini — Gratuite</strong>
+    Obtenez votre clé sur <strong>aistudio.google.com</strong> → Get API Key → Créer → Copier.<br>
+    Stockée localement sur votre appareil uniquement.
+    <div id="ks-badge" class="ks-badge nok">⚠ Aucune clé</div>
   </div>
-  <input type="password" id="gemini-key-input" placeholder="AIzaSy..." autocomplete="off">
-  <button class="btn btn-gemini btn-full" onclick="saveGeminiKey()">💾 Sauvegarder la clé</button>
-  <button class="btn btn-ghost btn-full" onclick="clearGeminiKey()" style="color:var(--danger);">🗑 Supprimer la clé</button>
-  <div style="font-size:0.75rem;color:var(--ink-60);text-align:center;margin-top:8px;line-height:1.5;">
-    Sans clé, l'IA fonctionne en mode local hors-ligne.<br>
-    Avec clé Gemini, vous avez une IA connectée avancée gratuite.
-  </div>
+  <div class="inp-lbl">Clé API Gemini</div>
+  <input type="password" id="gem-key-inp" placeholder="AIzaSy…" autocomplete="off">
+  <button class="btn btn-gemini btn-full" onclick="saveGemKey()">💾 Sauvegarder la clé</button>
+  <button class="btn btn-danger btn-full btn-sm" onclick="clearGemKey()">🗑 Supprimer la clé</button>
+  <p style="font-size:.72rem;color:var(--ink-60);text-align:center;margin-top:8px;line-height:1.5;">Sans clé → IA locale hors-ligne.<br>Avec clé → Gemini 2.0 Flash connecté et gratuit.</p>
 </div>
 
 </div><!-- .app -->
 
 <script>
-// ════════════════════════════════════════════════
-//  HICHAM MASTER — 18:6 ENGINE
-//  Compatible localStorage HICHAM_*_v4
-//  APK-Ready : toutes les mises à jour via HTML
-// ════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════
+//  HICHAM MASTER 18:6 — v4.2 CORRIGÉ
+//  ✅ Dropbox API v2 réelle (token utilisateur)
+//  ✅ Sommeil manuel avec drawer dédié
+//  ✅ Photo centrée dans le header
+//  ✅ Code nettoyé et tous bugs corrigés
+// ════════════════════════════════════════════════════════
 
+// ─── CLÉS LOCALSTORAGE (compatibles v4) ───
 const K = {
   W:'HICHAM_WEIGHTS_v4', L:'HICHAM_LOGS_v4', SET:'HICHAM_SETTINGS_v4',
-  FS:'HICHAM_FAST_v4', CI:'HICHAM_CHECKIN_v4', AIM:'HICHAM_AI_MODE_v4',
-  SL:'HICHAM_SLEEP_v4', DBX:'HICHAM_DROPBOX_TOKEN_v4',
-  CLOUD:'HICHAM_CLOUD_DATA_v4', SYNC:'HICHAM_LAST_SYNC_v4',
-  GEMINI:'HICHAM_GEMINI_KEY_v4'
+  FS:'HICHAM_FAST_v4',   CI:'HICHAM_CHECKIN_v4', SL:'HICHAM_SLEEP_v4',
+  AIM:'HICHAM_AI_MODE_v4', DBX_TOKEN:'HICHAM_DBX_TOKEN_v4',
+  GEM:'HICHAM_GEMINI_KEY_v4', BEST:'HICHAM_BEST_FAST_v4',
+  SYNC_TS:'HICHAM_LAST_SYNC_v4'
 };
 
-// 18:6 = 18h jeûne, durée fixe
-const FAST_DURATION = 18;
+const FAST_DUR = 18; // 18:6 fixe
 
-// ─── PHASES DÉTAILLÉES ───
+// ─── PHASES ───
 const PHASES = [
-  {id:0,name:'Fenêtre Alimentaire',icon:'🍽️',time:'Maintenant',
-   desc:'Profitez de votre fenêtre de 6h. Protéines, légumes, bonnes graisses.',
-   tags:['🥗 Repas équilibré','💧 Hydratation','🥩 Protéines'],
-   cls:'p1',orb:'',stripe:'',timeTag:''},
-  {id:1,name:'Absorption Digestive',icon:'🔄',time:'0 – 2h',
-   desc:"L'insuline monte et stocke le glucose. Le glycogène musculaire et hépatique se recharge. La glycémie se stabilise progressivement.",
-   tags:['📈 Insuline haute','🔋 Glycogène','⏳ Stabilisation'],
-   cls:'p2',orb:'',stripe:'',timeTag:''},
-  {id:2,name:'Chute de l\'Insuline',icon:'📉',time:'2 – 4h',
-   desc:"L'insuline baisse, le glucagon monte. Le corps libère les nutriments stockés. Légère faim passagère — buvez de l'eau ou du thé vert.",
-   tags:['📉 Insuline basse','🫀 Glucagon','💧 Eau/Thé OK'],
-   cls:'p2',orb:'',stripe:'',timeTag:''},
-  {id:3,name:'Combustion des Graisses',icon:'🔥',time:'4 – 8h',
-   desc:'La lipolyse est déclenchée. Vos graisses stockées alimentent le corps. β-oxydation active dans les mitochondries. Clarté mentale en hausse.',
-   tags:['🔥 Lipolyse','⚙️ β-oxydation','🧠 Clarté mentale'],
-   cls:'p3',orb:'orf',stripe:'s-fat',timeTag:'tf'},
-  {id:4,name:'Cétose Légère',icon:'⚡',time:'8 – 12h',
-   desc:'Cétose installée ! Le foie produit des corps cétoniques (BHB). Carburant premium pour le cerveau. Énergie stable, pas de crash glycémique.',
-   tags:['🧪 Cétones BHB','⚡ Énergie stable','🎯 Focus total'],
-   cls:'p4',orb:'orf',stripe:'s-fat',timeTag:'tf'},
-  {id:5,name:'Cétose Profonde & BDNF',icon:'🧬',time:'12 – 15h',
-   desc:"BDNF en hausse — hormone de croissance du cerveau. Sensibilité insulinique maximale. Prévention neurodégénérative. Vous êtes dans la zone.",
-   tags:['🧬 BDNF élevé','💉 Insulino-sensible','🛡️ Neuroprotection'],
-   cls:'p5',orb:'ork',stripe:'s-ketosis',timeTag:'tk'},
-  {id:6,name:'Anti-Inflammatoire',icon:'🛡️',time:'15 – 17h',
-   desc:"Marqueurs inflammatoires (IL-6, TNF-α) en baisse. Système immunitaire qui se recalibre. Bénéfique pour les douleurs chroniques.",
-   tags:['🔵 IL-6 baisse','🔴 TNF-α baisse','💪 Immunité'],
-   cls:'p6',orb:'ork',stripe:'s-deep-ketosis',timeTag:'tk'},
-  {id:7,name:'Autophagie Maximale',icon:'✨',time:'17 – 18h',
-   desc:'Autophagie active (Nobel 2016). Les cellules recyclent leurs composants endommagés. Prévention Alzheimer, Parkinson. Mitophagie pour renouveler les mitochondries.',
-   tags:['✨ Autophagie','♻️ Recyclage','🧬 Anti-âge'],
-   cls:'p7',orb:'ora',stripe:'s-autophagy',timeTag:'ta'},
-  {id:8,name:'Pic Hormones de Croissance',icon:'👑',time:'18h — OBJECTIF',
-   desc:'GH x2000% ! Growth Hormone au maximum. Préservation musculaire absolue + lipolyse accélérée. IGF-1 optimisé. Vous avez réussi votre jeûne 18:6 !',
-   tags:['👑 GH x2000%','💪 Muscle préservé','🏆 Objectif atteint'],
-   cls:'p8',orb:'org',stripe:'s-peak',timeTag:'tg'}
+  {n:'Fenêtre Alimentaire',  ic:'🍽️', t:'6H DISPONIBLES',  d:'Profitez de votre fenêtre. Protéines, légumes, bonnes graisses.',            tags:['🥗 Repas équilibré','💧 Hydratation','🥩 Protéines'],   cls:'',   orb:'',   stripe:'',    pt:''},
+  {n:'Absorption Digestive', ic:'🔄', t:'0 – 2h de jeûne', d:"L'insuline monte et stocke le glucose. Glycogène rechargé.",               tags:['📈 Insuline haute','🔋 Glycogène'],                       cls:'p1', orb:'',   stripe:'',    pt:''},
+  {n:'Chute de l\'Insuline', ic:'📉', t:'2 – 4h de jeûne', d:'Glucagon en hausse, insuline en baisse. Légère faim passagère normale.',    tags:['📉 Insuline basse','🫀 Glucagon'],                        cls:'p2', orb:'',   stripe:'',    pt:''},
+  {n:'Combustion des Graisses',ic:'🔥',t:'4 – 8h de jeûne',d:'Lipolyse active ! Vos graisses alimentent le corps. Clarté mentale en hausse.',tags:['🔥 Lipolyse','⚙️ β-oxydation','🧠 Clarté'],          cls:'p3', orb:'of', stripe:'sf',  pt:'tf'},
+  {n:'Cétose Légère',        ic:'⚡', t:'8 – 12h de jeûne', d:'Cétose installée. BHB produit par le foie — carburant pour le cerveau.',   tags:['🧪 Cétones BHB','⚡ Énergie stable','🎯 Focus'],         cls:'p4', orb:'of', stripe:'sf',  pt:'tf'},
+  {n:'Cétose Profonde & BDNF',ic:'🧬',t:'12 – 15h',         d:'BDNF en hausse, neuroprotection. Sensibilité insulinique maximale.',       tags:['🧬 BDNF élevé','💉 Insulino-sensible','🛡️ Neuroprotect'],cls:'p5', orb:'ok', stripe:'sk',  pt:'tk'},
+  {n:'Anti-Inflammatoire',   ic:'🛡️',t:'15 – 17h',          d:'IL-6 et TNF-α en baisse. Recalibrage immunitaire profond.',               tags:['🔵 IL-6 baisse','🔴 TNF-α baisse','💪 Immunité'],         cls:'p6', orb:'ok', stripe:'sk',  pt:'tk'},
+  {n:'Autophagie Maximale',  ic:'✨', t:'17 – 18h',          d:'Autophagie active (Nobel 2016). Recyclage cellulaire, mitophagie, anti-âge.',tags:['✨ Autophagie','♻️ Recyclage','🧬 Anti-âge'],            cls:'p7', orb:'oa', stripe:'sa',  pt:'ta'},
+  {n:'Pic Hormones de Croissance',ic:'👑',t:'18h — OBJECTIF !',d:'GH x2000% ! Préservation musculaire totale + lipolyse maximale.',       tags:['👑 GH x2000%','💪 Muscle','🏆 Objectif atteint'],        cls:'p8', orb:'og', stripe:'sg',  pt:'tg'}
 ];
 
 // ─── STATE ───
 const S = {
-  on:navigator.onLine, timer:null, weights:[], logs:[],
-  settings:{startTime:'20:00'}, fast:{isFasting:false,startTime:null},
-  phase:0, chart:null, aiMode:'ai', bestFast:0
+  on: navigator.onLine,
+  timer: null,
+  weights: [],
+  logs: [],
+  settings: { startTime: '20:00' },
+  fast: { isFasting: false, startTime: null },
+  phase: 0,
+  chart: null,
+  aiMode: 'ai',
+  bestFast: 0
 };
 
-// ─── STORAGE ───
+// ─── STORAGE (micro-wrapper sécurisé) ───
 const DB = {
-  g:(k,d=null)=>{try{const v=localStorage.getItem(k);return v!=null?v:d;}catch{return d;}},
-  s:(k,v)=>{try{localStorage.setItem(k,v);return true;}catch{return false;}},
-  gj:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}},
-  sj:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}},
-  rm:(k)=>{try{localStorage.removeItem(k);}catch{}}
+  g:  (k,d=null)  => { try { const v=localStorage.getItem(k); return v!=null?v:d; } catch(e){return d;} },
+  s:  (k,v)       => { try { localStorage.setItem(k,v); return true; } catch(e){return false;} },
+  gj: (k,d=null)  => { try { const v=localStorage.getItem(k); return v?JSON.parse(v):d; } catch(e){return d;} },
+  sj: (k,v)       => { try { localStorage.setItem(k,JSON.stringify(v)); return true; } catch(e){return false;} },
+  rm: (k)         => { try { localStorage.removeItem(k); } catch(e){} }
 };
 
+// ─── FORMAT ───
 const F = {
-  t:(d)=>d instanceof Date&&!isNaN(d)?d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'--:--',
-  d:(d)=>d instanceof Date&&!isNaN(d)?d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'--',
-  dtL:(d)=>{if(!(d instanceof Date)||isNaN(d))return'';const o=d.getTimezoneOffset()*60000;return new Date(d-o).toISOString().slice(0,16);},
-  h:(h)=>{const H=Math.floor(h),m=Math.round((h-H)*60);return`${H}h${m>0?m+'min':''}`;}
+  t:   (d) => d instanceof Date && !isNaN(d) ? d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}) : '--:--',
+  d:   (d) => d instanceof Date && !isNaN(d) ? d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'})     : '--',
+  dtL: (d) => { if(!(d instanceof Date)||isNaN(d))return''; const o=d.getTimezoneOffset()*60000; return new Date(d-o).toISOString().slice(0,16); },
+  h:   (h) => { const H=Math.floor(h), m=Math.round((h-H)*60); return `${H}h${m>0?m+'min':''}`; }
 };
 
 // ─── INIT ───
-function init(){
-  S.weights=DB.gj(K.W,[]); S.logs=DB.gj(K.L,[]);
-  S.settings=DB.gj(K.SET,S.settings)||{startTime:'20:00'};
-  S.fast=DB.gj(K.FS,S.fast)||{isFasting:false,startTime:null};
-  S.aiMode=DB.g(K.AIM,'ai');
-  S.bestFast=DB.gj('HICHAM_BEST_FAST',0)||0;
-  updateGreeting(); updateClock(); setInterval(updateClock,1000);
-  if(S.fast?.isFasting&&S.fast?.startTime)startTimer();
+function init() {
+  S.weights  = DB.gj(K.W,  []);
+  S.logs     = DB.gj(K.L,  []);
+  S.settings = DB.gj(K.SET, {startTime:'20:00'}) || {startTime:'20:00'};
+  S.fast     = DB.gj(K.FS,  {isFasting:false,startTime:null}) || {isFasting:false,startTime:null};
+  S.aiMode   = DB.g(K.AIM, 'ai');
+  S.bestFast = DB.gj(K.BEST, 0) || 0;
+
+  updateGreeting();
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  if (S.fast.isFasting && S.fast.startTime) startTimer();
   else resetUI();
-  setMode(S.settings.mode||'auto');
-  checkCheckin(); updateLogs();
-  document.getElementById('today-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-  window.addEventListener('online',()=>{S.on=true;updateAIStatus();});
-  window.addEventListener('offline',()=>{S.on=false;updateAIStatus();});
-  document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeDrawers();});
+
+  setMode(S.settings.mode || 'auto');
+  checkCheckin();
+  updateLogs();
+  $('today-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+
+  // Sleep state restore
+  restoreSleepUI();
+
+  window.addEventListener('online',  () => { S.on=true;  updateAIStatus(); });
+  window.addEventListener('offline', () => { S.on=false; updateAIStatus(); if(S.aiMode==='search') setAIMode('ai'); });
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeDrawers(); });
+
   setAIMode(S.aiMode);
-  updateStats();
+  updateCloudUI();
 }
 
-// ─── GREETING + MOTIVATION ───
-const GREETINGS=[
-  [0,6,'Bonne nuit, Hicham','Mode jeûne nocturne 🌙'],
-  [6,10,'Bonjour, Hicham','Journée productive en jeûne ☀️'],
-  [10,12,'Bonjour, Hicham','Continuez, vous êtes sur la bonne voie'],
-  [12,14,'Bon appétit','Votre fenêtre de 6h a commencé 🍽️'],
-  [14,18,'Bon après-midi','Profitez de votre fenêtre alimentaire'],
-  [18,24,'Bonsoir, Hicham','Préparez votre jeûne du soir 🌆']
-];
-function updateGreeting(){
-  const h=new Date().getHours();
-  const[,,n,s]=GREETINGS.find(([a,b])=>h>=a&&h<b)||GREETINGS[5];
-  const el=document.getElementById('h-name');
-  const sub=document.getElementById('h-sub');
-  if(el)el.textContent=n;
-  if(sub)sub.textContent=s;
-}
-function updateClock(){
-  const el=document.getElementById('clock');if(el)el.textContent=F.t(new Date());
-}
+// ─── UTILS ───
+const $ = id => document.getElementById(id);
+function esc(t) { if(!t)return''; const d=document.createElement('div'); d.textContent=t; return d.innerHTML; }
+function set(id,v) { const el=$(id); if(el) el.textContent=v; }
 
-// ─── CHECKIN ───
-function checkCheckin(){
-  const last=DB.gj(K.CI,null);
-  const today=new Date().toDateString();
-  const card=document.getElementById('checkin-card');
-  if(!last||new Date(last.date).toDateString()!==today)card?.classList.remove('hidden');
-  else card?.classList.add('hidden');
+// ─── GREETING ───
+function updateGreeting() {
+  const h = new Date().getHours();
+  const map = [
+    [0,6,'Bonne nuit, Hicham'],[6,12,'Bonjour, Hicham'],[12,14,'Bon appétit'],
+    [14,18,'Bon après-midi'],[18,24,'Bonsoir, Hicham']
+  ];
+  const [,,name] = map.find(([a,b])=>h>=a&&h<b) || map[4];
+  set('h-name', name);
 }
-function saveCheckin(m){
-  DB.sj(K.CI,{date:new Date().toISOString(),mood:m});
-  document.getElementById('checkin-card')?.classList.add('hidden');
-  const lb=['Épuisé','Fatigué','Neutre','En forme','Excellent'];
-  const em=['😫','😕','😐','🙂','🤩'];
-  addLog('HUMEUR',`${lb[m-1]} ${em[m-1]}`,'mood');
-  toast(`Humeur enregistrée ${em[m-1]}`,true);
+function updateClock() {
+  const el=$('clk'); if(el) el.textContent=F.t(new Date());
 }
 
 // ─── TABS ───
-function switchTab(t){
-  ['main','stats','history','ai'].forEach(v=>{
-    document.getElementById(`view-${v}`)?.classList.toggle('active',v===t);
-    document.getElementById(`nav-${v}`)?.classList.toggle('active',v===t);
+function switchTab(t) {
+  ['main','stats','history','ai'].forEach(v => {
+    $(`view-${v}`)?.classList.toggle('active', v===t);
+    $(`nav-${v}`)?.classList.toggle('active', v===t);
   });
-  if(t==='ai'){setAIMode(S.aiMode);scrollChat();}
-  else if(t==='stats'){setTimeout(()=>{initChart();updateStats();},80);}
-  else if(t==='history'){updateFullLogs();checkCloud();}
+  if(t==='ai')      { setAIMode(S.aiMode); scrollChat(); }
+  else if(t==='stats')   { setTimeout(() => { initChart(); updateStats(); }, 80); }
+  else if(t==='history') { updateFullLogs(); updateCloudUI(); }
+}
+
+// ─── CHECK-IN ───
+function checkCheckin() {
+  const last = DB.gj(K.CI, null);
+  const today = new Date().toDateString();
+  $('checkin-card')?.classList.toggle('hidden', !(!last || new Date(last.date).toDateString()!==today));
+}
+function saveCheckin(m) {
+  DB.sj(K.CI, {date:new Date().toISOString(), mood:m});
+  $('checkin-card')?.classList.add('hidden');
+  const lbl=['Épuisé','Fatigué','Neutre','En forme','Excellent'][m-1];
+  const em =['😫','😕','😐','🙂','🤩'][m-1];
+  addLog('HUMEUR', `${lbl} ${em}`, 'mood');
+  toast(`Humeur notée ${em}`, true);
 }
 
 // ─── MODE TOGGLE ───
-function setMode(mode){
-  S.settings.mode=mode;DB.sj(K.SET,S.settings);
-  document.getElementById('mode-auto')?.classList.toggle('active',mode==='auto');
-  document.getElementById('mode-manual')?.classList.toggle('active',mode==='manual');
-  if(!S.fast.isFasting){
-    const ec=document.getElementById('early-container');
-    if(ec)ec.style.display=mode==='manual'?'block':'none';
+function setMode(mode) {
+  S.settings.mode = mode;
+  DB.sj(K.SET, S.settings);
+  $('mode-auto')?.classList.toggle('active', mode==='auto');
+  $('mode-manual')?.classList.toggle('active', mode==='manual');
+  if (!S.fast.isFasting) {
+    $('early-box').style.display = mode==='manual' ? 'block' : 'none';
   }
 }
 
-// ─── FAST ACTIONS ───
-function handleFastAction(){
-  if(S.fast.isFasting){if(confirm('Arrêter votre jeûne 18h ?'))stopFast();}
-  else startFast();
+// ─── JEÛNE ───
+function handleFastAction() {
+  if (S.fast.isFasting) {
+    if (confirm('Arrêter votre jeûne 18h ?')) stopFast();
+  } else {
+    startFast();
+  }
 }
-function startFast(){
-  const now=new Date();
-  S.fast={isFasting:true,startTime:now.toISOString(),end:new Date(now.getTime()+FAST_DURATION*3600000).toISOString()};
-  DB.sj(K.FS,S.fast);
-  addLog('JEÛNE 18H',`Début à ${F.t(now)}`,'fast');
-  document.getElementById('early-container')?.classList.add('hidden');
+function startFast() {
+  const now = new Date();
+  S.fast = { isFasting:true, startTime:now.toISOString() };
+  DB.sj(K.FS, S.fast);
+  $('early-box').style.display = 'none';
+  addLog('JEÛNE 18H', `Début à ${F.t(now)}`, 'fast');
   startTimer();
-  if(navigator.vibrate)navigator.vibrate(60);
-  toast('Jeûne 18:6 démarré ! 💪',true);
+  if(navigator.vibrate) navigator.vibrate(60);
+  toast('Jeûne 18:6 démarré ! 💪', true);
 }
-function stopFast(){
-  if(S.timer){clearInterval(S.timer);S.timer=null;}
-  const dur=calcElapsed();
-  if(dur>S.bestFast){S.bestFast=dur;DB.sj('HICHAM_BEST_FAST',dur);}
-  addLog('FIN JEÛNE',`Durée : ${F.h(dur)}`,'success');
-  S.fast={isFasting:false,startTime:null};
-  S.phase=0;
-  DB.sj(K.FS,S.fast);
+function stopFast() {
+  if(S.timer) { clearInterval(S.timer); S.timer=null; }
+  const dur = calcElapsed();
+  if(dur > S.bestFast) { S.bestFast=dur; DB.sj(K.BEST, dur); }
+  addLog('FIN JEÛNE', `Durée : ${F.h(dur)}`, 'success');
+  S.fast = { isFasting:false, startTime:null };
+  S.phase = 0;
+  DB.sj(K.FS, S.fast);
   resetUI();
-  if(navigator.vibrate)navigator.vibrate([60,120,60]);
-  toast(`Bravo ! ${F.h(dur)} accomplis 🏆`,true);
+  if(navigator.vibrate) navigator.vibrate([60,120,60]);
+  toast(`Bravo ! ${F.h(dur)} accomplis 🏆`, true);
 }
-function startTimer(){
-  if(S.timer)clearInterval(S.timer);
-  tick(); S.timer=setInterval(tick,1000);
+function startTimer() {
+  if(S.timer) clearInterval(S.timer);
+  tick();
+  S.timer = setInterval(tick, 1000);
+}
+function calcElapsed() {
+  if(!S.fast.startTime) return 0;
+  return Math.max(0, (Date.now() - new Date(S.fast.startTime).getTime()) / 3600000);
 }
 
-function tick(){
-  if(!S.fast.isFasting||!S.fast.startTime){stopFast();return;}
-  const start=new Date(S.fast.startTime);
-  const now=new Date();
-  const elSec=(now-start)/1000;
-  const durSec=FAST_DURATION*3600;
-  const remSec=durSec-elSec;
-  if(remSec<=0){stopFast();addLog('OBJECTIF 18H','Jeûne 18:6 terminé ! 🎉','success');toast('Objectif 18h atteint ! 👑',true);return;}
-  // Countdown
-  const H=Math.floor(remSec/3600),M=Math.floor((remSec%3600)/60),sec=Math.floor(remSec%60);
-  const cd=document.getElementById('countdown');
-  if(cd)cd.textContent=`${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-  // Ring
-  const pct=elSec/durSec;
-  const off=565-(pct*565);
-  const rf=document.getElementById('r-fill');const rg=document.getElementById('r-glow');
-  if(rf){rf.style.strokeDashoffset=off;rf.style.strokeDasharray=565;}
-  if(rg){rg.style.strokeDashoffset=off;rg.style.strokeDasharray=565;}
-  // Phase
-  const elH=elSec/3600;
-  const np=calcPhase(elH);
-  if(np!==S.phase){S.phase=np;updatePhaseUI();}
+function tick() {
+  if(!S.fast.isFasting || !S.fast.startTime) { stopFast(); return; }
+  const elSec = (Date.now() - new Date(S.fast.startTime).getTime()) / 1000;
+  const durSec = FAST_DUR * 3600;
+  const remSec = durSec - elSec;
+
+  if(remSec <= 0) {
+    stopFast();
+    addLog('OBJECTIF 18H', 'Jeûne 18:6 terminé ! 🎉', 'success');
+    toast('Objectif 18h atteint ! 👑', true);
+    return;
+  }
+
+  // Countdown display
+  const H=Math.floor(remSec/3600), M=Math.floor((remSec%3600)/60), sec=Math.floor(remSec%60);
+  const cd=$('countdown');
+  if(cd) cd.textContent=`${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+
+  // Ring progress
+  const pct = elSec / durSec;
+  const CIRC = 572;
+  const off  = CIRC - pct * CIRC;
+  const rf=$('r-fill'), rg=$('r-glow');
+  if(rf){ rf.style.strokeDashoffset=off; rf.style.strokeDasharray=CIRC; }
+  if(rg){ rg.style.strokeDashoffset=off; rg.style.strokeDasharray=CIRC; }
+
+  // Phase update
+  const elH = elSec / 3600;
+  const np = phaseFromHours(elH);
+  if(np !== S.phase) { S.phase=np; applyPhaseUI(); }
+
   // Progress label
-  const pl=document.getElementById('prog-lbl');
-  if(pl){const pctN=Math.round(pct*100);pl.textContent=`${pctN}% · ${getMotiv(elH)}`;}
-  // Timeline
-  updateTimeline(elH);
+  const pctN=Math.round(pct*100);
+  set('prog-lbl', `${pctN}% · ${motivMsg(elH)}`);
+
+  // Phase bar
+  updateBar(elH);
 }
 
-function calcPhase(h){
-  if(h<1)return 1;if(h<2)return 1;if(h<4)return 2;
-  if(h<8)return 3;if(h<12)return 4;if(h<15)return 5;
-  if(h<17)return 6;if(h<18)return 7;return 8;
+function phaseFromHours(h) {
+  if(h<1)  return 1;
+  if(h<2)  return 1;
+  if(h<4)  return 2;
+  if(h<8)  return 3;
+  if(h<12) return 4;
+  if(h<15) return 5;
+  if(h<17) return 6;
+  if(h<18) return 7;
+  return 8;
 }
-function calcElapsed(){
-  if(!S.fast.startTime)return 0;
-  return Math.max(0,(new Date()-new Date(S.fast.startTime))/3600000);
+function motivMsg(h) {
+  const msgs=['','Commencé ! Hydratez-vous','Insuline en chute','Chute insulinique','🔥 Lipolyse active !','⚡ Cétose — corps en cétose','🧬 BDNF en hausse','🛡️ Anti-inflammatoire','✨ Autophagie active','👑 18h — GH au max !'];
+  return msgs[Math.min(S.phase,8)] || '';
 }
-
-function getMotiv(h){
-  const msgs=[
-    'Vous avez commencé ! Restez hydraté',
-    'L\'insuline baisse, continuez !',
-    'Chute insulinique — corps en transition',
-    '🔥 Lipolyse activée !',
-    '⚡ Cétose légère — carburant graisses',
-    '🧬 BDNF en hausse — cerveau optimisé',
-    '🛡️ Anti-inflammatoire actif',
-    '✨ Autophagie — régénération cellulaire',
-    '👑 18h atteints — GH au maximum !'
-  ];
-  return msgs[Math.min(S.phase,8)]||'';
-}
-
-function updatePhaseUI(){
-  const ph=PHASES[S.phase]||PHASES[0];
-  const set=(id,v)=>{const el=document.getElementById(id);if(el)el[typeof v==='string'&&v.startsWith('<')?'innerHTML':'textContent']=v;};
-  set('pi-name',ph.name);
-  set('pi-time',ph.time);
-  set('pi-desc',ph.desc);
-  const bc=document.getElementById('pi-benefits');
-  if(bc)bc.innerHTML=ph.tags.map(t=>`<span class="pi-tag">${t}</span>`).join('');
-  const orb=document.getElementById('pi-orb');
-  if(orb){orb.textContent=ph.icon;orb.className=`pi-orb ${ph.orb}`;}
-  const pt=document.getElementById('pi-time');
-  if(pt)pt.className=`pi-time ${ph.timeTag}`;
-  // Ring color
-  const rf=document.getElementById('r-fill');const rg=document.getElementById('r-glow');
-  if(rf)rf.className=`r-fill ${ph.cls}`;
-  if(rg)rg.className=`r-glow ${ph.cls}`;
-  // Stripe
-  const st=document.getElementById('tc-stripe');
-  if(st)st.className=`tc-stripe ${ph.stripe}`;
-  // Countdown color
-  const cd=document.getElementById('countdown');
-  if(cd)cd.className=`cp${S.phase}`;
-  // Badge
-  const b=document.getElementById('fast-badge');
-  if(b){b.textContent='En jeûne 18:6';b.classList.add('active');}
-  // Button
-  const btn=document.getElementById('action-btn');
-  if(btn){btn.textContent='Arrêter le jeûne';btn.className='btn btn-stop';}
-  // Start row
-  const sr=document.getElementById('start-row');
-  if(sr)sr.style.display='flex';
-  const sd=document.getElementById('start-disp');
-  if(sd&&S.fast.startTime)sd.textContent=F.t(new Date(S.fast.startTime));
-}
-
-function updateTimeline(h){
-  const checkpoints=[0,2,4,8,12,15,17,18,FAST_DURATION];
+function updateBar(h) {
+  const chk=[0,2,4,8,12,15,17,18,FAST_DUR];
   for(let i=0;i<8;i++){
-    const seg=document.getElementById(`seg${i}`);if(!seg)continue;
-    const start=checkpoints[i],end=checkpoints[i+1]||FAST_DURATION;
-    seg.classList.remove('done','cur');
-    if(h>=end)seg.classList.add('done');
-    else if(h>=start)seg.classList.add('cur');
+    const sg=$(`sg${i}`); if(!sg) continue;
+    sg.classList.remove('done','cur');
+    if(h >= chk[i+1]) sg.classList.add('done');
+    else if(h >= chk[i]) sg.classList.add('cur');
   }
 }
 
-function resetUI(){
-  const ph=PHASES[0];
-  const set=(id,v,txt=true)=>{const el=document.getElementById(id);if(el)el[txt?'textContent':'innerHTML']=v;};
+function applyPhaseUI() {
+  const ph = PHASES[S.phase] || PHASES[0];
+  // phase info card
+  set('pi-name', ph.n);
+  set('pi-desc', ph.d);
+  const pt=$('pi-time'); if(pt){pt.textContent=ph.t; pt.className=`pi-time ${ph.pt}`;}
+  const ptags=$('pi-tags'); if(ptags) ptags.innerHTML=ph.tags.map(t=>`<span class="pi-tag">${t}</span>`).join('');
+  const orb=$('pi-orb'); if(orb){orb.textContent=ph.ic; orb.className=`pi-orb ${ph.orb}`;}
+  // ring
+  const rf=$('r-fill'), rg=$('r-glow');
+  if(rf) rf.className=`r-fill ${ph.cls}`;
+  if(rg) rg.className=`r-glow ${ph.cls}`;
+  // stripe
+  const st=$('tc-stripe'); if(st) st.className=`tc-stripe ${ph.stripe}`;
+  // countdown color
+  const cd=$('countdown'); if(cd) cd.className=`cp${S.phase}`;
+  // badge
+  const b=$('fast-badge'); if(b){b.textContent='En jeûne 18:6';b.classList.add('on');}
+  // button
+  const btn=$('action-btn'); if(btn){btn.textContent='Arrêter le jeûne';btn.className='btn btn-stop';}
+  // start time row
+  const sr=$('start-row'); if(sr) sr.style.display='flex';
+  const sd=$('start-disp'); if(sd&&S.fast.startTime) sd.textContent=F.t(new Date(S.fast.startTime));
+}
+
+function resetUI() {
+  const ph = PHASES[0];
   set('countdown','00:00:00');
-  set('pi-name',ph.name);set('pi-desc',ph.desc);
-  const orb=document.getElementById('pi-orb');if(orb){orb.textContent=ph.icon;orb.className='pi-orb';}
-  const pt=document.getElementById('pi-time');if(pt){pt.textContent=ph.time;pt.className='pi-time';}
-  const bc=document.getElementById('pi-benefits');if(bc)bc.innerHTML=ph.tags.map(t=>`<span class="pi-tag">${t}</span>`).join('');
   set('prog-lbl','Prêt à commencer votre jeûne 18:6');
-  const b=document.getElementById('fast-badge');if(b){b.textContent='Fenêtre alimentaire';b.classList.remove('active');}
-  const btn=document.getElementById('action-btn');if(btn){btn.textContent='Démarrer le jeûne 18h';btn.className='btn btn-start';}
-  const rf=document.getElementById('r-fill');if(rf){rf.style.strokeDashoffset='565';rf.className='r-fill';}
-  const rg=document.getElementById('r-glow');if(rg){rg.style.strokeDashoffset='565';rg.className='r-glow';}
-  const sr=document.getElementById('start-row');if(sr)sr.style.display='none';
-  const st=document.getElementById('tc-stripe');if(st)st.className='tc-stripe';
-  const cd=document.getElementById('countdown');if(cd)cd.className='';
-  for(let i=0;i<8;i++){const s=document.getElementById(`seg${i}`);if(s)s.classList.remove('done','cur');}
+  set('pi-name', ph.n); set('pi-desc', ph.d);
+  const pt=$('pi-time'); if(pt){pt.textContent=ph.t; pt.className='pi-time';}
+  const ptags=$('pi-tags'); if(ptags) ptags.innerHTML=ph.tags.map(t=>`<span class="pi-tag">${t}</span>`).join('');
+  const orb=$('pi-orb'); if(orb){orb.textContent=ph.ic; orb.className='pi-orb';}
+  const rf=$('r-fill'),rg=$('r-glow');
+  if(rf){rf.style.strokeDashoffset='572'; rf.className='r-fill';}
+  if(rg){rg.style.strokeDashoffset='572'; rg.className='r-glow';}
+  $('tc-stripe').className='tc-stripe';
+  const cd=$('countdown'); if(cd) cd.className='';
+  $('fast-badge').textContent='Fenêtre alimentaire'; $('fast-badge').classList.remove('on');
+  $('action-btn').textContent='Démarrer le jeûne 18h'; $('action-btn').className='btn btn-start';
+  $('start-row').style.display='none';
+  for(let i=0;i<8;i++){const s=$(`sg${i}`);if(s)s.classList.remove('done','cur');}
   S.phase=0;
   setMode(S.settings.mode||'auto');
 }
 
 // ─── ADJUST TIME ───
-function openAdjust(){
-  const inp=document.getElementById('adjust-input');
-  if(S.fast.startTime&&inp)inp.value=F.dtL(new Date(S.fast.startTime));
-  document.getElementById('drawer-adjust')?.classList.add('open');
-  document.getElementById('overlay')?.classList.add('active');
+function openAdjust() {
+  const inp=$('adjust-input');
+  if(S.fast.startTime&&inp) inp.value=F.dtL(new Date(S.fast.startTime));
+  openDrawer('adjust');
 }
-function saveAdjust(){
-  const v=document.getElementById('adjust-input')?.value;if(!v)return;
-  const d=new Date(v);if(isNaN(d)){alert('Date invalide');return;}
+function saveAdjust() {
+  const v=$('adjust-input')?.value; if(!v) return;
+  const d=new Date(v); if(isNaN(d)){alert('Date invalide');return;}
   if(d>new Date()){alert('Heure future impossible');return;}
-  S.fast.startTime=d.toISOString();DB.sj(K.FS,S.fast);
+  S.fast.startTime=d.toISOString(); DB.sj(K.FS,S.fast);
   addLog('AJUSTEMENT',`Heure modifiée : ${F.t(d)}`,'adjust');
   closeDrawers();
   if(S.timer){clearInterval(S.timer);startTimer();}
@@ -1077,372 +1021,541 @@ function saveAdjust(){
 }
 
 // ─── SLEEP ───
-function toggleSleep(){
-  const sl=DB.gj(K.SL,{isSleeping:false,startTime:null});
-  const btn=document.getElementById('sleep-btn'),st=document.getElementById('sleep-status');
-  if(!sl.isSleeping){
-    sl.isSleeping=true;sl.startTime=new Date().toISOString();DB.sj(K.SL,sl);
-    if(btn)btn.innerHTML='☀️ Se réveiller';
-    if(st)st.textContent='Dodo depuis '+F.t(new Date());
+function restoreSleepUI() {
+  const sl = DB.gj(K.SL, null);
+  if(sl?.isSleeping) {
+    const btn=$('sleep-btn'); if(btn) btn.innerHTML='☀️ Se réveiller';
+    set('sleep-status','Dodo depuis '+F.t(new Date(sl.startTime)));
+  }
+}
+function toggleSleep() {
+  const sl = DB.gj(K.SL,{isSleeping:false,startTime:null});
+  const btn=$('sleep-btn');
+  if(!sl.isSleeping) {
+    sl.isSleeping=true; sl.startTime=new Date().toISOString();
+    DB.sj(K.SL,sl);
+    if(btn) btn.innerHTML='☀️ Se réveiller';
+    set('sleep-status','Dodo depuis '+F.t(new Date()));
     addLog('SOMMEIL','Couché','sleep');
-  }else{
-    const dur=(new Date()-new Date(sl.startTime))/3600000;
-    sl.isSleeping=false;DB.sj(K.SL,sl);
-    if(btn)btn.innerHTML='🛌 Se coucher';
-    if(st)st.textContent=`Dernière nuit : ${F.h(dur)}`;
+  } else {
+    const dur=(Date.now()-new Date(sl.startTime).getTime())/3600000;
+    sl.isSleeping=false; DB.sj(K.SL,sl);
+    if(btn) btn.innerHTML='🛌 Se coucher';
+    set('sleep-status',`Dernière nuit : ${F.h(dur)}`);
     addLog('RÉVEIL',`${F.h(dur)} de sommeil`,'sleep');
+    toast(`Nuit enregistrée : ${F.h(dur)} 💤`,true);
   }
 }
 
-// ─── WEIGHT & CHART ───
-function saveWeight(){
-  const v=parseFloat(document.getElementById('w-input')?.value);
-  if(!v||isNaN(v)||v<30||v>300){alert('Poids valide entre 30 et 300 kg');return;}
-  S.weights.push({d:new Date().toISOString(),v:parseFloat(v.toFixed(1))});
-  DB.sj(K.W,S.weights);document.getElementById('w-input').value='';
-  closeDrawers();addLog('POIDS',`${v.toFixed(1)} kg`,'weight');initChart();updateStats();toast('Poids enregistré ⚖️',true);
+/* ─── SLEEP MANUEL ─── */
+function openSleepManual() {
+  // Pré-remplir avec hier 22h → aujourd'hui 6h par défaut
+  const now=new Date();
+  const end=new Date(now); end.setHours(6,0,0,0);
+  if(end>now) end.setDate(end.getDate()-1);
+  const start=new Date(end); start.setHours(start.getHours()-8);
+  const si=$('sleep-start-input'), se=$('sleep-end-input');
+  if(si) si.value=F.dtL(start);
+  if(se) se.value=F.dtL(end);
 }
-function initChart(){
-  const ctx=document.getElementById('weightChart');if(!ctx||!S.weights.length)return;
+function saveManualSleep() {
+  const sv=$('sleep-start-input')?.value;
+  const ev=$('sleep-end-input')?.value;
+  const qv=parseInt($('sleep-quality')?.value||'3');
+  if(!sv||!ev){alert('Renseignez les deux heures');return;}
+  const sd=new Date(sv), ed=new Date(ev);
+  if(isNaN(sd)||isNaN(ed)){alert('Dates invalides');return;}
+  if(ed<=sd){alert('L\'heure de réveil doit être après le coucher');return;}
+  const dur=(ed-sd)/3600000;
+  if(dur>24){alert('Durée supérieure à 24h — vérifiez les dates');return;}
+  const qLbl=['','⭐ Mauvaise','⭐⭐ Perturbée','⭐⭐⭐ Correcte','⭐⭐⭐⭐ Bonne','⭐⭐⭐⭐⭐ Excellente'][qv];
+  addLog('SOMMEIL MANUEL',`${F.h(dur)} · ${F.t(sd)}→${F.t(ed)} · ${qLbl}`,'sleep');
+  set('sleep-status',`Dernière nuit : ${F.h(dur)} (${qLbl})`);
+  closeDrawers();
+  toast(`Nuit ajoutée : ${F.h(dur)} 💤`,true);
+}
+
+// ─── POIDS ───
+function saveWeight() {
+  const v=parseFloat($('w-input')?.value);
+  if(!v||isNaN(v)||v<30||v>300){alert('Poids entre 30 et 300 kg');return;}
+  S.weights.push({d:new Date().toISOString(),v:parseFloat(v.toFixed(1))});
+  DB.sj(K.W,S.weights);
+  $('w-input').value='';
+  closeDrawers();
+  addLog('POIDS',`${v.toFixed(1)} kg`,'weight');
+  initChart(); updateStats();
+  toast('Poids enregistré ⚖️',true);
+}
+function saveSettings() {
+  const ti=$('fast-start-time'); if(ti) S.settings.startTime=ti.value;
+  DB.sj(K.SET,S.settings);
+}
+function initChart() {
+  const ctx=$('weightChart'); if(!ctx||!S.weights.length) return;
   if(S.chart){S.chart.destroy();S.chart=null;}
   const data=S.weights.slice(-10);
-  S.chart=new Chart(ctx,{type:'line',data:{labels:data.map(w=>F.d(new Date(w.d))),datasets:[{label:'Poids',data:data.map(w=>parseFloat(w.v)),borderColor:'#C8803A',backgroundColor:'rgba(200,128,58,0.07)',tension:0.4,fill:true,pointRadius:5,pointBackgroundColor:'#C8803A',pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(42,37,32,0.92)',padding:12,cornerRadius:10,displayColors:false,callbacks:{label:c=>c.parsed.y+' kg'}}},scales:{y:{beginAtZero:false,grid:{color:'rgba(42,37,32,0.04)'},ticks:{callback:v=>v+' kg'}},x:{grid:{display:false}}}}});
+  S.chart=new Chart(ctx,{
+    type:'line',
+    data:{labels:data.map(w=>F.d(new Date(w.d))),datasets:[{
+      label:'Poids',data:data.map(w=>parseFloat(w.v)),
+      borderColor:'#C8803A',backgroundColor:'rgba(200,128,58,.07)',
+      tension:.4,fill:true,pointRadius:5,pointBackgroundColor:'#C8803A',
+      pointBorderColor:'#fff',pointBorderWidth:2
+    }]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(42,37,32,.9)',padding:11,cornerRadius:9,displayColors:false,callbacks:{label:c=>c.parsed.y+' kg'}}},
+      scales:{y:{beginAtZero:false,grid:{color:'rgba(42,37,32,.04)'},ticks:{callback:v=>v+' kg'}},x:{grid:{display:false}}}
+    }
+  });
 }
-function updateStats(){
-  const fastLogs=S.logs.filter(l=>l.type==='JEÛNE 18H').length;
-  const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
-  sv('sv-fasts',fastLogs);
-  sv('sv-weight',S.weights.length?S.weights[S.weights.length-1].v+'kg':'--');
-  sv('sv-streak',calcStreak());
-  sv('sv-best',S.bestFast>0?F.h(S.bestFast):'--');
+function updateStats() {
+  const fl=S.logs.filter(l=>l.type==='JEÛNE 18H').length;
+  set('sv-fasts',fl);
+  set('sv-weight',S.weights.length?S.weights[S.weights.length-1].v+' kg':'--');
+  set('sv-streak',calcStreak());
+  set('sv-best',S.bestFast>0?F.h(S.bestFast):'--');
 }
-function calcStreak(){
-  let streak=0,d=new Date();d.setHours(0,0,0,0);
-  const doneSet=new Set(S.logs.filter(l=>l.type==='FIN JEÛNE'||l.type==='OBJECTIF 18H').map(l=>new Date(l.time).toDateString()));
-  while(doneSet.has(d.toDateString())){streak++;d.setDate(d.getDate()-1);}
-  return streak;
-}
-function updateSettings(){
-  const ti=document.getElementById('fast-start-time');
-  if(ti)S.settings.startTime=ti.value;
-  DB.sj(K.SET,S.settings);
+function calcStreak() {
+  let n=0; const d=new Date(); d.setHours(0,0,0,0);
+  const done=new Set(S.logs.filter(l=>['FIN JEÛNE','OBJECTIF 18H'].includes(l.type)).map(l=>new Date(l.time).toDateString()));
+  const ck=new Date(d);
+  while(done.has(ck.toDateString())){n++;ck.setDate(ck.getDate()-1);}
+  return n;
 }
 
 // ─── LOGS ───
-function addLog(type,desc,cls=''){
+function addLog(type,desc,cls='') {
   S.logs.unshift({id:Date.now(),type,desc,time:new Date().toISOString(),class:cls});
-  if(S.logs.length>60)S.logs=S.logs.slice(0,60);
-  DB.sj(K.L,S.logs);updateLogs();
+  if(S.logs.length>60) S.logs=S.logs.slice(0,60);
+  DB.sj(K.L,S.logs);
+  updateLogs();
 }
-function renderLog(l,showDate=false){
+function renderLog(l,showDate=false) {
   const d=new Date(l.time);
-  return`<div class="log-item ${l.class||''}"><div class="lc"><h4>${esc(l.type)}</h4><p>${esc(l.desc)}</p></div><div class="lt">${showDate?F.d(d)+'<br>':''}${F.t(d)}</div></div>`;
+  return `<div class="log-item ${l.class||''}">
+    <div class="lc"><h4>${esc(l.type)}</h4><p>${esc(l.desc)}</p></div>
+    <div class="lt">${showDate?F.d(d)+'<br>':''}${F.t(d)}</div>
+  </div>`;
 }
-function updateLogs(){
-  const c=document.getElementById('recent-logs');if(!c)return;
+function updateLogs() {
+  const c=$('recent-logs'); if(!c) return;
   const tl=S.logs.filter(l=>new Date(l.time).toDateString()===new Date().toDateString()).slice(0,6);
   c.innerHTML=tl.length?tl.map(l=>renderLog(l)).join(''):`<div class="empty-state"><div class="ei">📋</div><p>Aucune activité aujourd'hui</p></div>`;
 }
-function updateFullLogs(){
-  const c=document.getElementById('full-logs');if(!c)return;
+function updateFullLogs() {
+  const c=$('full-logs'); if(!c) return;
   c.innerHTML=S.logs.length?S.logs.slice(0,60).map(l=>renderLog(l,true)).join(''):`<div class="empty-state"><div class="ei">📜</div><p>Aucun historique</p></div>`;
 }
 
-// ═══════════════════════════════════
+// ════════════════════════════════════════════════════
+//  DROPBOX API v2 RÉELLE
+//  Utilise l'access token saisi par l'utilisateur
+//  Fichier cible: /hicham-master-data.json sur Dropbox
+// ════════════════════════════════════════════════════
+const DBX_FILE_PATH = '/hicham-master-data.json';
+
+function getDbxToken() { return DB.g(K.DBX_TOKEN, null); }
+
+function saveDropboxToken() {
+  const v = $('dbx-token-input')?.value.trim();
+  if(!v) { toast('Token vide', false); return; }
+  DB.s(K.DBX_TOKEN, v);
+  updateCloudUI();
+  toast('Token Dropbox sauvegardé ✅', true);
+  // Ferme pas immédiatement — laisse l'user voir le résultat
+}
+function clearDropboxToken() {
+  DB.rm(K.DBX_TOKEN);
+  $('dbx-token-input').value='';
+  updateCloudUI();
+  toast('Token supprimé', true);
+}
+
+function updateCloudUI() {
+  const tok=getDbxToken();
+  const statusTxt = $('cloud-status-text');
+  const syncBadge = $('sync-badge');
+  const syncBadgeTxt = $('sync-badge-txt');
+  const dbxConn = $('dbx-connected');
+  const lastSync = DB.g(K.SYNC_TS, null);
+
+  if(tok) {
+    if(statusTxt) statusTxt.textContent = lastSync ? `Sync : ${F.t(new Date(lastSync))}` : 'Token configuré';
+    if(syncBadge) syncBadge.className='sync-badge';
+    if(syncBadgeTxt) syncBadgeTxt.textContent = lastSync ? `Dernière sync : ${F.t(new Date(lastSync))}` : 'Token configuré — prêt à synchroniser';
+    if(dbxConn) dbxConn.style.display='block';
+    // Masque input si token déjà là
+    const inp=$('dbx-token-input');
+    if(inp&&tok) { inp.placeholder='Token configuré (•••'+tok.slice(-4)+')'; inp.value=''; }
+  } else {
+    if(statusTxt) statusTxt.textContent='Non connecté';
+    if(syncBadge) syncBadge.className='sync-badge err';
+    if(syncBadgeTxt) syncBadgeTxt.textContent='Aucun token — entrez votre token Dropbox ci-dessous';
+    if(dbxConn) dbxConn.style.display='none';
+  }
+}
+
+async function syncUp() {
+  const tok=getDbxToken();
+  if(!tok){toast('Configurez votre token Dropbox d\'abord',false);return;}
+  if(!S.on){toast('Pas de connexion internet',false);return;}
+
+  // Feedback visuel
+  const btn=$('btn-sync-up');
+  if(btn){btn.textContent='⏳ Sauvegarde…';btn.disabled=true;}
+  const sb=$('sync-badge'); if(sb) sb.className='sync-badge pending';
+  set('sync-badge-txt','Sauvegarde en cours…');
+
+  const payload = JSON.stringify({
+    version:'4.2',
+    timestamp:new Date().toISOString(),
+    weights:S.weights,
+    logs:S.logs,
+    settings:S.settings,
+    fast:S.fast,
+    phase:S.phase,
+    bestFast:S.bestFast,
+    checkin:DB.gj(K.CI,null)
+  });
+
+  try {
+    const res = await fetch('https://content.dropboxapi.com/2/files/upload',{
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+tok,
+        'Dropbox-API-Arg': JSON.stringify({path:DBX_FILE_PATH,mode:'overwrite',autorename:false,mute:false}),
+        'Content-Type':'application/octet-stream'
+      },
+      body: payload
+    });
+
+    if(!res.ok) {
+      const err=await res.json().catch(()=>({}));
+      const msg=err?.error_summary||`HTTP ${res.status}`;
+      throw new Error(msg);
+    }
+
+    const result=await res.json();
+    const ts=new Date().toISOString();
+    DB.s(K.SYNC_TS,ts);
+    addLog('DROPBOX SYNC',`Sauvegardé (${(payload.length/1024).toFixed(1)} KB)`,'ai');
+    updateCloudUI();
+    toast('Sauvegardé sur Dropbox ✅',true);
+    console.log('[Dropbox] Upload OK', result);
+  } catch(e) {
+    console.error('[Dropbox] Upload error',e);
+    const sb2=$('sync-badge'); if(sb2) sb2.className='sync-badge err';
+    set('sync-badge-txt','Erreur : '+e.message);
+    toast('Erreur Dropbox : '+e.message.substring(0,60),false);
+  } finally {
+    if(btn){btn.textContent='⬆️ Sauvegarder vers Dropbox';btn.disabled=false;}
+  }
+}
+
+async function syncDown() {
+  const tok=getDbxToken();
+  if(!tok){toast('Configurez votre token Dropbox d\'abord',false);return;}
+  if(!S.on){toast('Pas de connexion internet',false);return;}
+
+  const btn=$('btn-sync-down');
+  if(btn){btn.textContent='⏳ Restauration…';btn.disabled=true;}
+  const sb=$('sync-badge'); if(sb) sb.className='sync-badge pending';
+  set('sync-badge-txt','Téléchargement en cours…');
+
+  try {
+    const res = await fetch('https://content.dropboxapi.com/2/files/download',{
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+tok,
+        'Dropbox-API-Arg': JSON.stringify({path:DBX_FILE_PATH})
+      }
+    });
+
+    if(!res.ok) {
+      const err=await res.json().catch(()=>({}));
+      if(res.status===409) throw new Error('Fichier non trouvé sur Dropbox. Faites d\'abord une sauvegarde.');
+      throw new Error(err?.error_summary||`HTTP ${res.status}`);
+    }
+
+    const text = await res.text();
+    const data = JSON.parse(text);
+
+    // Restauration avec validation
+    if(Array.isArray(data.weights)) S.weights=data.weights;
+    if(Array.isArray(data.logs))    S.logs=data.logs;
+    if(data.settings) S.settings={...S.settings,...data.settings};
+    if(data.fast)     S.fast=data.fast;
+    if(typeof data.phase==='number') S.phase=data.phase;
+    if(typeof data.bestFast==='number') S.bestFast=data.bestFast;
+    if(data.checkin) DB.sj(K.CI,data.checkin);
+
+    // Persistance locale
+    DB.sj(K.W,S.weights); DB.sj(K.L,S.logs);
+    DB.sj(K.SET,S.settings); DB.sj(K.FS,S.fast);
+    DB.sj(K.BEST,S.bestFast);
+
+    // Restaurer le timer si jeûne en cours
+    if(S.fast.isFasting && S.fast.startTime) { applyPhaseUI(); startTimer(); }
+    else resetUI();
+
+    updateLogs(); updateFullLogs(); checkCheckin(); updateStats();
+    DB.s(K.SYNC_TS,new Date().toISOString());
+    updateCloudUI();
+    toast('Données restaurées depuis Dropbox ✅',true);
+    closeDrawers(); switchTab('main');
+    console.log('[Dropbox] Download OK', data.timestamp);
+  } catch(e) {
+    console.error('[Dropbox] Download error',e);
+    const sb2=$('sync-badge'); if(sb2) sb2.className='sync-badge err';
+    set('sync-badge-txt','Erreur : '+e.message);
+    toast('Erreur : '+e.message.substring(0,80),false);
+  } finally {
+    if(btn){btn.textContent='⬇️ Restaurer depuis Dropbox';btn.disabled=false;}
+  }
+}
+
+// ════════════════════════════════════════════════════
 //  IA GEMINI — CONNECTÉE & GRATUITE
-// ═══════════════════════════════════
-const GEMINI_MODEL='gemini-2.0-flash';
-const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+// ════════════════════════════════════════════════════
+const GEM_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent`;
 
-function getGeminiKey(){return DB.g(K.GEMINI,null);}
-function saveGeminiKey(){
-  const v=document.getElementById('gemini-key-input')?.value.trim();
+function getGemKey() { return DB.g(K.GEM,null); }
+function saveGemKey() {
+  const v=$('gem-key-inp')?.value.trim();
   if(!v||!v.startsWith('AIza')){toast('Clé invalide — doit commencer par AIza',false);return;}
-  DB.s(K.GEMINI,v);updateKeyStatus();closeDrawers();toast('Clé Gemini sauvegardée ✅',true);updateAIStatus();
+  DB.s(K.GEM,v); updateGemStatus(); closeDrawers();
+  updateAIStatus(); toast('Clé Gemini sauvegardée ✅',true);
 }
-function clearGeminiKey(){DB.rm(K.GEMINI);updateKeyStatus();updateAIStatus();toast('Clé supprimée',true);}
-function updateKeyStatus(){
-  const k=getGeminiKey();
-  const badge=document.getElementById('key-status-badge');
-  if(badge){badge.textContent=k?'✅ Clé configurée':'⚠ Aucune clé configurée';badge.className=`key-status ${k?'':'nok'}`;}
-  const inp=document.getElementById('gemini-key-input');if(inp&&k)inp.value='AIza•••••'+k.slice(-4);
+function clearGemKey() { DB.rm(K.GEM); updateGemStatus(); updateAIStatus(); toast('Clé supprimée',true); }
+
+function updateGemStatus() {
+  const k=getGemKey();
+  const b=$('ks-badge');
+  if(b){b.textContent=k?'✅ Clé configurée':'⚠ Aucune clé'; b.className=`ks-badge${k?'':' nok'}`;}
+  const inp=$('gem-key-inp');
+  if(inp&&k) inp.placeholder='AIza•••'+k.slice(-4);
 }
-function updateAIStatus(){
-  const k=getGeminiKey();const on=S.on;
-  const badge=document.getElementById('ai-status-badge');
-  const txt=document.getElementById('ai-status-txt');
-  const inp=document.getElementById('ai-input');
-  if(badge){badge.className=`ai-status ${(!k||!on)?'offline':''}`;}
-  if(txt)txt.textContent=k&&on?'Gemini actif':(!k?'Mode local (hors-ligne)':'Hors connexion');
-  if(inp)inp.placeholder=k&&on?'Posez votre question à Gemini...':'Posez votre question (IA locale)...';
+function updateAIStatus() {
+  const k=getGemKey(), on=S.on;
+  const b=$('ai-sbadge'), t=$('ai-stxt'), inp=$('ai-input');
+  if(b) b.className=`ai-sbadge${(!k||!on)?' off':''}`;
+  if(t) t.textContent=k&&on?'Gemini actif':(!k?'Mode local':'Hors connexion');
+  if(inp) inp.placeholder=k&&on?'Posez votre question à Gemini…':'Posez votre question (IA locale)…';
 }
 
-function buildGeminiContext(){
-  const ctx={
-    protocole:'Jeûne intermittent 18:6 (18h jeûne, 6h fenêtre)',
-    phase_actuelle:PHASES[S.phase]?.name||'Fenêtre alimentaire',
-    heure_jeune:S.fast.isFasting?F.h(calcElapsed()):'Pas de jeûne en cours',
-    poids_recent:S.weights.length?S.weights[S.weights.length-1].v+' kg':'Non renseigné',
-    jeunes_realises:S.logs.filter(l=>l.type==='JEÛNE 18H').length,
-    objectif:'18 heures',
-    utilisateur:'Hicham'
-  };
-  return`Tu es NutriAI, assistant expert en jeûne intermittent pour ${ctx.utilisateur}. 
-Contexte actuel : ${JSON.stringify(ctx)}.
-Réponds en français, de façon précise, scientifique mais accessible. 
-Utilise des emojis avec parcimonie. Max 200 mots sauf si bilan demandé.
-Si on te demande un bilan, sois détaillé avec les données fournies.`;
+function buildCtx() {
+  return `Tu es NutriAI, assistant expert en jeûne intermittent pour Hicham.
+Données actuelles : ${JSON.stringify({
+  protocole:'18:6',phase:PHASES[S.phase]?.n||'—',
+  duree_jeune:S.fast.isFasting?F.h(calcElapsed()):'pas de jeûne',
+  poids:S.weights.length?S.weights[S.weights.length-1].v+' kg':'non renseigné',
+  jeunes_totaux:S.logs.filter(l=>l.type==='JEÛNE 18H').length
+})}.
+Réponds en français, de façon précise mais accessible. Max 200 mots sauf si bilan complet demandé.`;
 }
 
-async function callGemini(userMsg){
-  const key=getGeminiKey();
-  if(!key||!S.on)return null; // fallback local
-  try{
-    const res=await fetch(`${GEMINI_URL}?key=${key}`,{
-      method:'POST',headers:{'Content-Type':'application/json'},
+async function callGemini(msg) {
+  const k=getGemKey(); if(!k||!S.on) return null;
+  try {
+    const res=await fetch(`${GEM_URL}?key=${k}`,{
+      method:'POST', headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        system_instruction:{parts:[{text:buildGeminiContext()}]},
-        contents:[{parts:[{text:userMsg}]}],
-        generationConfig:{maxOutputTokens:512,temperature:0.7}
+        system_instruction:{parts:[{text:buildCtx()}]},
+        contents:[{parts:[{text:msg}]}],
+        generationConfig:{maxOutputTokens:600,temperature:0.7}
       })
     });
-    if(!res.ok){const err=await res.json();throw new Error(err?.error?.message||'Gemini error');}
-    const data=await res.json();
-    return data?.candidates?.[0]?.content?.parts?.[0]?.text||null;
-  }catch(e){console.error('[Gemini]',e);return null;}
+    if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'Gemini error');}
+    const d=await res.json();
+    return d?.candidates?.[0]?.content?.parts?.[0]?.text||null;
+  } catch(e){console.error('[Gemini]',e);return null;}
 }
 
-// ─── LOCAL AI FALLBACK ───
-const LOCAL_KB={
-  faim:`La faim en jeûne vient par vagues de 20 min max. Buvez de l'eau chaude avec citron, du thé vert ou du café noir — ça stoppe naturellement la sensation de faim. Rappelez-vous : la faim n'est PAS un signal d'urgence, c'est une habitude.`,
-  cafe:`☕ Le café noir est 100% autorisé pendant le jeûne 18:6. Il accélère même la cétose et augmente les corps cétoniques. Évitez sucre, lait, crème. Le café peut également augmenter la durée de l'autophagie.`,
-  sport:`L'exercice à jeun est puissant ! En phase de lipolyse (4-12h), le corps brûle jusqu'à 20% plus de graisses. Cardio léger à modéré est idéal. Évitez l'intensité maximale les 2 premières semaines d'adaptation.`,
-  fatigue:`La fatigue initiale est normale (1-3 semaines). Causes : manque d'électrolytes. Solution : sel de l'Himalaya dans l'eau, magnésium le soir, potassium. Assurez-vous de dormir 7-9h. Ça disparaît totalement après l'adaptation.`,
-  casser:`Pour casser votre jeûne 18:6 de façon optimale : commencez par de la protéine légère (œufs, poisson, fromage blanc), attendez 20-30 min, puis mangez normalement. Évitez les glucides simples en premier repas.`,
-  resultats:`Les résultats du 18:6 arrivent en 2-4 semaines pour la perte de poids, 4-8 semaines pour les changements métaboliques profonds. La régularité > l'intensité. Chaque jeûne complété est une victoire.`
+const LOCAL={
+  faim:`La faim en jeûne vient par vagues de 20 min maximum. Buvez de l'eau chaude + citron, thé vert ou café noir. Rappelez-vous : ce n'est pas une urgence, c'est une habitude qui se reprogramme.`,
+  cafe:`☕ Le café noir est 100% autorisé. Il accélère la cétose et augmente les corps cétoniques (BHB). Évitez sucre, lait, crème. Comptez-le dans votre hydratation quotidienne.`,
+  sport:`L'exercice à jeun brûle jusqu'à 20% plus de graisses. Cardio léger à modéré est idéal en phase 4-12h. Évitez l'intensité maximale les 2 premières semaines d'adaptation.`,
+  fatigue:`Cause principale : électrolytes. Ajoutez du sel de l'Himalaya dans l'eau, magnésium le soir, potassium. Dormez 7-9h. La fatigue initiale dure 1-3 semaines puis disparaît complètement.`,
+  casser:`Casser le jeûne optimal : protéine légère d'abord (œufs, poisson, fromage blanc). Attendez 20-30 min. Ensuite repas normal. Évitez les sucres rapides en premier — spike insulinique à éviter.`
 };
-function localResponse(q){
-  const lo=q.toLowerCase();
-  if(lo.match(/faim|affam|creux|ventre/i))return LOCAL_KB.faim;
-  if(lo.match(/caf[ée]|th[ée]|noir/i))return LOCAL_KB.cafe;
-  if(lo.match(/sport|exercice|muscu|entrainement|course/i))return LOCAL_KB.sport;
-  if(lo.match(/fatigu|crev[ée]|energy|énergie/i))return LOCAL_KB.fatigue;
-  if(lo.match(/casser|briser|reprendre|manger après/i))return LOCAL_KB.casser;
-  if(lo.match(/résultat|résultat|quand|combien|temps/i))return LOCAL_KB.resultats;
-  if(lo.match(/bonjour|salut|coucou|hello/i))return`Bonjour Hicham ! 👋 Je suis en mode local (configurez une clé Gemini pour l'IA complète). Je peux vous aider sur : la faim, le café, le sport, la fatigue, ou comment casser le jeûne.`;
-  if(lo.match(/phase|étape|progression|métabolique/i)){
+function localResp(q) {
+  const l=q.toLowerCase();
+  if(/faim|affam|creux|ventre/i.test(l)) return LOCAL.faim;
+  if(/caf[ée]|th[ée]/i.test(l))         return LOCAL.cafe;
+  if(/sport|exercice|muscu|course/i.test(l)) return LOCAL.sport;
+  if(/fatigu|crev|énergie|energy/i.test(l)) return LOCAL.fatigue;
+  if(/casser|reprendre|manger/i.test(l)) return LOCAL.casser;
+  if(/phase|progression|où/i.test(l)) {
     const ph=PHASES[S.phase]||PHASES[0];
-    return`📊 <strong>Votre phase actuelle : ${ph.name}</strong><br>${ph.time}<br><br>${ph.desc}<br><br>Conseil : ${ph.tags.join(' · ')}`;
+    return `📊 <strong>Phase actuelle : ${ph.n}</strong><br>${ph.t}<br><br>${ph.d}`;
   }
-  if(lo.match(/autophagie|autophag/i))return`✨ L'autophagie commence vers 17h de jeûne. C'est pourquoi le 18:6 est si puissant — vous atteignez cette phase chaque jour ! Prix Nobel 2016. Le corps recycle ses cellules endommagées, prévient Alzheimer et Parkinson.`;
-  return`Je comprends votre question sur "${esc(q.substring(0,30))}". Pour des réponses IA avancées, configurez votre clé Gemini gratuite (bouton ⚙️). En mode local, je peux vous aider sur : faim, café/thé, sport, fatigue, casser le jeûne, phases métaboliques.`;
+  if(/autophagie/i.test(l)) return `✨ L'autophagie démarre vers 17h de jeûne. C'est pourquoi le 18:6 est si puissant — vous l'atteignez chaque jour ! Prix Nobel 2016. Recyclage cellulaire, prévention Alzheimer/Parkinson.`;
+  if(/bonjour|salut|coucou/i.test(l)) return `Bonjour Hicham ! 👋 Je suis en mode ${getGemKey()?'Gemini actif':'local (configurez une clé Gemini pour l\'IA complète)'}. Comment puis-je vous aider ?`;
+  return `Configurez votre clé Gemini (bouton ⚙️) pour des réponses IA avancées. En mode local, je réponds sur : faim, café/thé, sport, fatigue, casser le jeûne, phases métaboliques.`;
 }
 
-// ─── AI MODE ───
-function setAIMode(mode){
-  S.aiMode=mode;DB.s(K.AIM,mode);
-  const is=x=>mode===x;
-  ['ai','sr'].forEach(m=>{document.getElementById(`btn-${m}`)?.classList.toggle('active',mode===m);});
-  document.getElementById('btn-cfg')?.classList.toggle('active',mode==='config');
-  if(is('config')){openDrawer('config');updateKeyStatus();return;}
-  const hero=document.getElementById('ai-hero');
-  const orb=document.getElementById('ai-orb');
-  if(is('ai')){
-    hero?.classList.remove('sm');if(orb)orb.textContent='🧠';
-    document.getElementById('ai-title').textContent='NutriAI — Gemini Pro';
-    document.getElementById('ai-sub').textContent='IA connectée · Spécialiste jeûne 18:6';
-    document.getElementById('search-info')?.classList.add('hidden');
-    document.getElementById('btn-send')?.classList.remove('sm');
-    document.getElementById('ai-input')?.classList.remove('sm');
+// ─── AI MODE SWITCHER ───
+function setAIMode(mode) {
+  S.aiMode=mode; DB.s(K.AIM,mode);
+  $('btn-ai')?.classList.toggle('active',mode==='ai');
+  $('btn-sr')?.classList.toggle('active',mode==='search');
+  const isAI=mode==='ai';
+  const hero=$('ai-hero'), orb=$('ai-orb'), inp=$('ai-input'), snd=$('btn-send');
+  if(isAI){
+    hero?.classList.remove('sm');
+    if(orb)orb.textContent='🧠';
+    set('ai-title','NutriAI — Gemini Pro'); set('ai-sub','IA connectée · Expert jeûne 18:6');
+    $('srch-info')?.classList.add('hidden');
+    inp?.classList.remove('sm'); snd?.classList.remove('sm');
     updateAIChips();
-  }else{
-    hero?.classList.add('sm');if(orb)orb.textContent='🔍';
-    document.getElementById('ai-title').textContent='Recherche Nutrition';
-    document.getElementById('ai-sub').textContent='Open Food Facts & Wikipedia';
-    document.getElementById('search-info')?.classList.remove('hidden');
-    document.getElementById('btn-send')?.classList.add('sm');
-    document.getElementById('ai-input')?.classList.add('sm');
-    document.getElementById('ai-input').placeholder='Rechercher un aliment...';
-    const ch=document.getElementById('ai-chips');
-    if(ch)ch.innerHTML=['🥑 Avocat','🐟 Saumon','🥚 Œufs','🫐 Myrtilles','🥩 Bœuf','🥦 Brocoli'].map(s=>`<button class="chip sr" onclick="sfood('${s.split(' ')[1]}')">${s}</button>`).join('');
+  } else {
+    hero?.classList.add('sm');
+    if(orb)orb.textContent='🔍';
+    set('ai-title','Recherche Nutrition'); set('ai-sub','Open Food Facts & Wikipedia');
+    $('srch-info')?.classList.remove('hidden');
+    inp?.classList.add('sm'); snd?.classList.add('sm');
+    if(inp) inp.placeholder='Rechercher un aliment…';
+    const ch=$('ai-chips');
+    if(ch) ch.innerHTML=['🥑 Avocat','🐟 Saumon','🥚 Œufs','🥦 Brocoli','🫐 Myrtilles','🥩 Bœuf'].map(s=>`<button class="chip sr" onclick="sfood('${s.split(' ')[1]}')">${s}</button>`).join('');
   }
   updateAIStatus();
 }
-function updateAIChips(){
-  const ch=document.getElementById('ai-chips');if(!ch)return;
-  const chips=['🍽️ Quoi manger pour casser le jeûne ?','☕ Café autorisé ?','😫 J\'ai faim, que faire ?','💪 Sport à jeun ?','✨ Expliquez l\'autophagie','📊 Mon bilan 18:6'];
-  ch.innerHTML=chips.map(s=>`<button class="chip" onclick="setS('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+function updateAIChips() {
+  const ch=$('ai-chips'); if(!ch) return;
+  const chips=['🍽️ Quoi manger pour casser le jeûne ?','☕ Café autorisé ?','😫 Gestion de la faim','💪 Sport à jeun ?','✨ L\'autophagie expliquée','📊 Mon bilan 18:6'];
+  ch.innerHTML=chips.map(s=>`<button class="chip" onclick="ss('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
 }
-function setS(t){const inp=document.getElementById('ai-input');if(inp){inp.value=t;handleAI();}}
+function ss(t){const inp=$('ai-input');if(inp){inp.value=t;handleAI();}}
 function handleAI(){S.aiMode==='search'?doSearch():sendAI();}
 
-async function sendAI(){
-  const inp=document.getElementById('ai-input');
-  const txt=inp?.value.trim();if(!txt)return;
-  addMsg(txt,'user');inp.value='';
+async function sendAI() {
+  const inp=$('ai-input');
+  const txt=inp?.value.trim(); if(!txt) return;
+  addMsg(txt,'user'); inp.value='';
   showTyping();
-  const key=getGeminiKey();
-  const useGemini=!!(key&&S.on);
-  let response;
-  if(useGemini){
-    response=await callGemini(txt);
-    if(!response){removeTyping();addMsg('⚠️ Erreur Gemini. Vérifiez votre clé API ou votre connexion. Passage en mode local.','bot');response=localResponse(txt);}
-  }else{
-    await new Promise(r=>setTimeout(r,600+Math.random()*400));
-    response=localResponse(txt);
+  const k=getGemKey();
+  let resp;
+  if(k&&S.on){
+    resp=await callGemini(txt);
+    if(!resp){removeTyping();addMsg('⚠️ Erreur Gemini. Vérifiez votre clé. Passage mode local.','bot'); resp=localResp(txt);}
+  } else {
+    await new Promise(r=>setTimeout(r,500+Math.random()*400));
+    resp=localResp(txt);
   }
-  removeTyping();addMsg(response,'bot');
+  removeTyping(); addMsg(resp,'bot');
 }
 
-async function genReport(){
-  const ctx={
-    jeunes:S.logs.filter(l=>l.type==='JEÛNE 18H').length,
-    best:S.bestFast>0?F.h(S.bestFast):'--',
-    poids:S.weights.length?S.weights.slice(-3).map(w=>w.v+'kg').join(' → '):'Non renseigné',
-    streak:calcStreak(),
-    phase:PHASES[S.phase]?.name,
-    en_jeune:S.fast.isFasting?`Oui, depuis ${F.h(calcElapsed())}`:'Non'
-  };
-  const prompt=`Génère un bilan hebdomadaire complet et personnalisé pour mon jeûne 18:6. Données : ${JSON.stringify(ctx)}. Inclus : analyse progression, points forts, points à améliorer, conseils pour la semaine prochaine. Sois encourageant mais précis.`;
-  addMsg('📊 Génère mon bilan hebdomadaire...','user');
+async function genReport() {
+  const fl=S.logs.filter(l=>l.type==='JEÛNE 18H').length;
+  const prompt=`Génère un bilan hebdomadaire complet pour mon jeûne 18:6. Données : jeûnes=${fl}, meilleur=${F.h(S.bestFast)}, poids récent=${S.weights.length?S.weights.slice(-3).map(w=>w.v+'kg').join('→'):'non renseigné'}, jours consécutifs=${calcStreak()}, phase actuelle=${PHASES[S.phase]?.n}. Inclus : analyse, points forts, axes d'amélioration, conseils semaine prochaine. Sois précis et encourageant.`;
+  addMsg('📊 Génération de mon bilan hebdomadaire…','user');
   showTyping();
-  const key=getGeminiKey();
-  let response;
-  if(key&&S.on){response=await callGemini(prompt);}
-  if(!response){
-    response=`📊 <strong>Bilan Hebdomadaire 18:6</strong><br><br>🔥 <strong>Jeûnes réalisés :</strong> ${ctx.jeunes}<br>📅 <strong>Jours consécutifs :</strong> ${ctx.streak}<br>⚖️ <strong>Évolution poids :</strong> ${ctx.poids}<br>🏆 <strong>Meilleur jeûne :</strong> ${ctx.best}<br>🧬 <strong>Phase actuelle :</strong> ${ctx.phase}<br><br>💡 <strong>Conseil semaine prochaine :</strong><br>Maintenez votre régularité. La constance du 18:6 est plus importante que la perfection. Hydratez-vous +2L/jour et dormez 7-9h pour optimiser l'autophagie.`;
+  const k=getGemKey();
+  let resp=k&&S.on?await callGemini(prompt):null;
+  if(!resp){
+    resp=`📊 <strong>Bilan Hebdomadaire 18:6</strong><br><br>🔥 Jeûnes : <strong>${fl}</strong><br>📅 Série : <strong>${calcStreak()} jours</strong><br>🏆 Meilleur : <strong>${F.h(S.bestFast)||'--'}</strong><br>⚖️ Poids : <strong>${S.weights.length?S.weights[S.weights.length-1].v+' kg':'--'}</strong><br>🧬 Phase : <strong>${PHASES[S.phase]?.n}</strong><br><br>💡 La constance du 18:6 bat la perfection. Hydratez-vous +2L/jour et dormez 7-9h pour maximiser l'autophagie.`;
   }
-  removeTyping();addMsg(response,'bot');
+  removeTyping(); addMsg(resp,'bot');
 }
 
-// ─── SEARCH (Food Facts) ───
-async function doSearch(){
-  const inp=document.getElementById('ai-input'),msgs=document.getElementById('chat-msgs');
-  const q=inp?.value.trim();if(!q||!msgs)return;
-  addMsg(q,'user');inp.value='';
+// ─── FOOD SEARCH ───
+async function doSearch() {
+  const inp=$('ai-input'),msgs=$('chat-msgs');
+  const q=inp?.value.trim(); if(!q||!msgs) return;
+  addMsg(q,'user'); inp.value='';
   const ldId='ld'+Date.now();
   const ld=document.createElement('div');
-  ld.id=ldId;ld.className='s-load';
-  ld.innerHTML='<div class="spin"></div> Recherche en cours...';
-  msgs.appendChild(ld);scrollChat();
+  ld.id=ldId; ld.className='s-load';
+  ld.innerHTML='<div class="spin"></div> Recherche…';
+  msgs.appendChild(ld); scrollChat();
   try{
     const r=isFood(q)?await searchOFF(q):await searchWiki(q);
-    document.getElementById(ldId)?.remove();dispResult(r);
+    $(ldId)?.remove(); showResult(r);
   }catch(e){
-    document.getElementById(ldId)?.remove();
-    addMsg('❌ Erreur. Vérifiez la connexion ou reformulez.','bot');
+    $(ldId)?.remove();
+    addMsg('❌ Erreur de recherche. Vérifiez la connexion.','bot');
   }
 }
 function isFood(q){return['pomme','banane','poulet','riz','pâtes','poisson','viande','avocat','saumon','amande','oeuf','tomate','carotte','salade','fromage','brocoli','myrtille','boeuf','agneau','thon','sardine'].some(k=>q.toLowerCase().includes(k))||q.length<10;}
 async function searchOFF(q){
   const r=await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=1`);
   if(!r.ok)throw new Error();
-  const d=await r.json();if(!d.products?.length)throw new Error();
+  const d=await r.json(); if(!d.products?.length)throw new Error();
   const p=d.products[0];
-  return{type:'food',title:p.product_name||q,brand:p.brands||'',nutrition:{cal:p.nutriments?.energy_kcal_100g||'N/A',prot:p.nutriments?.proteins_100g||'N/A',carb:p.nutriments?.carbohydrates_100g||'N/A',fat:p.nutriments?.fat_100g||'N/A',fib:p.nutriments?.fiber_100g||'N/A'},src:'Open Food Facts'};
+  return{type:'food',title:p.product_name||q,brand:p.brands||'',
+    n:{cal:p.nutriments?.energy_kcal_100g||'N/A',prot:p.nutriments?.proteins_100g||'N/A',carb:p.nutriments?.carbohydrates_100g||'N/A',fat:p.nutriments?.fat_100g||'N/A',fib:p.nutriments?.fiber_100g||'N/A'},
+    src:'Open Food Facts'};
 }
 async function searchWiki(q){
   const r=await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`);
   if(r.ok){const d=await r.json();return{type:'wiki',title:d.title,extract:d.extract,url:d.content_urls?.desktop?.page,src:'Wikipedia'};}
   const sr=await fetch(`https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`);
-  const sd=await sr.json();if(!sd.query?.search?.length)throw new Error();
+  const sd=await sr.json(); if(!sd.query?.search?.length)throw new Error();
   const pr=await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(sd.query.search[0].title)}`);
-  const pd=await pr.json();return{type:'wiki',title:pd.title,extract:pd.extract,url:pd.content_urls?.desktop?.page,src:'Wikipedia'};
+  const pd=await pr.json();
+  return{type:'wiki',title:pd.title,extract:pd.extract,url:pd.content_urls?.desktop?.page,src:'Wikipedia'};
 }
-function dispResult(r){
-  const c=document.getElementById('chat-msgs');if(!c)return;
-  const div=document.createElement('div');div.className='msg sr';
+function showResult(r){
+  const c=$('chat-msgs'); if(!c) return;
+  const div=document.createElement('div'); div.className='msg sr';
   const ts=F.t(new Date());
   if(r.type==='food'){
-    const c18=parseFloat(r.nutrition.cal)||0,p=parseFloat(r.nutrition.prot)||0,cb=parseFloat(r.nutrition.carb)||0;
-    const adv=p>15?'🥩 Excellent en protéines ! Idéal pour casser votre jeûne 18:6.':cb<5?'🔥 Très low-carb ! Parfait pour maintenir la cétose.':c18>500?'⚠️ Calorique — à consommer en début de fenêtre.':'✅ Équilibré, bon choix pour votre fenêtre de 6h.';
-    div.innerHTML=`<div class="sr-title">🍽️ ${esc(r.title)}${r.brand?' — <span style="font-weight:400;font-size:0.8rem;">'+esc(r.brand)+'</span>':''}</div><div class="nutr-card"><div class="nutr-r"><span>Calories</span><strong>${r.nutrition.cal} kcal/100g</strong></div><div class="nutr-r"><span>Protéines</span><strong>${r.nutrition.prot}g</strong></div><div class="nutr-r"><span>Glucides</span><strong>${r.nutrition.carb}g</strong></div><div class="nutr-r"><span>Lipides</span><strong>${r.nutrition.fat}g</strong></div>${r.nutrition.fib!=='N/A'?`<div class="nutr-r"><span>Fibres</span><strong>${r.nutrition.fib}g</strong></div>`:''}</div><p style="margin-top:9px;font-size:0.78rem;color:var(--ink-60);">${adv}</p><div class="sr-meta"><span>📊 ${r.src}</span><span>🕒 ${ts}</span></div>`;
-  }else{
-    div.innerHTML=`<div class="sr-title">📖 ${esc(r.title)}</div><p style="font-size:0.8rem;line-height:1.55;">${esc(r.extract||'')}</p>${r.url?`<a href="${r.url}" target="_blank" rel="noopener" style="color:var(--slate);display:inline-block;margin-top:7px;font-weight:800;font-size:0.78rem;">Lire sur Wikipedia →</a>`:''}<div class="sr-meta"><span>🌐 ${r.src}</span><span>🕒 ${ts}</span></div>`;
+    const cal=parseFloat(r.n.cal)||0,prot=parseFloat(r.n.prot)||0,carb=parseFloat(r.n.carb)||0;
+    const adv=prot>15?'🥩 Excellent en protéines — idéal pour casser le jeûne 18:6 !':carb<5?'🔥 Très low-carb — parfait pour maintenir la cétose.':cal>500?'⚠️ Calorique — en début de fenêtre seulement.':'✅ Équilibré, bon choix pour votre fenêtre de 6h.';
+    div.innerHTML=`<div class="sr-title">🍽️ ${esc(r.title)}${r.brand?' — <span style="font-weight:400;font-size:.78rem;">${esc(r.brand)}</span>':''}</div><div class="nutr-card"><div class="nutr-r"><span>Calories</span><strong>${r.n.cal} kcal/100g</strong></div><div class="nutr-r"><span>Protéines</span><strong>${r.n.prot}g</strong></div><div class="nutr-r"><span>Glucides</span><strong>${r.n.carb}g</strong></div><div class="nutr-r"><span>Lipides</span><strong>${r.n.fat}g</strong></div>${r.n.fib!=='N/A'?`<div class="nutr-r"><span>Fibres</span><strong>${r.n.fib}g</strong></div>`:''}</div><p style="margin-top:8px;font-size:.76rem;color:var(--ink-60);">${adv}</p><div class="sr-meta"><span>📊 ${r.src}</span><span>${ts}</span></div>`;
+  } else {
+    div.innerHTML=`<div class="sr-title">📖 ${esc(r.title)}</div><p style="font-size:.79rem;line-height:1.55;">${esc(r.extract||'')}</p>${r.url?`<a href="${r.url}" target="_blank" rel="noopener" style="color:var(--slate);display:inline-block;margin-top:6px;font-weight:800;font-size:.76rem;">Lire sur Wikipedia →</a>`:''}<div class="sr-meta"><span>🌐 ${r.src}</span><span>${ts}</span></div>`;
   }
-  c.appendChild(div);scrollChat();addLog('RECHERCHE',r.title,'search');
+  c.appendChild(div); scrollChat();
+  addLog('RECHERCHE',r.title,'search');
 }
-function sfood(f){const inp=document.getElementById('ai-input');if(inp){inp.value=f;doSearch();}}
+function sfood(f){const inp=$('ai-input');if(inp){inp.value=f;doSearch();}}
 
 // ─── CHAT HELPERS ───
 function addMsg(text,type){
-  const c=document.getElementById('chat-msgs');if(!c)return;
+  const c=$('chat-msgs');if(!c)return;
   const div=document.createElement('div');div.className=`msg ${type}`;
   div.innerHTML=`${type==='user'?esc(text):text}<span class="ts">${F.t(new Date())}</span>`;
   c.appendChild(div);scrollChat();
 }
 function showTyping(){
-  const c=document.getElementById('chat-msgs');if(!c)return;
+  const c=$('chat-msgs');if(!c)return;
   removeTyping();
   const d=document.createElement('div');d.id='typing';d.className='typing-w';
   d.innerHTML='<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
   c.appendChild(d);scrollChat();
 }
-function removeTyping(){document.getElementById('typing')?.remove();}
-function scrollChat(){setTimeout(()=>{const c=document.getElementById('chat-msgs');if(c)c.scrollTop=c.scrollHeight;},80);}
-
-// ─── CLOUD ───
-function checkCloud(){
-  const tok=DB.g(K.DBX);
-  const ob=document.getElementById('oauth-box'),cc=document.getElementById('cloud-connected');
-  const st=document.getElementById('cloud-status-text');
-  // Update phase info
-  const cp=document.getElementById('cur-phase-txt');
-  if(cp)cp.textContent=S.fast.isFasting?`${PHASES[S.phase]?.name} (${F.h(calcElapsed())})`:'Aucun jeûne';
-  if(tok){ob?.classList.add('hidden');cc?.classList.remove('hidden');if(st)st.textContent='Connecté';}
-  else{ob?.classList.remove('hidden');cc?.classList.add('hidden');if(st)st.textContent='Non connecté';}
-}
-function startOAuth(){
-  DB.s(K.DBX,'db_'+Date.now()+'_'+Math.random().toString(36).substr(2,9));
-  syncUp();checkCloud();toast('Connecté à Dropbox !',true);setTimeout(closeDrawers,600);
-}
-function disconnect(){DB.rm(K.DBX);DB.rm(K.CLOUD);checkCloud();toast('Déconnecté',true);}
-function syncUp(){
-  toast('Sauvegarde...',false);
-  const data={v:'4.1',ts:new Date().toISOString(),weights:S.weights,logs:S.logs,settings:S.settings,fast:S.fast,phase:S.phase,bestFast:S.bestFast,checkin:DB.gj(K.CI,null)};
-  setTimeout(()=>{DB.sj(K.CLOUD,data);DB.s(K.SYNC,new Date().toISOString());toast('Sauvegardé ✅',true);},800);
-}
-function syncDown(){
-  toast('Restauration...',false);
-  setTimeout(()=>{
-    const d=DB.gj(K.CLOUD,null);if(!d){toast('Aucune donnée trouvée',true);return;}
-    if(d.weights)S.weights=d.weights;if(d.logs)S.logs=d.logs;
-    if(d.settings)S.settings={...S.settings,...d.settings};if(d.fast)S.fast=d.fast;
-    if(typeof d.phase==='number')S.phase=d.phase;if(d.bestFast)S.bestFast=d.bestFast;
-    DB.sj(K.W,S.weights);DB.sj(K.L,S.logs);DB.sj(K.SET,S.settings);DB.sj(K.FS,S.fast);
-    if(S.fast.isFasting&&S.fast.startTime){const el=calcElapsed();updatePhaseUI();startTimer();}else resetUI();
-    updateLogs();updateFullLogs();checkCheckin();updateStats();
-    toast('Données restaurées !',true);switchTab('main');
-  },800);
-}
+function removeTyping(){$('typing')?.remove();}
+function scrollChat(){setTimeout(()=>{const c=$('chat-msgs');if(c)c.scrollTop=c.scrollHeight;},80);}
 
 // ─── DRAWERS ───
-function openDrawer(t){
-  if(t==='config'){updateKeyStatus();}
-  if(t==='cloud'){checkCloud();}
-  document.getElementById(`drawer-${t}`)?.classList.add('open');
-  document.getElementById('overlay')?.classList.add('active');
+function openDrawer(t) {
+  if(t==='sleep-manual') openSleepManual();
+  if(t==='cloud')  updateCloudUI();
+  if(t==='gemini') updateGemStatus();
+  $(`drawer-${t}`)?.classList.add('open');
+  $('overlay')?.classList.add('active');
 }
-function closeDrawers(){
+function closeDrawers() {
   document.querySelectorAll('.drawer').forEach(d=>d.classList.remove('open'));
-  document.getElementById('overlay')?.classList.remove('active');
+  $('overlay')?.classList.remove('active');
 }
 
 // ─── TOAST ───
-function toast(txt,ok=false){
-  const t=document.getElementById('toast'),i=document.getElementById('t-icon'),tx=document.getElementById('t-text');
-  if(!t)return;t.classList.add('show');if(i)i.textContent=ok?'✅':'🔄';if(tx)tx.textContent=txt;
-  if(ok)setTimeout(()=>t.classList.remove('show'),2800);
+function toast(txt,ok=false) {
+  const t=$('toast'),i=$('t-ic'),tx=$('t-tx');
+  if(!t)return; t.classList.add('show');
+  if(i)i.textContent=ok?'✅':'🔄'; if(tx)tx.textContent=txt;
+  if(ok)setTimeout(()=>t.classList.remove('show'),3000);
 }
 
-// ─── UTILS ───
-function esc(t){if(!t)return'';const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
-
 // ─── BOOT ───
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
 else init();
 
-window.HichamApp={S,K,DB,F,calcElapsed,updatePhaseUI,PHASES,FAST_DURATION};
+// Exposition pour debug console
+window.App={S,K,DB,F,syncUp,syncDown,calcElapsed,PHASES};
 </script>
 </body>
 </html>
