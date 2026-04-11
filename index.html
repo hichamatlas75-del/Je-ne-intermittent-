@@ -1,757 +1,693 @@
 <!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════╗
+║           HICHAM MASTER — JEÛNE 18:6 PREMIUM                   ║
+║           Version APK-Ready / WebView Android Studio            ║
+╠══════════════════════════════════════════════════════════════════╣
+║  ARCHITECTURE MISE À JOUR SANS TOUCHER À L'APK :               ║
+║                                                                  ║
+║  1. Hébergez ce fichier sur GitHub Pages ou Dropbox             ║
+║     Ex: https://raw.githubusercontent.com/USER/REPO/main/       ║
+║         hicham-master.html                                       ║
+║                                                                  ║
+║  2. Dans Android Studio — MainActivity.java :                    ║
+║  ────────────────────────────────────────────                    ║
+║  WebView webView = findViewById(R.id.webview);                  ║
+║  WebSettings s = webView.getSettings();                         ║
+║  s.setJavaScriptEnabled(true);                                  ║
+║  s.setDomStorageEnabled(true);       // localStorage           ║
+║  s.setCacheMode(WebSettings.LOAD_DEFAULT); // cache offline     ║
+║  s.setAllowFileAccess(true);                                    ║
+║  s.setMediaPlaybackRequiresUserGesture(false);                  ║
+║  webView.setWebChromeClient(new WebChromeClient());             ║
+║  webView.loadUrl("https://VOTRE-URL/hicham-master.html");      ║
+║                                                                  ║
+║  3. AndroidManifest.xml :                                        ║
+║  <uses-permission android:name="android.permission.INTERNET"/>  ║
+║  <application android:usesCleartextTraffic="true" ...>          ║
+║                                                                  ║
+║  4. Mettez à jour ce fichier HTML → l'APK se met à jour seul   ║
+╚══════════════════════════════════════════════════════════════════╝
+-->
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#FAF7F2">
-<title>Hicham · Jeûne Intermittent</title>
+<title>Hicham · Jeûne 18:6</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
 <style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM — HICHAM MASTER PREMIUM
+═══════════════════════════════════════════ */
 :root {
   --cream: #FAF7F2;
   --cream-deep: #F2EDE4;
-  --parchment: #EAE2D5;
+  --parchment: #E8E0D4;
   --amber: #C8803A;
-  --amber-light: #F0C98A;
-  --amber-glow: rgba(200,128,58,0.18);
+  --amber-dark: #A86428;
+  --amber-light: #F5C882;
   --amber-soft: #FDF0DC;
+  --amber-glow: rgba(200,128,58,0.2);
   --terracotta: #C26B4A;
   --sage: #6A8C6A;
   --sage-light: #E4EDE4;
-  --sage-glow: rgba(106,140,106,0.18);
+  --sage-glow: rgba(106,140,106,0.2);
   --slate: #7B8CAE;
   --slate-light: #EBF0FA;
+  --slate-glow: rgba(123,140,174,0.2);
   --violet: #8A6DAE;
   --violet-light: #F0EAFB;
-  --violet-glow: rgba(138,109,174,0.18);
+  --violet-dark: #6B4F8E;
+  --violet-glow: rgba(138,109,174,0.2);
+  --gold: #D4A830;
+  --gold-light: #FBF4DC;
   --ink: #2A2520;
+  --ink-80: rgba(42,37,32,0.8);
   --ink-60: rgba(42,37,32,0.6);
   --ink-30: rgba(42,37,32,0.3);
   --ink-10: rgba(42,37,32,0.08);
+  --ink-05: rgba(42,37,32,0.04);
   --white: #FFFFFF;
   --danger: #C94040;
   --dropbox: #0061FF;
-  --r: 20px;
-  --r-lg: 28px;
-  --shadow-card: 0 2px 20px rgba(42,37,32,0.07);
-  --shadow-btn: 0 4px 16px rgba(42,37,32,0.12);
-  /* Phase colors */
-  --phase-0: #C8803A;
-  --phase-1: #C87038;
-  --phase-2: #B06A38;
-  --phase-3: #6A8C6A;
-  --phase-4: #7B8CAE;
-  --phase-5: #8A6DAE;
+  --gemini: #4285F4;
+  --r: 20px; --r-lg: 28px; --r-xl: 36px;
+  --shadow: 0 2px 24px rgba(42,37,32,0.07);
+  --shadow-lg: 0 6px 32px rgba(42,37,32,0.11);
+  --btn-h: 60px;
 }
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;outline:none;margin:0;padding:0;font-family:'Nunito',sans-serif;}
-html,body{background:var(--cream);color:var(--ink);height:100%;width:100%;overflow:hidden;position:fixed;touch-action:manipulation;}
-.app{display:flex;flex-direction:column;height:100vh;height:100dvh;width:100%;overflow:hidden;position:relative;}
+
+/* ── RESET ── */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;outline:none;margin:0;padding:0;}
+body,html{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--ink);height:100%;width:100%;overflow:hidden;position:fixed;touch-action:manipulation;-webkit-font-smoothing:antialiased;}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh;width:100%;overflow:hidden;}
 
 /* ── HEADER ── */
 .header{
-  padding:14px 22px;
-  padding-top:max(14px,env(safe-area-inset-top));
+  padding:14px 22px;padding-top:max(14px,env(safe-area-inset-top));
   display:flex;justify-content:space-between;align-items:center;
-  background:var(--cream);
-  border-bottom:1px solid var(--ink-10);
-  flex-shrink:0;z-index:100;position:sticky;top:0;
+  background:var(--cream);border-bottom:1px solid var(--ink-10);
+  flex-shrink:0;z-index:100;
 }
-.greeting-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;letter-spacing:-0.01em;color:var(--ink);}
-.greeting-sub{font-size:0.72rem;color:var(--ink-60);font-weight:500;margin-top:2px;letter-spacing:0.02em;text-transform:uppercase;}
-.header-right{display:flex;align-items:center;gap:12px;}
-.avatar-ring{
-  width:42px;height:42px;border-radius:14px;
-  background:linear-gradient(135deg,var(--amber),var(--terracotta));
-  display:flex;align-items:center;justify-content:center;
-  font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:white;
-  border:2.5px solid var(--amber);
-  box-shadow:0 2px 10px var(--amber-glow);
-}
-.ai-pill{
-  background:var(--violet-light);color:var(--violet);
-  border:1.5px solid rgba(138,109,174,0.25);
-  padding:8px 14px;border-radius:30px;
-  font-size:0.78rem;font-weight:700;cursor:pointer;
-  display:flex;align-items:center;gap:5px;
-  transition:all 0.2s ease;
-  box-shadow:0 2px 8px var(--violet-glow);
-}
-.ai-pill:active{transform:scale(0.94);}
+.h-name{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:700;letter-spacing:-0.01em;}
+.h-sub{font-size:0.68rem;color:var(--ink-60);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-top:1px;}
+.h-right{display:flex;align-items:center;gap:10px;}
+.avatar{width:40px;height:40px;border-radius:13px;background:linear-gradient(135deg,var(--amber),var(--terracotta));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;color:white;}
+.ai-pill{background:var(--violet-light);color:var(--violet);border:1.5px solid rgba(138,109,174,0.2);padding:8px 13px;border-radius:30px;font-size:0.78rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.18s;box-shadow:0 2px 8px var(--violet-glow);}
+.ai-pill:active{transform:scale(0.93);}
+.protocol-badge{background:var(--amber-soft);color:var(--amber-dark);border:1.5px solid rgba(200,128,58,0.25);padding:6px 12px;border-radius:20px;font-size:0.72rem;font-weight:800;letter-spacing:0.06em;}
 
 /* ── VIEWS ── */
-.view{
-  flex:1;overflow-y:auto;overflow-x:hidden;
-  padding:18px 20px;
-  padding-bottom:calc(100px + env(safe-area-inset-bottom));
-  display:none;flex-direction:column;gap:16px;
-  -webkit-overflow-scrolling:touch;
-  overscroll-behavior-y:contain;
-  scroll-behavior:smooth;
-}
+.view{flex:1;overflow-y:auto;overflow-x:hidden;padding:16px 18px;padding-bottom:calc(96px + env(safe-area-inset-bottom));display:none;flex-direction:column;gap:14px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
 .view.active{display:flex;}
-#view-ai{padding-bottom:calc(120px + env(safe-area-inset-bottom));height:100%;}
+#view-ai{padding-bottom:calc(110px + env(safe-area-inset-bottom));height:100%;}
 
-/* ── CHECK-IN CARD (MORNING RITUAL) ── */
+/* ── CHECKIN ── */
 .checkin-card{
   background:linear-gradient(135deg,var(--amber-soft),var(--cream));
-  border:1.5px solid rgba(200,128,58,0.2);
-  padding:24px 20px;border-radius:var(--r-lg);
-  flex-shrink:0;
-  animation:slideDown 0.5s cubic-bezier(0.34,1.56,0.64,1);
-  position:relative;overflow:hidden;
+  border:1.5px solid rgba(200,128,58,0.22);padding:22px 18px;border-radius:var(--r-lg);
+  flex-shrink:0;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;
 }
-.checkin-card::before{
-  content:'';position:absolute;top:-30px;right:-30px;
-  width:120px;height:120px;border-radius:50%;
-  background:radial-gradient(circle,rgba(200,128,58,0.12),transparent 70%);
-  pointer-events:none;
-}
-@keyframes slideDown{from{opacity:0;transform:translateY(-16px);}to{opacity:1;transform:translateY(0);}}
-.checkin-row{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
-.checkin-orb{
-  width:50px;height:50px;border-radius:16px;
-  background:linear-gradient(135deg,var(--amber),var(--terracotta));
-  display:flex;align-items:center;justify-content:center;font-size:1.5rem;
-  box-shadow:0 4px 14px var(--amber-glow);flex-shrink:0;
-}
-.checkin-label{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;color:var(--ink);line-height:1.2;}
-.checkin-sub{font-size:0.78rem;color:var(--ink-60);margin-top:3px;font-weight:500;}
-.mood-row{display:flex;gap:8px;justify-content:space-between;}
-.mood-btn{
-  flex:1;height:64px;
-  border:1.5px solid var(--ink-10);background:var(--white);
-  border-radius:18px;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
-  transition:all 0.2s cubic-bezier(0.34,1.56,0.64,1);
-  position:relative;
-}
-.mood-btn .emoji{font-size:1.4rem;line-height:1;}
-.mood-btn .mood-lbl{font-size:0.6rem;font-weight:700;color:var(--ink-60);text-transform:uppercase;letter-spacing:0.04em;}
-.mood-btn:hover{transform:translateY(-3px);box-shadow:0 6px 18px var(--amber-glow);}
-.mood-btn.selected{
-  background:var(--amber);border-color:var(--amber);
-  transform:scale(1.08);box-shadow:0 6px 18px var(--amber-glow);
-}
-.mood-btn.selected .mood-lbl{color:rgba(255,255,255,0.85);}
+.checkin-card::after{content:'';position:absolute;top:-40px;right:-40px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(200,128,58,0.1),transparent 70%);pointer-events:none;}
+@keyframes popIn{from{opacity:0;transform:translateY(-14px) scale(0.97);}to{opacity:1;transform:translateY(0) scale(1);}}
+.ci-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.ci-orb{width:50px;height:50px;border-radius:16px;background:linear-gradient(135deg,var(--amber),var(--terracotta));display:flex;align-items:center;justify-content:center;font-size:1.5rem;box-shadow:0 4px 14px var(--amber-glow);flex-shrink:0;}
+.ci-label{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;line-height:1.2;}
+.ci-sub{font-size:0.75rem;color:var(--ink-60);margin-top:3px;font-weight:600;}
+.mood-row{display:flex;gap:7px;}
+.mood-btn{flex:1;height:62px;border:1.5px solid var(--ink-10);background:var(--white);border-radius:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);}
+.mood-btn .me{font-size:1.35rem;}
+.mood-btn .ml{font-size:0.58rem;font-weight:800;color:var(--ink-60);text-transform:uppercase;letter-spacing:0.04em;}
+.mood-btn:hover{transform:translateY(-3px);box-shadow:0 6px 16px var(--amber-glow);}
+.mood-btn.sel{background:var(--amber);border-color:var(--amber);transform:scale(1.08);box-shadow:0 6px 18px var(--amber-glow);}
+.mood-btn.sel .ml{color:rgba(255,255,255,0.85);}
 
 /* ── TIMER CARD ── */
-.timer-card{
-  background:var(--white);
-  padding:24px 20px 20px;border-radius:var(--r-lg);
-  border:1px solid var(--ink-10);
-  box-shadow:var(--shadow-card);
-  flex-shrink:0;text-align:center;position:relative;overflow:hidden;
-}
-.timer-card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:4px;
-  background:linear-gradient(90deg,var(--amber),var(--terracotta));
-  border-radius:var(--r-lg) var(--r-lg) 0 0;
-  transition:background 0.8s ease;
-}
-.timer-card.phase-fat::before{background:linear-gradient(90deg,var(--sage),#8FBC8F);}
-.timer-card.phase-ketosis::before{background:linear-gradient(90deg,var(--slate),#9FB5D4);}
-.timer-card.phase-autophagy::before{background:linear-gradient(90deg,var(--violet),#B09ACE);}
-.timer-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-.fast-badge{
-  padding:5px 12px;border-radius:30px;
-  font-size:0.7rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;
-  background:var(--amber-soft);color:var(--amber);
-  border:1px solid rgba(200,128,58,0.2);
-  transition:all 0.4s ease;
-}
+.timer-card{background:var(--white);padding:22px 18px 18px;border-radius:var(--r-lg);border:1px solid var(--ink-10);box-shadow:var(--shadow);flex-shrink:0;text-align:center;position:relative;overflow:hidden;}
+.tc-stripe{position:absolute;top:0;left:0;right:0;height:3.5px;border-radius:var(--r-lg) var(--r-lg) 0 0;background:linear-gradient(90deg,var(--amber),var(--terracotta));transition:background 1s ease;}
+.tc-stripe.s-fat{background:linear-gradient(90deg,#5A8A5A,var(--sage));}
+.tc-stripe.s-ketosis{background:linear-gradient(90deg,var(--slate),#9FB5D4);}
+.tc-stripe.s-deep-ketosis{background:linear-gradient(90deg,#6070AA,var(--slate));}
+.tc-stripe.s-autophagy{background:linear-gradient(90deg,var(--violet),#B09ACE);}
+.tc-stripe.s-peak{background:linear-gradient(90deg,var(--gold),var(--violet));}
+
+.tc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+.fast-badge{padding:5px 12px;border-radius:24px;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;background:var(--amber-soft);color:var(--amber-dark);border:1px solid rgba(200,128,58,0.2);transition:all 0.4s ease;}
 .fast-badge.active{background:var(--sage-light);color:var(--sage);border-color:rgba(106,140,106,0.2);}
-.clock-display{font-size:0.82rem;color:var(--ink-60);font-weight:600;font-variant-numeric:tabular-nums;}
+.clock-txt{font-size:0.82rem;color:var(--ink-60);font-weight:700;font-variant-numeric:tabular-nums;}
 
-/* ── MODE TOGGLE ── */
-.mode-toggle{
-  display:flex;gap:4px;background:var(--cream-deep);
-  padding:4px;border-radius:14px;margin-bottom:20px;
-}
-.mode-btn{
-  flex:1;padding:9px 10px;border:none;background:transparent;
-  border-radius:10px;font-size:0.78rem;font-weight:700;color:var(--ink-60);
-  cursor:pointer;transition:all 0.2s ease;
-}
-.mode-btn.active{background:var(--white);color:var(--ink);box-shadow:0 2px 8px var(--ink-10);}
-
-/* ── CIRCULAR TIMER ── */
-.ring-wrap{
-  position:relative;width:210px;height:210px;
-  margin:0 auto 16px;display:flex;align-items:center;justify-content:center;
-}
+/* ── RING SVG ── */
+.ring-wrap{position:relative;width:214px;height:214px;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;}
 .ring-wrap svg{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotate(-90deg);}
-.ring-bg{fill:none;stroke:var(--parchment);stroke-width:10;stroke-linecap:round;}
-.ring-glow{fill:none;stroke-width:14;stroke-linecap:round;opacity:0;stroke-dasharray:565;stroke-dashoffset:565;transition:stroke-dashoffset 1s linear,stroke 0.8s ease,opacity 0.4s ease;filter:blur(3px);}
-.ring-fill{fill:none;stroke:var(--amber);stroke-width:10;stroke-linecap:round;stroke-dasharray:565;stroke-dashoffset:565;transition:stroke-dashoffset 1s linear,stroke 0.8s ease;}
-.ring-fill.phase-digest{stroke:var(--amber);}
-.ring-fill.phase-fat{stroke:var(--sage);}
-.ring-fill.phase-ketosis{stroke:var(--slate);}
-.ring-fill.phase-autophagy{stroke:var(--violet);}
-.ring-glow.phase-digest{stroke:var(--amber);opacity:0.35;}
-.ring-glow.phase-fat{stroke:var(--sage);opacity:0.35;}
-.ring-glow.phase-ketosis{stroke:var(--slate);opacity:0.35;}
-.ring-glow.phase-autophagy{stroke:var(--violet);opacity:0.35;}
-/* Phase dots on ring */
-.ring-marker{fill:none;}
+.r-bg{fill:none;stroke:var(--parchment);stroke-width:9;}
+.r-glow{fill:none;stroke-width:16;stroke-linecap:round;opacity:0;stroke-dasharray:565;stroke-dashoffset:565;transition:stroke-dashoffset 1s linear,stroke 0.8s ease,opacity 0.5s ease;filter:blur(4px);}
+.r-fill{fill:none;stroke:var(--amber);stroke-width:9;stroke-linecap:round;stroke-dasharray:565;stroke-dashoffset:565;transition:stroke-dashoffset 1s linear,stroke 0.9s ease;}
+/* Phase ring colors */
+.r-fill.p1{stroke:var(--amber);}
+.r-fill.p2{stroke:var(--amber);}
+.r-fill.p3{stroke:var(--sage);}
+.r-fill.p4{stroke:var(--sage);}
+.r-fill.p5{stroke:var(--slate);}
+.r-fill.p6{stroke:var(--slate);}
+.r-fill.p7{stroke:var(--violet);}
+.r-fill.p8{stroke:var(--gold);}
+.r-glow.p1,.r-glow.p2{stroke:var(--amber);opacity:0.3;}
+.r-glow.p3,.r-glow.p4{stroke:var(--sage);opacity:0.3;}
+.r-glow.p5,.r-glow.p6{stroke:var(--slate);opacity:0.3;}
+.r-glow.p7{stroke:var(--violet);opacity:0.3;}
+.r-glow.p8{stroke:var(--gold);opacity:0.3;}
+
+/* Phase tick marks on ring */
+.r-tick{stroke:var(--cream-deep);stroke-width:3;}
 
 .timer-inner{z-index:10;position:relative;text-align:center;}
-#countdown{
-  font-family:'Cormorant Garamond',serif;
-  font-size:2.8rem;font-weight:700;letter-spacing:-0.03em;
-  color:var(--ink);font-variant-numeric:tabular-nums;
-  line-height:1;margin-bottom:4px;
-  transition:color 0.6s ease;
-}
-#countdown.phase-fat{color:var(--sage);}
-#countdown.phase-ketosis{color:var(--slate);}
-#countdown.phase-autophagy{color:var(--violet);}
-.timer-lbl{font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink-60);font-weight:600;margin-bottom:4px;}
+.t-lbl{font-size:0.65rem;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-30);margin-bottom:3px;}
+#countdown{font-family:'Cormorant Garamond',serif;font-size:2.9rem;font-weight:700;letter-spacing:-0.03em;color:var(--ink);font-variant-numeric:tabular-nums;line-height:1;transition:color 0.8s ease;margin-bottom:2px;}
+#countdown.cp3,#countdown.cp4{color:var(--sage);}
+#countdown.cp5,#countdown.cp6{color:var(--slate);}
+#countdown.cp7{color:var(--violet);}
+#countdown.cp8{color:var(--gold);}
+.prog-lbl{font-size:0.72rem;color:var(--ink-30);font-weight:700;margin-bottom:16px;min-height:18px;}
 
-/* Progress label under countdown */
-.fast-progress-lbl{font-size:0.72rem;color:var(--ink-30);font-weight:600;margin-bottom:18px;}
+/* ── PHASE PROGRESS BAR ── */
+.phase-bar-wrap{margin:12px 0;position:relative;}
+.phase-bar-track{height:8px;background:var(--parchment);border-radius:10px;overflow:visible;position:relative;display:flex;gap:2px;}
+.phase-seg{flex:1;height:100%;border-radius:2px;opacity:0.25;transition:opacity 0.5s ease,background 0.5s ease;position:relative;}
+.phase-seg.done{opacity:0.9;}
+.phase-seg.cur{opacity:1;animation:segPulse 2s infinite;}
+@keyframes segPulse{0%,100%{opacity:1;}50%{opacity:0.7;}}
+.ps-0,.ps-1{background:var(--amber);}
+.ps-2,.ps-3{background:var(--sage);}
+.ps-4,.ps-5{background:var(--slate);}
+.ps-6{background:var(--violet);}
+.ps-7{background:var(--gold);}
+.phase-bar-labels{display:flex;justify-content:space-between;margin-top:5px;padding:0 2px;}
+.pbl{font-size:0.58rem;font-weight:800;color:var(--ink-30);text-transform:uppercase;letter-spacing:0.04em;}
 
-/* ── START TIME INFO ── */
-.start-info{
-  display:none;background:var(--cream-deep);
-  padding:10px 14px;border-radius:12px;margin-bottom:14px;
-  justify-content:space-between;align-items:center;
+/* ── PHASE INFO CARD ── */
+.phase-info-card{
+  background:var(--cream);padding:16px 14px;border-radius:18px;
+  border:1.5px solid var(--ink-10);margin-top:12px;
+  display:flex;align-items:flex-start;gap:14px;text-align:left;
+  transition:all 0.5s ease;
 }
-.start-info .lbl{font-size:0.78rem;color:var(--ink-60);font-weight:600;}
-.start-info .val{font-size:0.85rem;font-weight:700;display:flex;align-items:center;gap:8px;}
-.btn-edit{
-  background:transparent;border:1px solid var(--ink-10);
-  width:28px;height:28px;border-radius:8px;cursor:pointer;
-  font-size:0.75rem;display:flex;align-items:center;justify-content:center;
-  transition:all 0.2s;color:var(--amber);
-}
-.btn-edit:hover{background:var(--amber-soft);}
+.pi-orb{width:50px;height:50px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;background:var(--amber-soft);flex-shrink:0;transition:background 0.5s ease;}
+.pi-orb.orf{background:var(--sage-light);}
+.pi-orb.ork{background:var(--slate-light);}
+.pi-orb.ora{background:var(--violet-light);}
+.pi-orb.org{background:var(--gold-light);}
+.pi-content{}
+.pi-name{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:var(--ink);margin-bottom:3px;}
+.pi-time{font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--amber);margin-bottom:6px;display:inline-block;}
+.pi-time.tf{color:var(--sage);}
+.pi-time.tk{color:var(--slate);}
+.pi-time.ta{color:var(--violet);}
+.pi-time.tg{color:var(--gold);}
+.pi-desc{font-size:0.78rem;color:var(--ink-60);line-height:1.55;}
+.pi-benefits{margin-top:8px;display:flex;flex-wrap:wrap;gap:5px;}
+.pi-tag{background:var(--white);border:1px solid var(--ink-10);padding:3px 9px;border-radius:20px;font-size:0.65rem;font-weight:700;color:var(--ink-60);}
+
+/* ── START TIME ROW ── */
+.start-row{display:none;background:var(--cream-deep);padding:9px 13px;border-radius:12px;margin-bottom:12px;justify-content:space-between;align-items:center;}
+.sr-lbl{font-size:0.75rem;color:var(--ink-60);font-weight:700;}
+.sr-val{font-size:0.85rem;font-weight:800;display:flex;align-items:center;gap:7px;}
+.btn-tiny{background:transparent;border:1px solid var(--ink-10);width:28px;height:28px;border-radius:8px;cursor:pointer;font-size:0.8rem;display:flex;align-items:center;justify-content:center;color:var(--amber);transition:all 0.2s;}
+.btn-tiny:hover{background:var(--amber-soft);}
 
 /* ── BUTTONS ── */
-.btn{
-  height:60px;padding:0 28px;
-  border-radius:20px;border:none;
-  font-weight:700;font-size:0.95rem;cursor:pointer;
-  display:inline-flex;align-items:center;justify-content:center;gap:8px;
-  width:100%;max-width:300px;
-  transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);
-  font-family:'Nunito',sans-serif;
-  position:relative;overflow:hidden;
-}
-.btn::after{
-  content:'';position:absolute;inset:0;border-radius:inherit;
-  background:linear-gradient(rgba(255,255,255,0.15),transparent);
-  pointer-events:none;
-}
+.btn{height:var(--btn-h);padding:0 26px;border-radius:20px;border:none;font-weight:800;font-size:0.92rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;max-width:300px;transition:all 0.22s cubic-bezier(0.34,1.56,0.64,1);font-family:'Nunito',sans-serif;position:relative;overflow:hidden;letter-spacing:0.01em;}
+.btn::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(rgba(255,255,255,0.12),transparent);pointer-events:none;}
 .btn:active{transform:scale(0.95);}
-.btn-start{
-  background:linear-gradient(135deg,var(--sage),#7FAF7F);
-  color:white;box-shadow:0 4px 18px var(--sage-glow);
-}
-.btn-stop{
-  background:linear-gradient(135deg,var(--terracotta),#D4845A);
-  color:white;box-shadow:0 4px 18px rgba(194,107,74,0.3);
-}
-.btn-amber{
-  background:linear-gradient(135deg,var(--amber),var(--terracotta));
-  color:white;box-shadow:0 4px 18px var(--amber-glow);
-}
-.btn-ghost{
-  background:var(--cream-deep);color:var(--ink-60);
-  border:1.5px solid var(--ink-10);box-shadow:none;
-}
+.btn-start{background:linear-gradient(135deg,var(--sage),#7FAF7F);color:white;box-shadow:0 4px 18px var(--sage-glow);}
+.btn-stop{background:linear-gradient(135deg,var(--terracotta),#D4845A);color:white;box-shadow:0 4px 18px rgba(194,107,74,0.3);}
+.btn-amber{background:linear-gradient(135deg,var(--amber),var(--terracotta));color:white;box-shadow:0 4px 18px var(--amber-glow);}
+.btn-ghost{background:var(--cream-deep);color:var(--ink-60);border:1.5px solid var(--ink-10);}
+.btn-violet{background:linear-gradient(135deg,var(--violet),#B09ACE);color:white;box-shadow:0 4px 18px var(--violet-glow);}
 .btn-dropbox{background:var(--dropbox);color:white;}
+.btn-gemini{background:linear-gradient(135deg,var(--gemini),#34A853);color:white;box-shadow:0 4px 18px rgba(66,133,244,0.25);}
 .btn-full{width:100%;max-width:none;margin-bottom:10px;}
 
-/* ── PHASE TIMELINE ── */
-.phase-timeline{
-  display:flex;gap:0;margin:16px 0 0 0;
-  border-radius:14px;overflow:hidden;
-  height:6px;background:var(--parchment);
-  position:relative;
-}
-.phase-segment{flex:1;height:100%;transition:background 0.4s ease;opacity:0.3;}
-.phase-segment.active{opacity:1;}
-.phase-segment.completed{opacity:0.8;}
-.phase-seg-digest.active,.phase-seg-digest.completed{background:var(--amber);}
-.phase-seg-fat.active,.phase-seg-fat.completed{background:var(--sage);}
-.phase-seg-ketosis.active,.phase-seg-ketosis.completed{background:var(--slate);}
-.phase-seg-autophagy.active,.phase-seg-autophagy.completed{background:var(--violet);}
-
-/* ── PHASE CARD ── */
-.phase-card{
-  background:var(--cream);
-  padding:16px 16px;border-radius:18px;
-  display:flex;align-items:flex-start;gap:14px;
-  border:1.5px solid var(--ink-10);margin-top:14px;
-  transition:all 0.4s ease;
-}
-.phase-orb{
-  width:46px;height:46px;border-radius:14px;
-  display:flex;align-items:center;justify-content:center;font-size:1.4rem;
-  background:var(--amber-soft);flex-shrink:0;
-  transition:background 0.4s ease;
-}
-.phase-orb.fat{background:var(--sage-light);}
-.phase-orb.ketosis{background:var(--slate-light);}
-.phase-orb.autophagy{background:var(--violet-light);}
-.phase-txt h4{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;margin-bottom:4px;color:var(--ink);}
-.phase-txt p{font-size:0.78rem;color:var(--ink-60);line-height:1.5;}
+/* ── MODE TOGGLE ── */
+.mode-toggle{display:flex;gap:4px;background:var(--cream-deep);padding:4px;border-radius:14px;margin-bottom:16px;}
+.mb{flex:1;padding:9px;border:none;background:transparent;border-radius:10px;font-size:0.78rem;font-weight:800;color:var(--ink-60);cursor:pointer;transition:all 0.2s;}
+.mb.active{background:var(--white);color:var(--ink);box-shadow:0 2px 8px var(--ink-10);}
 
 /* ── SLEEP CARD ── */
-.sleep-card{
-  background:linear-gradient(135deg,#EEF0FA,#F4EFF8);
-  padding:20px;border-radius:var(--r-lg);
-  border:1.5px solid rgba(123,140,174,0.15);
-  display:flex;justify-content:space-between;align-items:center;
-  flex-shrink:0;
-}
-.sleep-text h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;}
-.sleep-text p{font-size:0.78rem;color:var(--ink-60);margin-top:3px;}
-.btn-sleep{
-  height:48px;padding:0 18px;border-radius:14px;
-  background:var(--white);color:var(--slate);
-  border:1.5px solid rgba(123,140,174,0.2);
-  font-weight:700;font-size:0.82rem;cursor:pointer;
-  box-shadow:0 2px 10px rgba(123,140,174,0.1);
-  transition:all 0.2s ease;display:flex;align-items:center;gap:6px;
-}
+.sleep-card{background:linear-gradient(135deg,#EEF0FA,#F4EFF8);padding:18px;border-radius:var(--r-lg);border:1.5px solid rgba(123,140,174,0.15);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;}
+.sc-t h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;}
+.sc-t p{font-size:0.75rem;color:var(--ink-60);margin-top:2px;}
+.btn-sleep{height:46px;padding:0 16px;border-radius:13px;background:var(--white);color:var(--slate);border:1.5px solid rgba(123,140,174,0.2);font-weight:800;font-size:0.8rem;cursor:pointer;transition:all 0.2s ease;display:flex;align-items:center;gap:6px;font-family:'Nunito',sans-serif;}
 .btn-sleep:hover{transform:translateY(-2px);}
 
-/* ── SECTION HEADER ── */
-.section-head{
-  display:flex;justify-content:space-between;align-items:baseline;
-  flex-shrink:0;
-}
-.section-head h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;}
-.section-head time{font-size:0.72rem;color:var(--ink-60);}
-
 /* ── LOGS ── */
-.log-item{
-  background:var(--white);padding:14px 16px;border-radius:18px;
-  border:1px solid var(--ink-10);
-  display:flex;justify-content:space-between;align-items:center;
-  box-shadow:0 1px 8px var(--ink-10);
-  flex-shrink:0;transition:transform 0.2s ease;
-  position:relative;overflow:hidden;
-}
-.log-item::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;
-  width:3px;background:var(--amber);border-radius:3px 0 0 3px;
-}
+.log-item{background:var(--white);padding:12px 14px;border-radius:16px;border:1px solid var(--ink-10);display:flex;justify-content:space-between;align-items:center;box-shadow:0 1px 8px var(--ink-05);flex-shrink:0;position:relative;overflow:hidden;}
+.log-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber);}
 .log-item.sleep::before{background:var(--slate);}
 .log-item.weight::before{background:var(--terracotta);}
-.log-item.mood::before{background:var(--amber);}
-.log-item.adjust::before{background:var(--sage);}
+.log-item.mood::before{background:var(--gold);}
 .log-item.success::before{background:var(--sage);}
-.log-item.search::before{background:var(--slate);}
-.log-item:active{transform:scale(0.98);}
-.log-content h4{font-size:0.85rem;font-weight:700;margin-bottom:2px;}
-.log-content p{font-size:0.72rem;color:var(--ink-60);}
-.log-time{font-size:0.68rem;color:var(--ink-30);font-weight:600;text-align:right;}
-.empty-state{text-align:center;padding:36px 20px;color:var(--ink-60);}
-.empty-icon{font-size:2.8rem;margin-bottom:12px;opacity:0.4;}
+.log-item.search::before{background:var(--gemini);}
+.log-item.ai::before{background:var(--violet);}
+.lc h4{font-size:0.83rem;font-weight:800;margin-bottom:2px;}
+.lc p{font-size:0.7rem;color:var(--ink-60);}
+.lt{font-size:0.65rem;color:var(--ink-30);font-weight:700;text-align:right;white-space:nowrap;}
+.empty-state{text-align:center;padding:32px 16px;color:var(--ink-60);}
+.ei{font-size:2.5rem;margin-bottom:10px;opacity:0.35;}
 
-/* ── STATS VIEW ── */
-.chart-card{
-  background:var(--white);padding:20px;border-radius:var(--r-lg);
-  height:260px;box-shadow:var(--shadow-card);border:1px solid var(--ink-10);
-}
-.fast-types{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
-.fast-type{
-  background:var(--white);border:2px solid var(--ink-10);
-  padding:18px 10px;border-radius:18px;text-align:center;cursor:pointer;
-  box-shadow:var(--shadow-card);transition:all 0.2s ease;
-}
-.fast-type:hover{transform:translateY(-2px);}
-.fast-type.active{border-color:var(--amber);background:var(--amber-soft);}
-.fast-type h4{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--ink);}
-.fast-type p{font-size:0.7rem;color:var(--ink-60);margin-top:3px;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;}
-.settings-card{background:var(--white);border-radius:var(--r-lg);border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow-card);}
-.setting-row{display:flex;justify-content:space-between;align-items:center;padding:15px 16px;border-bottom:1px solid var(--ink-10);}
-.setting-row:last-child{border-bottom:none;}
-.setting-lbl{font-weight:700;font-size:0.88rem;}
-.setting-desc{font-size:0.72rem;color:var(--ink-60);margin-top:2px;}
-input[type=time],input[type=number],input[type=text],input[type=datetime-local]{
-  background:var(--cream-deep);border:1.5px solid transparent;
-  padding:12px 14px;color:var(--ink);border-radius:14px;
-  font-size:16px;font-weight:600;transition:all 0.2s ease;
-  -webkit-appearance:none;font-family:'Nunito',sans-serif;width:100%;margin-bottom:12px;
-}
+/* ── PHASE DETAIL SHEETS (vue Stats) ── */
+.phase-sheet{background:var(--white);border-radius:var(--r-lg);border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow);}
+.ps-header{padding:16px 16px 12px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--ink-10);}
+.ps-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;}
+.ps-head-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
+.ps-head-sub{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;margin-top:2px;}
+.ps-body{padding:14px 16px;}
+.ps-row{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--ink-05);}
+.ps-row:last-child{border-bottom:none;}
+.ps-bullet{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px;}
+.ps-row-text{font-size:0.8rem;color:var(--ink-60);line-height:1.45;}
+.ps-row-text strong{color:var(--ink);font-weight:700;}
+
+/* ── STATS ── */
+.chart-card{background:var(--white);padding:18px;border-radius:var(--r-lg);height:240px;box-shadow:var(--shadow);border:1px solid var(--ink-10);}
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.stat-card{background:var(--white);padding:14px;border-radius:18px;border:1px solid var(--ink-10);box-shadow:var(--shadow);}
+.stat-card .sv{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--ink);}
+.stat-card .sl{font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;color:var(--ink-60);margin-top:2px;}
+.settings-card{background:var(--white);border-radius:var(--r-lg);border:1px solid var(--ink-10);overflow:hidden;box-shadow:var(--shadow);}
+.set-row{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid var(--ink-10);}
+.set-row:last-child{border-bottom:none;}
+.set-lbl{font-weight:800;font-size:0.86rem;}
+.set-desc{font-size:0.7rem;color:var(--ink-60);margin-top:2px;}
+
+/* ── INPUTS ── */
+input[type=time],input[type=number],input[type=text],input[type=datetime-local],input[type=password]{background:var(--cream-deep);border:1.5px solid transparent;padding:12px 14px;color:var(--ink);border-radius:14px;font-size:16px;font-weight:700;transition:all 0.2s;-webkit-appearance:none;font-family:'Nunito',sans-serif;width:100%;margin-bottom:12px;}
 input:focus{border-color:var(--amber);background:var(--white);outline:none;}
-input[type=number]{width:auto;margin:0;width:70px;}
+input[type=number]{width:auto;margin:0;width:72px;}
 input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;}
-
-/* ── HISTORY VIEW ── */
-.cloud-card{
-  background:var(--white);padding:16px;border-radius:var(--r-lg);
-  display:flex;align-items:center;gap:14px;
-  box-shadow:var(--shadow-card);border:1px solid var(--ink-10);
-  border-left:4px solid var(--sage);
-}
-.cloud-orb{width:44px;height:44px;background:var(--sage-light);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;}
-.cloud-info h4{font-size:0.9rem;font-weight:700;margin-bottom:2px;}
-.cloud-info p{font-size:0.75rem;color:var(--ink-60);}
-.btn-sync{height:38px;padding:0 14px;border-radius:10px;background:var(--dropbox);color:white;border:none;font-weight:700;font-size:0.78rem;cursor:pointer;transition:all 0.2s;}
-.btn-sync:hover{opacity:0.9;}
+input[type=password]{letter-spacing:0.1em;}
 
 /* ── AI VIEW ── */
-.ai-mode-switcher{display:flex;gap:4px;background:var(--parchment);padding:4px;border-radius:16px;margin-bottom:14px;flex-shrink:0;position:sticky;top:0;z-index:10;}
-.ai-mode-btn{flex:1;padding:11px 10px;border:none;background:transparent;border-radius:12px;font-weight:700;font-size:0.82rem;color:var(--ink-60);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.2s ease;}
-.ai-mode-btn.active{background:var(--white);color:var(--violet);box-shadow:0 2px 8px var(--ink-10);}
-.ai-mode-btn.search.active{color:var(--slate);}
-.ai-hero{
-  background:linear-gradient(135deg,var(--violet-light),var(--cream));
-  border:1.5px solid rgba(138,109,174,0.2);
-  padding:24px;border-radius:var(--r-lg);text-align:center;flex-shrink:0;
-  transition:all 0.4s ease;
-}
-.ai-hero.search-mode{background:linear-gradient(135deg,var(--slate-light),var(--cream));border-color:rgba(123,140,174,0.2);}
-.ai-avatar-orb{
-  width:72px;height:72px;border-radius:50%;margin:0 auto 14px;
-  background:linear-gradient(135deg,var(--violet),#B09ACE);
-  display:flex;align-items:center;justify-content:center;font-size:2rem;
-  box-shadow:0 6px 24px var(--violet-glow);transition:all 0.4s ease;
-}
-.ai-hero.search-mode .ai-avatar-orb{background:linear-gradient(135deg,var(--slate),#9FB5D4);}
-.ai-hero h2{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:6px;}
-.ai-hero p{font-size:0.82rem;color:var(--ink-60);}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 6px;flex-shrink:0;scrollbar-width:none;}
+.ai-switcher{display:flex;gap:4px;background:var(--parchment);padding:4px;border-radius:16px;margin-bottom:12px;flex-shrink:0;}
+.aisw-btn{flex:1;padding:11px 8px;border:none;background:transparent;border-radius:12px;font-weight:800;font-size:0.78rem;color:var(--ink-60);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all 0.2s;font-family:'Nunito',sans-serif;}
+.aisw-btn.active{background:var(--white);color:var(--violet);box-shadow:0 2px 8px var(--ink-10);}
+.aisw-btn.sr.active{color:var(--slate);}
+.ai-hero{background:linear-gradient(135deg,var(--violet-light),var(--cream));border:1.5px solid rgba(138,109,174,0.18);padding:22px;border-radius:var(--r-lg);text-align:center;flex-shrink:0;transition:all 0.4s ease;}
+.ai-hero.sm{background:linear-gradient(135deg,var(--slate-light),var(--cream));border-color:rgba(123,140,174,0.18);}
+.ai-orb{width:68px;height:68px;border-radius:50%;margin:0 auto 12px;background:linear-gradient(135deg,var(--violet),#B09ACE);display:flex;align-items:center;justify-content:center;font-size:1.9rem;box-shadow:0 6px 24px var(--violet-glow);transition:all 0.4s ease;}
+.ai-hero.sm .ai-orb{background:linear-gradient(135deg,var(--slate),#9FB5D4);}
+.ai-hero h2{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;margin-bottom:5px;}
+.ai-hero p{font-size:0.78rem;color:var(--ink-60);}
+.ai-status{display:inline-flex;align-items:center;gap:5px;margin-top:8px;background:var(--white);border:1px solid var(--ink-10);padding:4px 10px;border-radius:20px;font-size:0.68rem;font-weight:800;color:var(--ink-60);}
+.ai-status .dot{width:6px;height:6px;border-radius:50%;background:var(--sage);animation:pls 2s infinite;}
+.ai-status.offline .dot{background:var(--amber);}
+@keyframes pls{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:2px 0 6px;flex-shrink:0;scrollbar-width:none;}
 .chips::-webkit-scrollbar{display:none;}
-.chip{
-  background:var(--white);border:1.5px solid rgba(138,109,174,0.25);
-  color:var(--violet);padding:9px 16px;border-radius:22px;
-  font-size:0.8rem;font-weight:700;white-space:nowrap;cursor:pointer;
-  flex-shrink:0;transition:all 0.2s ease;box-shadow:0 1px 6px var(--ink-10);
-}
-.chip.search{border-color:rgba(123,140,174,0.25);color:var(--slate);}
-.chip:active{transform:scale(0.95);}
-.chat-box{
-  background:var(--white);border-radius:var(--r-lg);
-  flex:1;display:flex;flex-direction:column;overflow:hidden;
-  box-shadow:var(--shadow-card);border:1px solid var(--ink-10);
-  min-height:250px;margin-bottom:12px;
-}
-.chat-messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
-.chat-messages::-webkit-scrollbar{width:4px;}
-.chat-messages::-webkit-scrollbar-thumb{background:var(--parchment);border-radius:10px;}
-.msg{max-width:86%;padding:13px 16px;border-radius:20px;font-size:0.88rem;line-height:1.55;animation:msgPop 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+.chip{background:var(--white);border:1.5px solid rgba(138,109,174,0.22);color:var(--violet);padding:8px 14px;border-radius:22px;font-size:0.78rem;font-weight:800;white-space:nowrap;cursor:pointer;flex-shrink:0;transition:all 0.18s;box-shadow:0 1px 5px var(--ink-05);font-family:'Nunito',sans-serif;}
+.chip.sr{border-color:rgba(123,140,174,0.22);color:var(--slate);}
+.chip:active{transform:scale(0.93);}
+.chat-box{background:var(--white);border-radius:var(--r-lg);flex:1;display:flex;flex-direction:column;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--ink-10);min-height:240px;margin-bottom:10px;}
+.chat-msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;}
+.chat-msgs::-webkit-scrollbar{width:3px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:var(--parchment);border-radius:10px;}
+.msg{max-width:88%;padding:12px 15px;border-radius:20px;font-size:0.87rem;line-height:1.55;animation:msgPop 0.3s cubic-bezier(0.34,1.56,0.64,1);}
 @keyframes msgPop{from{opacity:0;transform:translateY(8px) scale(0.95);}to{opacity:1;transform:translateY(0) scale(1);}}
-.msg.user{align-self:flex-end;background:var(--violet);color:white;border-bottom-right-radius:6px;margin-left:auto;}
-.msg.assistant{align-self:flex-start;background:var(--cream-deep);color:var(--ink);border-bottom-left-radius:6px;}
-.msg.search-result{align-self:flex-start;background:var(--slate-light);border:1px solid rgba(123,140,174,0.2);border-bottom-left-radius:6px;max-width:95%;}
-.msg .ts{font-size:0.65rem;opacity:0.6;margin-top:7px;display:block;text-align:right;}
-.chat-input-area{padding:14px 16px;background:var(--cream);border-top:1px solid var(--ink-10);display:flex;gap:10px;flex-shrink:0;}
-.chat-input{
-  flex:1;background:var(--white);border:1.5px solid var(--ink-10);
-  padding:13px 16px;border-radius:22px;font-size:0.95rem;color:var(--ink);
-  transition:all 0.2s;font-family:'Nunito',sans-serif;margin:0;
-}
-.chat-input:focus{border-color:var(--violet);outline:none;}
-.chat-input.search:focus{border-color:var(--slate);}
-.btn-send{
-  width:48px;height:48px;border-radius:50%;
-  background:linear-gradient(135deg,var(--violet),#B09ACE);
-  color:white;border:none;font-size:1.1rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 14px var(--violet-glow);transition:all 0.2s ease;flex-shrink:0;
-}
-.btn-send.search{background:linear-gradient(135deg,var(--slate),#9FB5D4);}
-.btn-send:active{transform:scale(0.9);}
-.search-info{
-  background:var(--slate-light);border:1px solid rgba(123,140,174,0.2);
-  padding:10px 14px;border-radius:14px;font-size:0.8rem;color:var(--ink-60);
-  display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:6px;
-}
-.typing-wrap{display:flex;gap:5px;padding:11px 14px;background:var(--cream-deep);border-radius:18px;border-bottom-left-radius:5px;width:fit-content;}
-.dot{width:7px;height:7px;background:var(--violet);border-radius:50%;animation:bounce 1.4s infinite ease-in-out;}
-.dot:nth-child(1){animation-delay:-0.32s;}
-.dot:nth-child(2){animation-delay:-0.16s;}
+.msg.user{align-self:flex-end;background:var(--violet);color:white;border-bottom-right-radius:5px;margin-left:auto;}
+.msg.bot{align-self:flex-start;background:var(--cream-deep);color:var(--ink);border-bottom-left-radius:5px;border:1px solid var(--ink-05);}
+.msg.sr{align-self:flex-start;background:var(--slate-light);border:1px solid rgba(123,140,174,0.18);border-bottom-left-radius:5px;max-width:96%;}
+.msg .ts{font-size:0.63rem;opacity:0.55;margin-top:7px;display:block;text-align:right;}
+.chat-input-row{padding:12px 14px;background:var(--cream);border-top:1px solid var(--ink-10);display:flex;gap:9px;flex-shrink:0;}
+.chat-inp{flex:1;background:var(--white);border:1.5px solid var(--ink-10);padding:12px 15px;border-radius:22px;font-size:0.93rem;color:var(--ink);transition:all 0.2s;font-family:'Nunito',sans-serif;margin:0;font-weight:600;}
+.chat-inp:focus{border-color:var(--violet);outline:none;}
+.chat-inp.sm:focus{border-color:var(--slate);}
+.btn-send{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--violet),#B09ACE);color:white;border:none;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px var(--violet-glow);transition:all 0.18s;flex-shrink:0;}
+.btn-send.sm{background:linear-gradient(135deg,var(--slate),#9FB5D4);}
+.btn-send:active{transform:scale(0.89);}
+.typing-w{display:flex;gap:4px;padding:10px 14px;background:var(--cream-deep);border-radius:18px;border-bottom-left-radius:4px;width:fit-content;align-self:flex-start;}
+.tdot{width:7px;height:7px;background:var(--violet);border-radius:50%;animation:bounce 1.4s infinite ease-in-out;}
+.tdot:nth-child(1){animation-delay:-.32s;}
+.tdot:nth-child(2){animation-delay:-.16s;}
 @keyframes bounce{0%,80%,100%{transform:scale(0);}40%{transform:scale(1);}}
-.search-spinner{width:15px;height:15px;border:2px solid var(--slate);border-top-color:transparent;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.nutrition-facts{background:var(--cream);padding:10px;border-radius:10px;margin-top:8px;font-size:0.78rem;border:1px solid var(--ink-10);}
-.nutr-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ink-10);}
-.nutr-row:last-child{border-bottom:none;}
-.search-title{font-weight:800;color:var(--slate);margin-bottom:7px;font-size:0.9rem;}
-.search-meta{margin-top:10px;padding-top:8px;border-top:1px solid rgba(123,140,174,0.15);font-size:0.7rem;color:var(--ink-30);display:flex;justify-content:space-between;}
+.s-load{display:flex;align-items:center;gap:8px;padding:11px 14px;background:var(--slate-light);border-radius:18px;align-self:flex-start;font-size:0.83rem;color:var(--slate);width:fit-content;}
+.spin{width:14px;height:14px;border:2px solid var(--slate);border-top-color:transparent;border-radius:50%;animation:sp 0.8s linear infinite;flex-shrink:0;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.nutr-card{background:var(--cream);padding:10px;border-radius:10px;margin-top:8px;font-size:0.76rem;border:1px solid var(--ink-10);}
+.nutr-r{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--ink-05);}
+.nutr-r:last-child{border-bottom:none;}
+.sr-title{font-weight:800;color:var(--slate);margin-bottom:6px;font-size:0.88rem;}
+.sr-meta{margin-top:9px;padding-top:7px;border-top:1px solid rgba(123,140,174,0.12);font-size:0.68rem;color:var(--ink-30);display:flex;justify-content:space-between;}
+.gemini-key-box{background:var(--violet-light);border:1.5px solid rgba(138,109,174,0.2);padding:16px;border-radius:16px;margin-bottom:12px;font-size:0.82rem;color:var(--ink-60);line-height:1.5;}
+.gemini-key-box strong{color:var(--violet);display:block;margin-bottom:6px;font-size:0.9rem;}
+.key-status{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:14px;font-size:0.7rem;font-weight:800;background:var(--sage-light);color:var(--sage);margin-top:8px;}
+.key-status.nok{background:var(--amber-soft);color:var(--amber);}
+.search-info{background:var(--slate-light);border:1px solid rgba(123,140,174,0.18);padding:9px 13px;border-radius:13px;font-size:0.78rem;color:var(--ink-60);display:flex;align-items:center;gap:7px;flex-shrink:0;margin-bottom:6px;}
 
-/* ── NAV BAR ── */
-.nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(250,247,242,0.97);
-  display:flex;justify-content:space-around;
-  padding:10px 0;padding-bottom:max(10px,env(safe-area-inset-bottom));
-  border-top:1px solid var(--ink-10);z-index:500;
-  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-}
-.nav-item{
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  color:var(--ink-30);cursor:pointer;padding:6px 16px;border-radius:14px;
-  flex:1;transition:all 0.2s ease;user-select:none;
-}
-.nav-item .nav-icon{font-size:1.3rem;}
-.nav-item .nav-lbl{font-size:0.6rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;}
-.nav-item.active{color:var(--amber);background:var(--amber-glow);}
-.nav-item.ai-nav.active{color:var(--violet);background:var(--violet-glow);}
+/* ── NAV ── */
+.nav{position:fixed;bottom:0;left:0;right:0;background:rgba(250,247,242,0.97);display:flex;justify-content:space-around;padding:8px 0;padding-bottom:max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--ink-10);z-index:500;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);}
+.ni{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink-30);cursor:pointer;padding:6px 14px;border-radius:14px;flex:1;transition:all 0.18s;user-select:none;}
+.ni-icon{font-size:1.25rem;}
+.ni-lbl{font-size:0.58rem;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;}
+.ni.active{color:var(--amber);background:var(--amber-glow);}
+.ni.ain.active{color:var(--violet);background:var(--violet-glow);}
 
 /* ── OVERLAY & DRAWERS ── */
-.overlay{position:fixed;inset:0;background:rgba(42,37,32,0.45);opacity:0;visibility:hidden;transition:all 0.3s ease;z-index:900;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);}
+.overlay{position:fixed;inset:0;background:rgba(42,37,32,0.48);opacity:0;visibility:hidden;transition:all 0.3s;z-index:900;backdrop-filter:blur(3px);}
 .overlay.active{opacity:1;visibility:visible;}
-.drawer{
-  position:fixed;bottom:0;left:0;right:0;background:var(--white);
-  border-radius:28px 28px 0 0;transform:translateY(100%);
-  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);z-index:1000;
-  padding:20px 22px calc(40px + env(safe-area-inset-bottom));
-  max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
-  box-shadow:0 -10px 40px rgba(42,37,32,0.12);
-}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:var(--white);border-radius:28px 28px 0 0;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);z-index:1000;padding:18px 20px calc(36px + env(safe-area-inset-bottom));max-height:88vh;overflow-y:auto;-webkit-overflow-scrolling:touch;box-shadow:0 -8px 40px rgba(42,37,32,0.1);}
 .drawer.open{transform:translateY(0);}
-.handle{width:34px;height:4px;background:var(--parchment);border-radius:10px;margin:0 auto 20px;cursor:pointer;}
-.drawer-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:18px;}
-.adjust-info{background:var(--amber-soft);border-left:3px solid var(--amber);padding:14px;border-radius:12px;margin-bottom:16px;font-size:0.85rem;line-height:1.5;color:var(--ink-60);}
-.adjust-info strong{color:var(--amber);}
-.oauth-box{background:linear-gradient(135deg,rgba(0,97,255,0.05),rgba(0,97,255,0.1));border:2px solid rgba(0,97,255,0.2);padding:28px 20px;border-radius:20px;text-align:center;margin-bottom:18px;}
-.oauth-icon{font-size:3rem;margin-bottom:12px;}
-.oauth-box h3{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;margin-bottom:8px;}
-.oauth-box p{font-size:0.85rem;color:var(--ink-60);margin-bottom:18px;line-height:1.5;}
+.handle{width:34px;height:4px;background:var(--parchment);border-radius:10px;margin:0 auto 18px;cursor:pointer;}
+.dr-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;margin-bottom:16px;}
+.adj-info{background:var(--amber-soft);border-left:3px solid var(--amber);padding:13px;border-radius:12px;margin-bottom:14px;font-size:0.83rem;line-height:1.5;color:var(--ink-60);}
+.adj-info strong{color:var(--amber);}
+.oauth-box{background:linear-gradient(135deg,rgba(0,97,255,0.05),rgba(0,97,255,0.1));border:2px solid rgba(0,97,255,0.18);padding:24px 18px;border-radius:20px;text-align:center;margin-bottom:16px;}
+.oauth-box h3{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;margin-bottom:7px;}
+.oauth-box p{font-size:0.82rem;color:var(--ink-60);margin-bottom:16px;line-height:1.5;}
 
-/* ── SYNC INDICATOR ── */
-.sync-toast{
-  position:fixed;top:74px;right:16px;
-  background:var(--white);padding:11px 16px;border-radius:14px;
-  font-size:0.83rem;font-weight:700;display:none;align-items:center;gap:8px;
-  z-index:200;box-shadow:var(--shadow-card);border:1px solid var(--ink-10);
-  animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
-}
-@keyframes toastIn{from{transform:translateX(30px);opacity:0;}to{transform:translateX(0);opacity:1;}}
-.sync-toast.show{display:flex;}
-.conn-dot{position:absolute;top:72px;right:18px;width:8px;height:8px;border-radius:50%;background:var(--sage);animation:pls 2s infinite;z-index:99;}
-.conn-dot.offline{background:var(--ink-30);}
-@keyframes pls{0%,100%{opacity:1;}50%{opacity:0.4;}}
-.btn-report{
-  background:linear-gradient(135deg,var(--violet),#B09ACE);
-  color:white;height:56px;border-radius:18px;border:none;
-  font-weight:700;font-size:0.92rem;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  width:100%;margin-top:10px;margin-bottom:16px;flex-shrink:0;
-  box-shadow:0 4px 18px var(--violet-glow);transition:all 0.2s;
-}
-.btn-report:hover{transform:translateY(-2px);}
-/* misc */
+/* ── TOAST ── */
+.toast{position:fixed;top:72px;right:14px;background:var(--white);padding:10px 15px;border-radius:14px;font-size:0.82rem;font-weight:700;display:none;align-items:center;gap:7px;z-index:800;box-shadow:var(--shadow-lg);border:1px solid var(--ink-10);animation:toastIn 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes toastIn{from{transform:translateX(26px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.toast.show{display:flex;}
+
+/* ── CLOUD & SYNC ── */
+.cloud-card{background:var(--white);padding:14px;border-radius:var(--r-lg);display:flex;align-items:center;gap:13px;box-shadow:var(--shadow);border:1px solid var(--ink-10);border-left:4px solid var(--sage);}
+.co-orb{width:42px;height:42px;background:var(--sage-light);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0;}
+.co-info h4{font-size:0.88rem;font-weight:800;margin-bottom:2px;}
+.co-info p{font-size:0.72rem;color:var(--ink-60);}
+.btn-sync{height:36px;padding:0 13px;border-radius:10px;background:var(--dropbox);color:white;border:none;font-weight:800;font-size:0.75rem;cursor:pointer;transition:all 0.18s;font-family:'Nunito',sans-serif;}
+
+/* ── MISC ── */
 .hidden{display:none!important;}
-.sync-phase-info{background:var(--cream-deep);padding:12px;border-radius:12px;margin:10px 0;font-size:0.85rem;color:var(--ink-60);text-align:center;}
-@media(max-height:700px){.ring-wrap{width:170px;height:170px;}#countdown{font-size:2.2rem;}.ai-hero{padding:16px;}.ai-avatar-orb{width:56px;height:56px;font-size:1.6rem;}}
+.section-head{display:flex;justify-content:space-between;align-items:baseline;flex-shrink:0;}
+.section-head h3{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;}
+.btn-report{background:linear-gradient(135deg,var(--violet),#B09ACE);color:white;height:54px;border-radius:18px;border:none;font-weight:800;font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:8px;margin-bottom:14px;flex-shrink:0;box-shadow:0 4px 18px var(--violet-glow);transition:all 0.2s;font-family:'Nunito',sans-serif;}
+.btn-report:hover{transform:translateY(-2px);}
+.sync-phase{background:var(--cream-deep);padding:11px;border-radius:12px;margin:10px 0;font-size:0.83rem;color:var(--ink-60);text-align:center;}
+@media(max-height:700px){.ring-wrap{width:174px;height:174px;}#countdown{font-size:2.2rem;}.ai-hero{padding:16px;}.ai-orb{width:54px;height:54px;font-size:1.5rem;}}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- HEADER -->
+<!-- ═══════ HEADER ═══════ -->
 <header class="header">
   <div>
-    <div class="greeting-name" id="greeting-text">Bonjour, Hicham</div>
-    <div class="greeting-sub" id="greeting-sub">Prêt pour votre jeûne ?</div>
+    <div class="h-name" id="h-name">Bonjour, Hicham</div>
+    <div class="h-sub" id="h-sub">Protocole Jeûne 18:6</div>
   </div>
-  <div class="header-right">
-    <button class="ai-pill" onclick="switchTab('ai')">✨ IA</button>
-    <div class="avatar-ring">H</div>
+  <div class="h-right">
+    <span class="protocol-badge">18:6</span>
+    <button class="ai-pill" onclick="switchTab('ai')">✨ IA Pro</button>
+    <div class="avatar">H</div>
   </div>
 </header>
 
-<!-- CONN DOT -->
-<div class="conn-dot" id="conn-dot"></div>
-
-<!-- VIEW ACCUEIL -->
+<!-- ═══════ VUE ACCUEIL ═══════ -->
 <main class="view active" id="view-main">
 
-  <!-- CHECKIN CARD -->
+  <!-- CHECK-IN MATINAL -->
   <div id="checkin-card" class="checkin-card hidden">
-    <div class="checkin-row">
-      <div class="checkin-orb">🌅</div>
+    <div class="ci-row">
+      <div class="ci-orb">🌅</div>
       <div>
-        <div class="checkin-label">Comment vous sentez-vous ?</div>
-        <div class="checkin-sub">Votre énergie ce matin</div>
+        <div class="ci-label">Rituel matinal — Comment allez-vous ?</div>
+        <div class="ci-sub">Évaluez votre énergie du matin</div>
       </div>
     </div>
     <div class="mood-row">
-      <button class="mood-btn" onclick="saveCheckin(1)"><span class="emoji">😫</span><span class="mood-lbl">Épuisé</span></button>
-      <button class="mood-btn" onclick="saveCheckin(2)"><span class="emoji">😕</span><span class="mood-lbl">Moyen</span></button>
-      <button class="mood-btn" onclick="saveCheckin(3)"><span class="emoji">😐</span><span class="mood-lbl">Neutre</span></button>
-      <button class="mood-btn" onclick="saveCheckin(4)"><span class="emoji">🙂</span><span class="mood-lbl">Bien</span></button>
-      <button class="mood-btn" onclick="saveCheckin(5)"><span class="emoji">🤩</span><span class="mood-lbl">Top !</span></button>
+      <button class="mood-btn" onclick="saveCheckin(1)"><span class="me">😫</span><span class="ml">Épuisé</span></button>
+      <button class="mood-btn" onclick="saveCheckin(2)"><span class="me">😕</span><span class="ml">Moyen</span></button>
+      <button class="mood-btn" onclick="saveCheckin(3)"><span class="me">😐</span><span class="ml">Neutre</span></button>
+      <button class="mood-btn" onclick="saveCheckin(4)"><span class="me">🙂</span><span class="ml">Bien</span></button>
+      <button class="mood-btn" onclick="saveCheckin(5)"><span class="me">🤩</span><span class="ml">Top !</span></button>
     </div>
   </div>
 
   <!-- TIMER CARD -->
   <div class="timer-card" id="timer-card">
-    <div class="timer-top">
-      <span class="fast-badge" id="fast-badge">Fenêtre de repas</span>
-      <span class="clock-display" id="clock">00:00</span>
+    <div class="tc-stripe" id="tc-stripe"></div>
+    <div class="tc-top">
+      <span class="fast-badge" id="fast-badge">Fenêtre alimentaire</span>
+      <span class="clock-txt" id="clock">--:--</span>
     </div>
-
-    <!-- MODE TOGGLE -->
     <div class="mode-toggle">
-      <button class="mode-btn active" id="mode-auto" onclick="setMode('auto')">⏰ Auto</button>
-      <button class="mode-btn" id="mode-manual" onclick="setMode('manual')">👤 Manuel</button>
+      <button class="mb active" id="mode-auto" onclick="setMode('auto')">⏰ Auto 18:6</button>
+      <button class="mb" id="mode-manual" onclick="setMode('manual')">👤 Manuel</button>
     </div>
-
-    <!-- START INFO -->
-    <div class="start-info" id="fast-start-info">
-      <span class="lbl">Début du jeûne</span>
-      <span class="val">
-        <time id="fast-start-time-display">--:--</time>
-        <button class="btn-edit" onclick="openAdjustTimeDrawer()">✏️</button>
+    <div class="start-row" id="start-row">
+      <span class="sr-lbl">Début du jeûne</span>
+      <span class="sr-val">
+        <time id="start-disp">--:--</time>
+        <button class="btn-tiny" onclick="openAdjust()">✏️</button>
       </span>
     </div>
-
     <!-- RING -->
     <div class="ring-wrap">
-      <svg viewBox="0 0 210 210">
-        <circle cx="105" cy="105" r="90" class="ring-bg"/>
-        <!-- Phase markers at 16h (0°), 12h (-75°), 8h (-143°), 4h (-218°) relative -->
-        <circle id="ring-glow" cx="105" cy="105" r="90" class="ring-glow" pathLength="565"/>
-        <circle id="ring-fill" cx="105" cy="105" r="90" class="ring-fill" pathLength="565"/>
+      <svg viewBox="0 0 214 214">
+        <circle cx="107" cy="107" r="92" class="r-bg"/>
+        <!-- Tick marks at phase boundaries -->
+        <line x1="107" y1="15" x2="107" y2="26" class="r-tick"/>
+        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(40,107,107)"/>
+        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(80,107,107)"/>
+        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(120,107,107)"/>
+        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(160,107,107)"/>
+        <line x1="107" y1="15" x2="107" y2="26" class="r-tick" transform="rotate(200,107,107)"/>
+        <circle id="r-glow" cx="107" cy="107" r="92" class="r-glow" pathLength="565"/>
+        <circle id="r-fill" cx="107" cy="107" r="92" class="r-fill" pathLength="565"/>
       </svg>
       <div class="timer-inner">
-        <div class="timer-lbl" id="timer-lbl">TEMPS RESTANT</div>
+        <div class="t-lbl">TEMPS RESTANT</div>
         <div id="countdown">00:00:00</div>
-        <div class="fast-progress-lbl" id="progress-lbl">Prêt à commencer</div>
+        <div class="prog-lbl" id="prog-lbl">Prêt à commencer</div>
+        <button class="btn btn-start" id="action-btn" onclick="handleFastAction()">Démarrer le jeûne 18h</button>
       </div>
     </div>
-
-    <!-- ACTION BUTTON -->
-    <div style="display:flex;justify-content:center;margin-bottom:6px;">
-      <button class="btn btn-start" id="fast-action-btn" onclick="handleFastAction()">
-        Démarrer le jeûne
-      </button>
-    </div>
-
-    <!-- PHASE TIMELINE -->
-    <div class="phase-timeline">
-      <div class="phase-segment phase-seg-digest" id="seg-0" title="Digestion 0-4h"></div>
-      <div class="phase-segment phase-seg-digest" id="seg-1" title="Jeûne 4-8h"></div>
-      <div class="phase-segment phase-seg-fat" id="seg-2" title="Lipolyse 8-12h"></div>
-      <div class="phase-segment phase-seg-fat" id="seg-3" title="Cétose 12-16h"></div>
-      <div class="phase-segment phase-seg-ketosis" id="seg-4" title="Cétose profonde"></div>
-      <div class="phase-segment phase-seg-autophagy" id="seg-5" title="Autophagie 16h+"></div>
-    </div>
-
-    <!-- PHASE CARD -->
-    <div class="phase-card" id="phase-card">
-      <div class="phase-orb" id="phase-orb">🍽️</div>
-      <div class="phase-txt">
-        <h4 id="phase-title">Fenêtre Alimentaire</h4>
-        <p id="phase-desc">Votre corps est en phase d'absorption des nutriments. Privilégiez les protéines et les légumes.</p>
+    <!-- PHASE PROGRESS BAR -->
+    <div class="phase-bar-wrap">
+      <div class="phase-bar-track">
+        <div class="phase-seg ps-0" id="seg0"></div>
+        <div class="phase-seg ps-1" id="seg1"></div>
+        <div class="phase-seg ps-2" id="seg2"></div>
+        <div class="phase-seg ps-3" id="seg3"></div>
+        <div class="phase-seg ps-4" id="seg4"></div>
+        <div class="phase-seg ps-5" id="seg5"></div>
+        <div class="phase-seg ps-6" id="seg6"></div>
+        <div class="phase-seg ps-7" id="seg7"></div>
+      </div>
+      <div class="phase-bar-labels">
+        <span class="pbl">0h</span>
+        <span class="pbl">4h</span>
+        <span class="pbl">8h</span>
+        <span class="pbl">12h</span>
+        <span class="pbl">18h</span>
       </div>
     </div>
-
-    <!-- EARLY FAST -->
-    <div id="early-fast-container" style="display:none;text-align:center;margin-top:12px;">
-      <button class="btn btn-amber" onclick="startEarlyFast()" style="height:50px;font-size:0.88rem;">⚡ Commencer maintenant</button>
+    <!-- PHASE INFO -->
+    <div class="phase-info-card" id="phase-card">
+      <div class="pi-orb" id="pi-orb">🍽️</div>
+      <div class="pi-content">
+        <div class="pi-name" id="pi-name">Fenêtre Alimentaire</div>
+        <div class="pi-time" id="pi-time">MAINTENANT</div>
+        <div class="pi-desc" id="pi-desc">Profitez de votre fenêtre de 6 heures. Privilégiez des repas riches en protéines, légumes et bonnes graisses pour maximiser les bénéfices du jeûne.</div>
+        <div class="pi-benefits" id="pi-benefits">
+          <span class="pi-tag">🥗 Repas équilibré</span>
+          <span class="pi-tag">💧 Hydratation</span>
+          <span class="pi-tag">🥩 Protéines</span>
+        </div>
+      </div>
+    </div>
+    <div id="early-container" style="display:none;text-align:center;margin-top:12px;">
+      <button class="btn btn-amber" onclick="startFast()" style="height:50px;font-size:0.88rem;max-width:none;">⚡ Commencer maintenant</button>
     </div>
   </div>
 
   <!-- SLEEP -->
   <div class="sleep-card">
-    <div class="sleep-text">
-      <h3>Sommeil</h3>
-      <p id="sleep-status">Aucune donnée</p>
-    </div>
+    <div class="sc-t"><h3>Sommeil</h3><p id="sleep-status">Aucune donnée enregistrée</p></div>
     <button class="btn-sleep" onclick="toggleSleep()" id="sleep-btn">🛌 Se coucher</button>
   </div>
 
-  <!-- LOGS AUJOURD'HUI -->
+  <!-- LOGS -->
   <div class="section-head">
     <h3>Aujourd'hui</h3>
-    <time id="today-date" style="font-size:0.72rem;color:var(--ink-60);">--</time>
+    <time id="today-date" style="font-size:0.68rem;color:var(--ink-60);">--</time>
   </div>
-  <div id="recent-logs"><div class="empty-state"><div class="empty-icon">📋</div><p>Aucune activité aujourd'hui</p></div></div>
+  <div id="recent-logs"><div class="empty-state"><div class="ei">📋</div><p>Aucune activité pour l'instant</p></div></div>
 
 </main>
 
-<!-- VIEW STATS -->
+<!-- ═══════ VUE PHASES DÉTAILLÉES ═══════ -->
 <main class="view" id="view-stats">
-  <div style="display:flex;align-items:baseline;gap:8px;flex-shrink:0;">
-    <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;">Statistiques</h2>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;flex-shrink:0;">Votre Jeûne 18:6</div>
+
+  <!-- STATS RAPIDES -->
+  <div class="stat-grid">
+    <div class="stat-card"><div class="sv" id="sv-fasts">0</div><div class="sl">Jeûnes réalisés</div></div>
+    <div class="stat-card"><div class="sv" id="sv-weight">--</div><div class="sl">Dernier poids (kg)</div></div>
+    <div class="stat-card"><div class="sv" id="sv-streak">0</div><div class="sl">Jours consécutifs</div></div>
+    <div class="stat-card"><div class="sv" id="sv-best">--</div><div class="sl">Meilleur jeûne</div></div>
   </div>
+
+  <!-- GRAPHIQUE -->
   <div class="chart-card"><canvas id="weightChart"></canvas></div>
-  <button class="btn btn-amber btn-full" onclick="openDrawer('poids')">⚖️ Noter mon poids</button>
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex-shrink:0;">Protocole de jeûne</div>
-  <div class="fast-types">
-    <div class="fast-type active" onclick="setFastType(16)" id="type-16"><h4>16:8</h4><p>Débutant</p></div>
-    <div class="fast-type" onclick="setFastType(18)" id="type-18"><h4>18:6</h4><p>Intermédiaire</p></div>
-    <div class="fast-type" onclick="setFastType(20)" id="type-20"><h4>20:4</h4><p>Avancé</p></div>
-  </div>
-  <div class="settings-card">
-    <div class="setting-row">
-      <div><div class="setting-lbl">Début du jeûne</div><div class="setting-desc">Heure de début automatique</div></div>
-      <input type="time" id="fast-start-time" value="20:00" style="width:auto;margin:0;" onchange="updateFastSettings()">
+  <button class="btn btn-amber btn-full" onclick="openDrawer('poids')">⚖️ Enregistrer mon poids</button>
+
+  <!-- PHASES DÉTAILLÉES -->
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;flex-shrink:0;margin-top:6px;">Les 8 Phases Métaboliques</div>
+
+  <!-- Phase 1 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--amber-soft);">🍽️</div><div><div class="ps-head-title">Absorption & Digestion</div><div class="ps-head-sub" style="color:var(--amber);">0 — 2 heures</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Pic insulinique :</strong> L'insuline monte pour stocker le glucose dans les cellules musculaires et hépatiques.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Glycogène chargé :</strong> Le foie et les muscles reconstituent leurs réserves de glycogène (énergie rapide).</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text">Conseil : Privilégiez les protéines et fibres pour ralentir l'absorption et prolonger la satiété.</div></div>
     </div>
-    <div class="setting-row">
-      <div><div class="setting-lbl">Durée</div><div class="setting-desc" id="duration-label">16 heures</div></div>
-      <input type="number" id="fast-duration" value="16" min="12" max="23" onchange="updateFastSettings()">
+  </div>
+
+  <!-- Phase 2 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--amber-soft);">📉</div><div><div class="ps-head-title">Chute de l'Insuline</div><div class="ps-head-sub" style="color:var(--amber);">2 — 4 heures</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Insuline en baisse :</strong> Le corps arrête de stocker et commence à libérer des nutriments.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text"><strong>Glucagon monte :</strong> Hormone antagoniste de l'insuline, signal du début de la mobilisation énergétique.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--amber);"></div><div class="ps-row-text">Légère faim possible — elle passe. Buvez de l'eau ou du thé vert.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 3 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--sage-light);">🔄</div><div><div class="ps-head-title">Transition Métabolique</div><div class="ps-head-sub" style="color:var(--sage);">4 — 8 heures</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>Lipolyse déclenchée :</strong> Les graisses stockées (triglycérides) sont libérées dans le sang comme carburant.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>β-oxydation :</strong> Les acides gras libres sont convertis en énergie dans les mitochondries.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text">Clarté mentale qui augmente. Excellent moment pour travailler ou méditer.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--sage-light);">🔥</div><div><div class="ps-head-title">Combustion des Graisses</div><div class="ps-head-sub" style="color:var(--sage);">8 — 12 heures</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>Cétose légère :</strong> Le foie produit des corps cétoniques (BHB, AcAc) à partir des graisses — carburant premium pour le cerveau.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text"><strong>Glycogène épuisé :</strong> Les réserves hépatiques de glycogène sont presque vides — retour impossible sans nourriture.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--sage);"></div><div class="ps-row-text">Énergie stable, pas de crash. Exercice modéré à jeun optimal ici.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--slate-light);">⚡</div><div><div class="ps-head-title">Cétose Profonde & BDNF</div><div class="ps-head-sub" style="color:var(--slate);">12 — 15 heures</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>BDNF élevé :</strong> "Brain-Derived Neurotrophic Factor" — hormone de croissance du cerveau. Améliore la mémoire et protège contre la neurodégénérescence.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>Sensibilité insulinique :</strong> Les cellules deviennent beaucoup plus sensibles à l'insuline — anti-diabète naturel.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text">Vous êtes dans la zone. Concentration maximale, productivité optimale.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--slate-light);">🛡️</div><div><div class="ps-head-title">Réponse Anti-Inflammatoire</div><div class="ps-head-sub" style="color:var(--slate);">15 — 17 heures</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>IL-6 & TNF-α en baisse :</strong> Les marqueurs inflammatoires chroniques diminuent significativement.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text"><strong>Lymphocytes T régulateurs :</strong> Le système immunitaire se recalibre et renforce ses défenses.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--slate);"></div><div class="ps-row-text">Bénéfique pour les douleurs chroniques, arthrite, maladies auto-immunes.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 7 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--violet-light);">✨</div><div><div class="ps-head-title">Autophagie — Régénération</div><div class="ps-head-sub" style="color:var(--violet);">17 — 18 heures</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text"><strong>Autophagie activée :</strong> (Prix Nobel 2016 — Yoshinori Ohsumi) Les cellules digèrent leurs composants endommagés et les recyclent.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text"><strong>Protéines mal repliées :</strong> Éliminées — prévention Alzheimer, Parkinson, cancers.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text"><strong>Mitophagie :</strong> Les mitochondries endommagées sont renouvelées — plus d'énergie cellulaire.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--violet);"></div><div class="ps-row-text">C'est pour ça que vous faites du 18:6. Vous avez atteint le but ultime !</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 8 -->
+  <div class="phase-sheet">
+    <div class="ps-header"><div class="ps-icon" style="background:var(--gold-light);">👑</div><div><div class="ps-head-title">Pic Hormones de Croissance</div><div class="ps-head-sub" style="color:var(--gold);">18 heures — OBJECTIF</div></div></div>
+    <div class="ps-body">
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--gold);"></div><div class="ps-row-text"><strong>GH x2000% :</strong> La Growth Hormone monte jusqu'à 20x la normale. Préservation musculaire maximale, lipolyse accélérée.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--gold);"></div><div class="ps-row-text"><strong>IGF-1 optimisé :</strong> Facteur de croissance insulinique — régénération cellulaire, peau, os, muscles.</div></div>
+      <div class="ps-row"><div class="ps-bullet" style="background:var(--gold);"></div><div class="ps-row-text"><strong>Casser le jeûne :</strong> Idéal avec protéines légères (œufs, poisson) + légumes. Évitez les glucides rapides.</div></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex-shrink:0;">Paramètres 18:6</div>
+  <div class="settings-card">
+    <div class="set-row">
+      <div><div class="set-lbl">Début du jeûne</div><div class="set-desc">Heure de début automatique</div></div>
+      <input type="time" id="fast-start-time" value="20:00" style="width:auto;margin:0;" onchange="updateSettings()">
+    </div>
+    <div class="set-row">
+      <div><div class="set-lbl">Protocole</div><div class="set-desc">18h jeûne · 6h fenêtre alimentaire</div></div>
+      <span style="font-weight:800;color:var(--amber);font-size:0.9rem;">18:6 ✓</span>
     </div>
   </div>
 </main>
 
-<!-- VIEW HISTORIQUE -->
+<!-- ═══════ VUE HISTORIQUE ═══════ -->
 <main class="view" id="view-history">
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;flex-shrink:0;">Historique</div>
+  <div style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;flex-shrink:0;">Historique</div>
   <div class="cloud-card" id="cloud-card">
-    <div class="cloud-orb">☁️</div>
-    <div class="cloud-info" style="flex:1"><h4>Dropbox</h4><p id="cloud-status-text">Non connecté</p></div>
+    <div class="co-orb">☁️</div>
+    <div class="co-info" style="flex:1;"><h4>Dropbox Sync</h4><p id="cloud-status-text">Non connecté</p></div>
     <button class="btn-sync" onclick="openDrawer('cloud')">Connecter</button>
   </div>
-  <div id="full-logs"><div class="empty-state"><div class="empty-icon">📜</div><p>Aucun historique</p></div></div>
+  <div id="full-logs"><div class="empty-state"><div class="ei">📜</div><p>Aucun historique</p></div></div>
 </main>
 
-<!-- VIEW IA -->
+<!-- ═══════ VUE IA PRO ═══════ -->
 <main class="view" id="view-ai">
-  <div class="ai-mode-switcher">
-    <button class="ai-mode-btn active" id="btn-mode-ai" onclick="setAIMode('ai')">🧠 Conseil IA</button>
-    <button class="ai-mode-btn search" id="btn-mode-search" onclick="setAIMode('search')">🔍 Recherche</button>
+  <div class="ai-switcher">
+    <button class="aisw-btn active" id="btn-ai" onclick="setAIMode('ai')">🧠 Gemini Pro</button>
+    <button class="aisw-btn sr" id="btn-sr" onclick="setAIMode('search')">🔍 Aliments</button>
+    <button class="aisw-btn" id="btn-cfg" onclick="setAIMode('config')" style="flex:0.6;">⚙️</button>
   </div>
-  <div class="search-info hidden" id="search-info">🌐 Open Food Facts & Wikipedia — 100% gratuit</div>
+  <div class="search-info hidden" id="search-info">🌐 Recherche Open Food Facts & Wikipedia — 100% gratuit</div>
   <div class="ai-hero" id="ai-hero">
-    <div class="ai-avatar-orb" id="ai-avatar">🧠</div>
-    <h2 id="ai-title">NutriAI Assistant</h2>
-    <p id="ai-subtitle">Spécialiste jeûne intermittent & nutrition</p>
+    <div class="ai-orb" id="ai-orb">🧠</div>
+    <h2 id="ai-title">NutriAI — Gemini Pro</h2>
+    <p id="ai-sub">IA connectée · Spécialiste jeûne 18:6 & nutrition</p>
+    <div class="ai-status" id="ai-status-badge"><span class="dot"></span><span id="ai-status-txt">Gemini actif</span></div>
   </div>
   <div class="chips" id="ai-chips"></div>
   <div class="chat-box">
-    <div class="chat-messages" id="chat-msgs">
-      <div class="msg assistant">
-        Bonjour Hicham ! 👋 Je suis votre assistant nutritionnel. Je peux analyser vos données de jeûne, vous conseiller sur vos repas, ou répondre à vos questions sur la santé métabolique.<span class="ts">Maintenant</span>
-      </div>
+    <div class="chat-msgs" id="chat-msgs">
+      <div class="msg bot">Bonjour Hicham ! 👋 Je suis votre assistant IA personnel propulsé par <strong>Gemini Pro</strong>. Je connais votre protocole <strong>18:6</strong>, vos phases métaboliques, et je peux analyser votre progression en temps réel.<br><br>Comment puis-je vous aider aujourd'hui ?<span class="ts">Maintenant</span></div>
     </div>
-    <div class="chat-input-area">
-      <input type="text" class="chat-input" id="ai-input" placeholder="Posez votre question..." onkeypress="if(event.key==='Enter')handleAIInput()" autocomplete="off">
-      <button class="btn-send" id="ai-send" onclick="handleAIInput()">➤</button>
+    <div class="chat-input-row">
+      <input type="text" class="chat-inp" id="ai-input" placeholder="Posez votre question à Gemini..." onkeypress="if(event.key==='Enter')handleAI()" autocomplete="off">
+      <button class="btn-send" id="btn-send" onclick="handleAI()">➤</button>
     </div>
   </div>
-  <button class="btn-report" onclick="generateAIReport()">📊 Générer mon bilan hebdomadaire</button>
+  <button class="btn-report" onclick="genReport()">📊 Bilan hebdomadaire IA</button>
 </main>
 
-<!-- NAV -->
+<!-- ═══════ NAV ═══════ -->
 <nav class="nav">
-  <button class="nav-item active" id="nav-main" onclick="switchTab('main')"><span class="nav-icon">🏠</span><span class="nav-lbl">Accueil</span></button>
-  <button class="nav-item" id="nav-stats" onclick="switchTab('stats')"><span class="nav-icon">📈</span><span class="nav-lbl">Stats</span></button>
-  <button class="nav-item ai-nav" id="nav-ai" onclick="switchTab('ai')"><span class="nav-icon">🧠</span><span class="nav-lbl">IA</span></button>
-  <button class="nav-item" id="nav-history" onclick="switchTab('history')"><span class="nav-icon">📜</span><span class="nav-lbl">Historique</span></button>
+  <button class="ni active" id="nav-main" onclick="switchTab('main')"><span class="ni-icon">🏠</span><span class="ni-lbl">Accueil</span></button>
+  <button class="ni" id="nav-stats" onclick="switchTab('stats')"><span class="ni-icon">🔬</span><span class="ni-lbl">Phases</span></button>
+  <button class="ni ain" id="nav-ai" onclick="switchTab('ai')"><span class="ni-icon">🧠</span><span class="ni-lbl">IA Pro</span></button>
+  <button class="ni" id="nav-history" onclick="switchTab('history')"><span class="ni-icon">📜</span><span class="ni-lbl">Historique</span></button>
 </nav>
 
-<!-- OVERLAY -->
 <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
-<div class="sync-toast" id="sync-toast"><span id="toast-icon">✅</span><span id="toast-text"></span></div>
+<div class="toast" id="toast"><span id="t-icon">✅</span><span id="t-text"></span></div>
 
 <!-- DRAWER POIDS -->
 <div class="drawer" id="drawer-poids">
   <div class="handle" onclick="closeDrawers()"></div>
-  <div class="drawer-title">Nouvelle pesée</div>
+  <div class="dr-title">Nouvelle pesée</div>
   <input type="number" id="w-input" step="0.1" placeholder="72.5 kg" min="30" max="300" inputmode="decimal">
   <button class="btn btn-start btn-full" onclick="saveWeight()">Enregistrer</button>
   <button class="btn btn-ghost btn-full" onclick="closeDrawers()">Annuler</button>
@@ -760,608 +696,731 @@ input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-
 <!-- DRAWER CLOUD -->
 <div class="drawer" id="drawer-cloud">
   <div class="handle" onclick="closeDrawers()"></div>
-  <div class="drawer-title">Synchronisation Cloud</div>
-  <div class="sync-phase-info" id="sync-phase-display">Phase : <strong id="current-phase-text">Non disponible</strong></div>
-  <div id="oauth-connect">
+  <div class="dr-title">Synchronisation Cloud</div>
+  <div class="sync-phase" id="sync-phase">Phase : <strong id="cur-phase-txt">—</strong></div>
+  <div id="oauth-box">
     <div class="oauth-box">
-      <div class="oauth-icon">☁️</div>
+      <div style="font-size:2.8rem;margin-bottom:10px;">☁️</div>
       <h3>Dropbox Connect</h3>
-      <p>Synchronisation automatique et sécurisée.<br><small>Vos données restent privées.</small></p>
+      <p>Synchronisation sécurisée de vos données de jeûne et de poids.</p>
       <button class="btn btn-dropbox" style="max-width:none;width:100%;height:56px;" onclick="startOAuth()">🔐 Se connecter à Dropbox</button>
     </div>
   </div>
   <div id="cloud-connected" style="display:none;">
-    <div class="cloud-card" style="margin-bottom:20px;border-left-color:var(--sage);">
-      <div class="cloud-orb" style="color:var(--sage);">✅</div>
-      <div class="cloud-info"><h4 style="color:var(--sage);">Connecté</h4><p>Compte Dropbox actif</p></div>
-    </div>
-    <button class="btn btn-dropbox btn-full" onclick="syncToDropbox()">⬆️ Sauvegarder sur le cloud</button>
-    <button class="btn btn-start btn-full" onclick="syncFromDropbox()">⬇️ Restaurer depuis le cloud</button>
+    <div class="cloud-card" style="margin-bottom:16px;"><div class="co-orb" style="color:var(--sage);">✅</div><div class="co-info" style="flex:1;"><h4 style="color:var(--sage);">Connecté</h4><p>Compte Dropbox actif</p></div></div>
+    <button class="btn btn-dropbox btn-full" onclick="syncUp()">⬆️ Sauvegarder</button>
+    <button class="btn btn-start btn-full" onclick="syncDown()">⬇️ Restaurer</button>
     <button class="btn btn-ghost btn-full" style="color:var(--danger);" onclick="disconnect()">Se déconnecter</button>
   </div>
 </div>
 
-<!-- DRAWER ADJUST TIME -->
+<!-- DRAWER ADJUST -->
 <div class="drawer" id="drawer-adjust">
   <div class="handle" onclick="closeDrawers()"></div>
-  <div class="drawer-title">Ajuster l'heure de début</div>
-  <div class="adjust-info">Modifiez l'heure de début de votre jeûne. <strong>La progression sera recalculée automatiquement.</strong></div>
-  <input type="datetime-local" id="adjust-time-input" style="margin-bottom:18px;">
-  <button class="btn btn-start btn-full" onclick="saveAdjustedTime()">Confirmer</button>
+  <div class="dr-title">Ajuster l'heure de début</div>
+  <div class="adj-info">Modifiez l'heure de début de votre jeûne en cours. <strong>La progression sera recalculée.</strong></div>
+  <input type="datetime-local" id="adjust-input" style="margin-bottom:16px;">
+  <button class="btn btn-start btn-full" onclick="saveAdjust()">Confirmer</button>
   <button class="btn btn-ghost btn-full" onclick="closeDrawers()">Annuler</button>
+</div>
+
+<!-- DRAWER CONFIG GEMINI -->
+<div class="drawer" id="drawer-config">
+  <div class="handle" onclick="closeDrawers()"></div>
+  <div class="dr-title">Configuration IA Gemini</div>
+  <div class="gemini-key-box">
+    <strong>🔑 Clé API Gemini (Gratuite)</strong>
+    Obtenez votre clé gratuite sur <strong>aistudio.google.com</strong> → "Get API Key" → Copiez et collez ci-dessous.<br>La clé est stockée localement sur votre appareil uniquement.
+    <div id="key-status-badge" class="key-status nok">⚠ Aucune clé configurée</div>
+  </div>
+  <input type="password" id="gemini-key-input" placeholder="AIzaSy..." autocomplete="off">
+  <button class="btn btn-gemini btn-full" onclick="saveGeminiKey()">💾 Sauvegarder la clé</button>
+  <button class="btn btn-ghost btn-full" onclick="clearGeminiKey()" style="color:var(--danger);">🗑 Supprimer la clé</button>
+  <div style="font-size:0.75rem;color:var(--ink-60);text-align:center;margin-top:8px;line-height:1.5;">
+    Sans clé, l'IA fonctionne en mode local hors-ligne.<br>
+    Avec clé Gemini, vous avez une IA connectée avancée gratuite.
+  </div>
 </div>
 
 </div><!-- .app -->
 
 <script>
-// ─── CONSTANTS (Compatible avec localStorage existant) ───
+// ════════════════════════════════════════════════
+//  HICHAM MASTER — 18:6 ENGINE
+//  Compatible localStorage HICHAM_*_v4
+//  APK-Ready : toutes les mises à jour via HTML
+// ════════════════════════════════════════════════
+
 const K = {
-  WEIGHTS:'HICHAM_WEIGHTS_v4',LOGS:'HICHAM_LOGS_v4',SETTINGS:'HICHAM_SETTINGS_v4',
-  FAST_STATE:'HICHAM_FAST_v4',CHECKIN:'HICHAM_CHECKIN_v4',AI_CHAT:'HICHAM_AI_CHAT_v4',
-  AI_MODE:'HICHAM_AI_MODE_v4',SLEEP:'HICHAM_SLEEP_v4',DROPBOX_TOKEN:'HICHAM_DROPBOX_TOKEN_v4',
-  CLOUD_DATA:'HICHAM_CLOUD_DATA_v4',LAST_SYNC:'HICHAM_LAST_SYNC_v4'
+  W:'HICHAM_WEIGHTS_v4', L:'HICHAM_LOGS_v4', SET:'HICHAM_SETTINGS_v4',
+  FS:'HICHAM_FAST_v4', CI:'HICHAM_CHECKIN_v4', AIM:'HICHAM_AI_MODE_v4',
+  SL:'HICHAM_SLEEP_v4', DBX:'HICHAM_DROPBOX_TOKEN_v4',
+  CLOUD:'HICHAM_CLOUD_DATA_v4', SYNC:'HICHAM_LAST_SYNC_v4',
+  GEMINI:'HICHAM_GEMINI_KEY_v4'
 };
 
+// 18:6 = 18h jeûne, durée fixe
+const FAST_DURATION = 18;
+
+// ─── PHASES DÉTAILLÉES ───
 const PHASES = [
-  {title:'Fenêtre Alimentaire',icon:'🍽️',desc:'Absorption des nutriments en cours. Privilégiez les protéines maigres, légumes et bonnes graisses.',cls:'',orb:'',seg:0},
-  {title:'Phase Digestive',icon:'🔄',desc:'La glycémie se stabilise. Votre corps digère activement le dernier repas.',cls:'phase-digest',orb:'',seg:1},
-  {title:'Début du Jeûne',icon:'⏰',desc:'Le jeûne commence. Votre corps prépare la transition énergétique. Hydratez-vous.',cls:'phase-digest',orb:'',seg:2},
-  {title:'Combustion des Graisses',icon:'🔥',desc:'Votre corps puise dans vos réserves lipidiques. Légère faim possible — elle passe en 20 min.',cls:'phase-fat',orb:'fat',seg:3},
-  {title:'Cétose Légère',icon:'⚡',desc:'Cétose établie ! Clarté mentale accrue, combustion des graisses optimale. Excellent travail.',cls:'phase-fat',orb:'fat',seg:4},
-  {title:'Autophagie Activée',icon:'✨',desc:'Mode régénération cellulaire. Anti-âge, détox profonde, longévité. Vous êtes dans la zone !',cls:'phase-autophagy',orb:'autophagy',seg:5}
+  {id:0,name:'Fenêtre Alimentaire',icon:'🍽️',time:'Maintenant',
+   desc:'Profitez de votre fenêtre de 6h. Protéines, légumes, bonnes graisses.',
+   tags:['🥗 Repas équilibré','💧 Hydratation','🥩 Protéines'],
+   cls:'p1',orb:'',stripe:'',timeTag:''},
+  {id:1,name:'Absorption Digestive',icon:'🔄',time:'0 – 2h',
+   desc:"L'insuline monte et stocke le glucose. Le glycogène musculaire et hépatique se recharge. La glycémie se stabilise progressivement.",
+   tags:['📈 Insuline haute','🔋 Glycogène','⏳ Stabilisation'],
+   cls:'p2',orb:'',stripe:'',timeTag:''},
+  {id:2,name:'Chute de l\'Insuline',icon:'📉',time:'2 – 4h',
+   desc:"L'insuline baisse, le glucagon monte. Le corps libère les nutriments stockés. Légère faim passagère — buvez de l'eau ou du thé vert.",
+   tags:['📉 Insuline basse','🫀 Glucagon','💧 Eau/Thé OK'],
+   cls:'p2',orb:'',stripe:'',timeTag:''},
+  {id:3,name:'Combustion des Graisses',icon:'🔥',time:'4 – 8h',
+   desc:'La lipolyse est déclenchée. Vos graisses stockées alimentent le corps. β-oxydation active dans les mitochondries. Clarté mentale en hausse.',
+   tags:['🔥 Lipolyse','⚙️ β-oxydation','🧠 Clarté mentale'],
+   cls:'p3',orb:'orf',stripe:'s-fat',timeTag:'tf'},
+  {id:4,name:'Cétose Légère',icon:'⚡',time:'8 – 12h',
+   desc:'Cétose installée ! Le foie produit des corps cétoniques (BHB). Carburant premium pour le cerveau. Énergie stable, pas de crash glycémique.',
+   tags:['🧪 Cétones BHB','⚡ Énergie stable','🎯 Focus total'],
+   cls:'p4',orb:'orf',stripe:'s-fat',timeTag:'tf'},
+  {id:5,name:'Cétose Profonde & BDNF',icon:'🧬',time:'12 – 15h',
+   desc:"BDNF en hausse — hormone de croissance du cerveau. Sensibilité insulinique maximale. Prévention neurodégénérative. Vous êtes dans la zone.",
+   tags:['🧬 BDNF élevé','💉 Insulino-sensible','🛡️ Neuroprotection'],
+   cls:'p5',orb:'ork',stripe:'s-ketosis',timeTag:'tk'},
+  {id:6,name:'Anti-Inflammatoire',icon:'🛡️',time:'15 – 17h',
+   desc:"Marqueurs inflammatoires (IL-6, TNF-α) en baisse. Système immunitaire qui se recalibre. Bénéfique pour les douleurs chroniques.",
+   tags:['🔵 IL-6 baisse','🔴 TNF-α baisse','💪 Immunité'],
+   cls:'p6',orb:'ork',stripe:'s-deep-ketosis',timeTag:'tk'},
+  {id:7,name:'Autophagie Maximale',icon:'✨',time:'17 – 18h',
+   desc:'Autophagie active (Nobel 2016). Les cellules recyclent leurs composants endommagés. Prévention Alzheimer, Parkinson. Mitophagie pour renouveler les mitochondries.',
+   tags:['✨ Autophagie','♻️ Recyclage','🧬 Anti-âge'],
+   cls:'p7',orb:'ora',stripe:'s-autophagy',timeTag:'ta'},
+  {id:8,name:'Pic Hormones de Croissance',icon:'👑',time:'18h — OBJECTIF',
+   desc:'GH x2000% ! Growth Hormone au maximum. Préservation musculaire absolue + lipolyse accélérée. IGF-1 optimisé. Vous avez réussi votre jeûne 18:6 !',
+   tags:['👑 GH x2000%','💪 Muscle préservé','🏆 Objectif atteint'],
+   cls:'p8',orb:'org',stripe:'s-peak',timeTag:'tg'}
 ];
-
-const AI_KB = {
-  faim:'La faim vient par vagues de 20 min maximum. Buvez de l\'eau, du thé vert ou du café noir — cela la stoppe naturellement.',
-  cafe:'☕ Le café noir est 100% autorisé pendant le jeûne. Il accélère même la cétose. Évitez sucre et lait.',
-  sport:'L\'exercice modéré est excellent en jeûne ! Entraînement à jeun = meilleure oxydation des graisses. Évitez l\'intensité maximale les 2 premières semaines.',
-  fatigue:'Vérifiez vos électrolytes : sel de l\'Himalaya, magnésium, potassium. La fatigue initiale dure 3-5 jours puis disparaît.',
-  conseils:[
-    ['Mastication lente = satiété x2','Protéines en début de repas','Évitez les sucres raffinés','Eau : 2L minimum par jour'],
-    ['Eau chaude + citron au réveil','Marche légère de 15 min','Thé vert ou café noir OK','Respirez profondément si faim'],
-    ['La faim passe en 20 min','Bouillon d\'os autorisé','Sel de l\'Himalaya dans l\'eau','Concentrez-vous sur une tâche'],
-    ['Clarté mentale = signal cétose','Exercice modéré idéal maintenant','Électrolytes importants','Dormez suffisamment ce soir'],
-    ['Hydratation maximale','Évitez le stress intense','Mode anti-âge activé ✨','Continuez, vous êtes dans la zone !']
-  ]
-};
 
 // ─── STATE ───
 const S = {
-  isOnline:navigator.onLine,
-  timerInterval:null,
-  weights:[],logs:[],
-  settings:{startTime:'20:00',duration:16,mode:'auto'},
-  fast:{isFasting:false,startTime:null,plannedEnd:null},
-  currentPhase:0,
-  aiMode:'ai',
-  chart:null
+  on:navigator.onLine, timer:null, weights:[], logs:[],
+  settings:{startTime:'20:00'}, fast:{isFasting:false,startTime:null},
+  phase:0, chart:null, aiMode:'ai', bestFast:0
 };
 
 // ─── STORAGE ───
-const Store = {
-  get:(k,d=null)=>{try{const v=localStorage.getItem(k);return v!==null?v:d;}catch{return d;}},
-  set:(k,v)=>{try{localStorage.setItem(k,v);return true;}catch{return false;}},
-  getJ:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}},
-  setJ:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}},
-  del:(k)=>{try{localStorage.removeItem(k);}catch{}}
+const DB = {
+  g:(k,d=null)=>{try{const v=localStorage.getItem(k);return v!=null?v:d;}catch{return d;}},
+  s:(k,v)=>{try{localStorage.setItem(k,v);return true;}catch{return false;}},
+  gj:(k,d=null)=>{try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch{return d;}},
+  sj:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v));return true;}catch{return false;}},
+  rm:(k)=>{try{localStorage.removeItem(k);}catch{}}
 };
 
-const Fmt = {
-  time:(d)=>d instanceof Date&&!isNaN(d)?d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'--:--',
-  date:(d)=>d instanceof Date&&!isNaN(d)?d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'--',
-  dtLocal:(d)=>{if(!(d instanceof Date)||isNaN(d))return '';const off=d.getTimezoneOffset()*60000;return new Date(d-off).toISOString().slice(0,16);},
-  dur:(h)=>{const H=Math.floor(h),m=Math.round((h-H)*60);return `${H}h${m>0?m+'min':''}`;},
-  pct:(elapsed,total)=>Math.min(100,Math.round(elapsed/total*100))
+const F = {
+  t:(d)=>d instanceof Date&&!isNaN(d)?d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}):'--:--',
+  d:(d)=>d instanceof Date&&!isNaN(d)?d.toLocaleDateString('fr-FR',{day:'numeric',month:'short'}):'--',
+  dtL:(d)=>{if(!(d instanceof Date)||isNaN(d))return'';const o=d.getTimezoneOffset()*60000;return new Date(d-o).toISOString().slice(0,16);},
+  h:(h)=>{const H=Math.floor(h),m=Math.round((h-H)*60);return`${H}h${m>0?m+'min':''}`;}
 };
-
-// ─── MOTIVATIONAL MESSAGES (time-aware) ───
-function getMotivationMessage(hour,isFasting,phase){
-  if(!isFasting){
-    if(hour<10)return 'Belle matinée pour préparer votre jeûne';
-    if(hour<14)return 'Profitez de votre fenêtre alimentaire';
-    if(hour<18)return 'Préparez mentalement votre jeûne du soir';
-    return 'Bientôt l\'heure de commencer';
-  }
-  const msgs=[
-    ['Bon début !','Restez hydraté','Vous avez commencé !'],
-    ['Vous tenez bon','La faim va passer','Buvez de l\'eau'],
-    ['Mi-parcours !','La lipolyse commence','Corps en action'],
-    ['Excellent !','Graisses en combustion','Continue comme ça'],
-    ['Cétose en route','Clarté mentale bientôt','Presque au sommet'],
-    ['AUTOPHAGIE ✨','Régénération cellulaire','Vous êtes au maximum']
-  ];
-  const pool=msgs[Math.min(phase,5)];
-  return pool[Math.floor(Math.random()*pool.length)];
-}
 
 // ─── INIT ───
 function init(){
-  loadData();
-  updateConnStatus();
-  updateGreeting();
-  updateClock();
-  setInterval(updateClock,1000);
-  if(S.fast?.isFasting&&S.fast?.startTime){startTimer();}
-  else{updateUINotFasting();}
+  S.weights=DB.gj(K.W,[]); S.logs=DB.gj(K.L,[]);
+  S.settings=DB.gj(K.SET,S.settings)||{startTime:'20:00'};
+  S.fast=DB.gj(K.FS,S.fast)||{isFasting:false,startTime:null};
+  S.aiMode=DB.g(K.AIM,'ai');
+  S.bestFast=DB.gj('HICHAM_BEST_FAST',0)||0;
+  updateGreeting(); updateClock(); setInterval(updateClock,1000);
+  if(S.fast?.isFasting&&S.fast?.startTime)startTimer();
+  else resetUI();
   setMode(S.settings.mode||'auto');
-  checkDailyCheckin();
-  updateLogs();
-  updateDateDisplay();
-  setupListeners();
-  setAIMode(S.aiMode);
-}
-
-function loadData(){
-  S.weights=Store.getJ(K.WEIGHTS,[]);
-  S.logs=Store.getJ(K.LOGS,[]);
-  S.settings=Store.getJ(K.SETTINGS,S.settings);
-  S.fast=Store.getJ(K.FAST_STATE,S.fast)||{isFasting:false,startTime:null,plannedEnd:null};
-  S.aiMode=Store.get(K.AI_MODE,'ai');
-}
-
-function setupListeners(){
-  window.addEventListener('online',()=>{S.isOnline=true;updateConnStatus();});
-  window.addEventListener('offline',()=>{S.isOnline=false;updateConnStatus();if(S.aiMode==='search'){setAIMode('ai');addMsg('📡 Connexion perdue — mode Offline activé.','assistant');}});
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&S.fast.isFasting)updateTimer();});
+  checkCheckin(); updateLogs();
+  document.getElementById('today-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
+  window.addEventListener('online',()=>{S.on=true;updateAIStatus();});
+  window.addEventListener('offline',()=>{S.on=false;updateAIStatus();});
   document.addEventListener('keydown',(e)=>{if(e.key==='Escape')closeDrawers();});
+  setAIMode(S.aiMode);
+  updateStats();
+}
+
+// ─── GREETING + MOTIVATION ───
+const GREETINGS=[
+  [0,6,'Bonne nuit, Hicham','Mode jeûne nocturne 🌙'],
+  [6,10,'Bonjour, Hicham','Journée productive en jeûne ☀️'],
+  [10,12,'Bonjour, Hicham','Continuez, vous êtes sur la bonne voie'],
+  [12,14,'Bon appétit','Votre fenêtre de 6h a commencé 🍽️'],
+  [14,18,'Bon après-midi','Profitez de votre fenêtre alimentaire'],
+  [18,24,'Bonsoir, Hicham','Préparez votre jeûne du soir 🌆']
+];
+function updateGreeting(){
+  const h=new Date().getHours();
+  const[,,n,s]=GREETINGS.find(([a,b])=>h>=a&&h<b)||GREETINGS[5];
+  const el=document.getElementById('h-name');
+  const sub=document.getElementById('h-sub');
+  if(el)el.textContent=n;
+  if(sub)sub.textContent=s;
+}
+function updateClock(){
+  const el=document.getElementById('clock');if(el)el.textContent=F.t(new Date());
 }
 
 // ─── CHECKIN ───
-function checkDailyCheckin(){
-  const last=Store.getJ(K.CHECKIN,null);
+function checkCheckin(){
+  const last=DB.gj(K.CI,null);
   const today=new Date().toDateString();
   const card=document.getElementById('checkin-card');
-  if(!last||new Date(last.date).toDateString()!==today){
-    card?.classList.remove('hidden');
-  }else{
-    card?.classList.add('hidden');
-  }
+  if(!last||new Date(last.date).toDateString()!==today)card?.classList.remove('hidden');
+  else card?.classList.add('hidden');
 }
-
-function saveCheckin(mood){
-  Store.setJ(K.CHECKIN,{date:new Date().toISOString(),mood,day:new Date().toDateString()});
+function saveCheckin(m){
+  DB.sj(K.CI,{date:new Date().toISOString(),mood:m});
   document.getElementById('checkin-card')?.classList.add('hidden');
-  const lbls=['Très fatigué','Fatigué','Neutre','En forme','Excellent'];
-  const emojis=['😫','😕','😐','🙂','🤩'];
-  addLog('HUMEUR',`${lbls[mood-1]} ${emojis[mood-1]}`,'mood');
-  showToast(`Humeur enregistrée ${emojis[mood-1]}`,true);
-}
-
-// ─── GREETING ───
-function updateGreeting(){
-  const h=new Date().getHours();
-  const el=document.getElementById('greeting-text');
-  const sub=document.getElementById('greeting-sub');
-  if(!el)return;
-  const map=[
-    [0,6,'Bonne nuit, Hicham','L\'heure du repos métabolique'],
-    [6,12,'Bonjour, Hicham','Belle journée pour jeûner'],
-    [12,14,'Bon appétit','Profitez de votre fenêtre alimentaire'],
-    [14,18,'Bon après-midi','Continuez sur cette lancée'],
-    [18,24,'Bonsoir, Hicham','Préparez-vous pour votre jeûne']
-  ];
-  const[,,text,subtitle]=map.find(([a,b])=>h>=a&&h<b)||map[4];
-  el.textContent=text;
-  if(sub)sub.textContent=subtitle;
-}
-
-function updateClock(){
-  const el=document.getElementById('clock');
-  if(el){const n=new Date();el.textContent=Fmt.time(n);}
-}
-
-function updateDateDisplay(){
-  const el=document.getElementById('today-date');
-  if(el)el.textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
-}
-
-function updateConnStatus(){
-  const dot=document.getElementById('conn-dot');
-  if(dot){dot.classList.toggle('offline',!S.isOnline);}
+  const lb=['Épuisé','Fatigué','Neutre','En forme','Excellent'];
+  const em=['😫','😕','😐','🙂','🤩'];
+  addLog('HUMEUR',`${lb[m-1]} ${em[m-1]}`,'mood');
+  toast(`Humeur enregistrée ${em[m-1]}`,true);
 }
 
 // ─── TABS ───
 function switchTab(t){
   ['main','stats','history','ai'].forEach(v=>{
-    const ve=document.getElementById(`view-${v}`);
-    const ne=document.getElementById(`nav-${v}`);
-    const a=v===t;
-    ve?.classList.toggle('active',a);
-    ne?.classList.toggle('active',a);
+    document.getElementById(`view-${v}`)?.classList.toggle('active',v===t);
+    document.getElementById(`nav-${v}`)?.classList.toggle('active',v===t);
   });
   if(t==='ai'){setAIMode(S.aiMode);scrollChat();}
-  else if(t==='stats'){setTimeout(initChart,100);}
-  else if(t==='history'){updateFullLogs();checkDropboxStatus();}
+  else if(t==='stats'){setTimeout(()=>{initChart();updateStats();},80);}
+  else if(t==='history'){updateFullLogs();checkCloud();}
 }
 
-function scrollChat(){
-  setTimeout(()=>{const c=document.getElementById('chat-msgs');if(c)c.scrollTop=c.scrollHeight;},100);
-}
-
-// ─── FASTING LOGIC ───
+// ─── MODE TOGGLE ───
 function setMode(mode){
-  S.settings.mode=mode;
-  Store.setJ(K.SETTINGS,S.settings);
+  S.settings.mode=mode;DB.sj(K.SET,S.settings);
   document.getElementById('mode-auto')?.classList.toggle('active',mode==='auto');
   document.getElementById('mode-manual')?.classList.toggle('active',mode==='manual');
   if(!S.fast.isFasting){
-    const ec=document.getElementById('early-fast-container');
+    const ec=document.getElementById('early-container');
     if(ec)ec.style.display=mode==='manual'?'block':'none';
   }
 }
 
+// ─── FAST ACTIONS ───
 function handleFastAction(){
-  if(S.fast.isFasting){
-    if(confirm('Voulez-vous vraiment arrêter votre jeûne ?'))stopFast();
-  }else{startFast();}
+  if(S.fast.isFasting){if(confirm('Arrêter votre jeûne 18h ?'))stopFast();}
+  else startFast();
 }
-
 function startFast(){
   const now=new Date();
-  S.fast={isFasting:true,startTime:now.toISOString(),plannedEnd:new Date(now.getTime()+S.settings.duration*3600000).toISOString()};
-  Store.setJ(K.FAST_STATE,S.fast);
-  addLog('JEÛNE',`Début à ${Fmt.time(now)}`,'fast');
-  document.getElementById('early-fast-container')?.classList.add('hidden');
+  S.fast={isFasting:true,startTime:now.toISOString(),end:new Date(now.getTime()+FAST_DURATION*3600000).toISOString()};
+  DB.sj(K.FS,S.fast);
+  addLog('JEÛNE 18H',`Début à ${F.t(now)}`,'fast');
+  document.getElementById('early-container')?.classList.add('hidden');
   startTimer();
-  if(navigator.vibrate)navigator.vibrate(50);
-  showToast('Jeûne démarré ! 💪',true);
+  if(navigator.vibrate)navigator.vibrate(60);
+  toast('Jeûne 18:6 démarré ! 💪',true);
 }
-
 function stopFast(){
-  if(S.timerInterval){clearInterval(S.timerInterval);S.timerInterval=null;}
+  if(S.timer){clearInterval(S.timer);S.timer=null;}
   const dur=calcElapsed();
-  addLog('FIN JEÛNE',`Durée : ${Fmt.dur(dur)}`,'success');
-  S.fast={isFasting:false,startTime:null,plannedEnd:null};
-  S.currentPhase=0;
-  Store.setJ(K.FAST_STATE,S.fast);
-  updateUINotFasting();
-  if(navigator.vibrate)navigator.vibrate([50,100,50]);
-  showToast(`Bravo ! ${Fmt.dur(dur)} accomplis 🎉`,true);
+  if(dur>S.bestFast){S.bestFast=dur;DB.sj('HICHAM_BEST_FAST',dur);}
+  addLog('FIN JEÛNE',`Durée : ${F.h(dur)}`,'success');
+  S.fast={isFasting:false,startTime:null};
+  S.phase=0;
+  DB.sj(K.FS,S.fast);
+  resetUI();
+  if(navigator.vibrate)navigator.vibrate([60,120,60]);
+  toast(`Bravo ! ${F.h(dur)} accomplis 🏆`,true);
 }
-
-function startEarlyFast(){startFast();}
-
 function startTimer(){
-  if(S.timerInterval)clearInterval(S.timerInterval);
-  updateTimer();
-  S.timerInterval=setInterval(updateTimer,1000);
+  if(S.timer)clearInterval(S.timer);
+  tick(); S.timer=setInterval(tick,1000);
 }
 
-function updateTimer(){
+function tick(){
   if(!S.fast.isFasting||!S.fast.startTime){stopFast();return;}
   const start=new Date(S.fast.startTime);
   const now=new Date();
   const elSec=(now-start)/1000;
-  const durSec=S.settings.duration*3600;
+  const durSec=FAST_DURATION*3600;
   const remSec=durSec-elSec;
-  if(remSec<=0){
-    stopFast();
-    addLog('OBJECTIF ATTEINT','Jeûne terminé avec succès ! 🎉','success');
-    showToast('Objectif atteint ! 🏆',true);
-    return;
-  }
+  if(remSec<=0){stopFast();addLog('OBJECTIF 18H','Jeûne 18:6 terminé ! 🎉','success');toast('Objectif 18h atteint ! 👑',true);return;}
+  // Countdown
   const H=Math.floor(remSec/3600),M=Math.floor((remSec%3600)/60),sec=Math.floor(remSec%60);
-  const el=document.getElementById('countdown');
-  if(el)el.textContent=`${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-  // Progress ring
-  const prog=elSec/durSec;
-  const circ=565;
-  const off=circ-(prog*circ);
-  const fill=document.getElementById('ring-fill');
-  const glow=document.getElementById('ring-glow');
-  if(fill){fill.style.strokeDashoffset=off;fill.style.strokeDasharray=circ;}
-  if(glow){glow.style.strokeDashoffset=off;glow.style.strokeDasharray=circ;}
+  const cd=document.getElementById('countdown');
+  if(cd)cd.textContent=`${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+  // Ring
+  const pct=elSec/durSec;
+  const off=565-(pct*565);
+  const rf=document.getElementById('r-fill');const rg=document.getElementById('r-glow');
+  if(rf){rf.style.strokeDashoffset=off;rf.style.strokeDasharray=565;}
+  if(rg){rg.style.strokeDashoffset=off;rg.style.strokeDasharray=565;}
   // Phase
   const elH=elSec/3600;
-  const newPhase=calcPhase(elH);
-  if(newPhase!==S.currentPhase)updatePhaseUI(elH);
+  const np=calcPhase(elH);
+  if(np!==S.phase){S.phase=np;updatePhaseUI();}
   // Progress label
-  const pct=Fmt.pct(elSec,durSec);
-  const pl=document.getElementById('progress-lbl');
-  if(pl){
-    const h=new Date().getHours();
-    pl.textContent=`${pct}% · ${getMotivationMessage(h,true,S.currentPhase)}`;
-  }
-  // Phase timeline
+  const pl=document.getElementById('prog-lbl');
+  if(pl){const pctN=Math.round(pct*100);pl.textContent=`${pctN}% · ${getMotiv(elH)}`;}
+  // Timeline
   updateTimeline(elH);
 }
 
 function calcPhase(h){
-  if(h<1)return 1;
-  if(h<4)return 2;
-  if(h<8)return 3;
-  if(h<12)return 4;
-  return 5;
+  if(h<1)return 1;if(h<2)return 1;if(h<4)return 2;
+  if(h<8)return 3;if(h<12)return 4;if(h<15)return 5;
+  if(h<17)return 6;if(h<18)return 7;return 8;
 }
-
 function calcElapsed(){
   if(!S.fast.startTime)return 0;
   return Math.max(0,(new Date()-new Date(S.fast.startTime))/3600000);
 }
 
-function updatePhaseUI(elH){
-  S.currentPhase=calcPhase(elH);
-  const ph=PHASES[S.currentPhase];
-  if(!ph)return;
-  const els={
-    title:document.getElementById('phase-title'),
-    desc:document.getElementById('phase-desc'),
-    orb:document.getElementById('phase-orb'),
-    ring:document.getElementById('ring-fill'),
-    glow:document.getElementById('ring-glow'),
-    badge:document.getElementById('fast-badge'),
-    lbl:document.getElementById('timer-lbl'),
-    btn:document.getElementById('fast-action-btn'),
-    info:document.getElementById('fast-start-info'),
-    disp:document.getElementById('fast-start-time-display'),
-    cd:document.getElementById('countdown'),
-    card:document.getElementById('timer-card')
-  };
-  if(els.title)els.title.textContent=ph.title;
-  if(els.desc)els.desc.textContent=ph.desc;
-  if(els.orb){els.orb.textContent=ph.icon;els.orb.className=`phase-orb ${ph.orb}`;}
-  if(els.ring){els.ring.className=`ring-fill ${ph.cls}`;}
-  if(els.glow){els.glow.className=`ring-glow ${ph.cls}`;}
-  if(els.badge){els.badge.textContent='En jeûne';els.badge.classList.add('active');}
-  if(els.lbl)els.lbl.textContent='TEMPS RESTANT';
-  if(els.btn){els.btn.textContent='Arrêter le jeûne';els.btn.className='btn btn-stop';}
-  if(els.info)els.info.style.display='flex';
-  if(els.disp&&S.fast.startTime)els.disp.textContent=Fmt.time(new Date(S.fast.startTime));
-  if(els.cd){
-    // Remove old phase classes
-    els.cd.className=['','','','phase-fat','phase-fat','phase-autophagy'][S.currentPhase]||'';
-  }
-  // Card top bar
-  if(els.card){
-    els.card.className='timer-card';
-    if(S.currentPhase>=3&&S.currentPhase<4)els.card.classList.add('phase-fat');
-    if(S.currentPhase>=4&&S.currentPhase<5)els.card.classList.add('phase-ketosis');
-    if(S.currentPhase>=5)els.card.classList.add('phase-autophagy');
+function getMotiv(h){
+  const msgs=[
+    'Vous avez commencé ! Restez hydraté',
+    'L\'insuline baisse, continuez !',
+    'Chute insulinique — corps en transition',
+    '🔥 Lipolyse activée !',
+    '⚡ Cétose légère — carburant graisses',
+    '🧬 BDNF en hausse — cerveau optimisé',
+    '🛡️ Anti-inflammatoire actif',
+    '✨ Autophagie — régénération cellulaire',
+    '👑 18h atteints — GH au maximum !'
+  ];
+  return msgs[Math.min(S.phase,8)]||'';
+}
+
+function updatePhaseUI(){
+  const ph=PHASES[S.phase]||PHASES[0];
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el[typeof v==='string'&&v.startsWith('<')?'innerHTML':'textContent']=v;};
+  set('pi-name',ph.name);
+  set('pi-time',ph.time);
+  set('pi-desc',ph.desc);
+  const bc=document.getElementById('pi-benefits');
+  if(bc)bc.innerHTML=ph.tags.map(t=>`<span class="pi-tag">${t}</span>`).join('');
+  const orb=document.getElementById('pi-orb');
+  if(orb){orb.textContent=ph.icon;orb.className=`pi-orb ${ph.orb}`;}
+  const pt=document.getElementById('pi-time');
+  if(pt)pt.className=`pi-time ${ph.timeTag}`;
+  // Ring color
+  const rf=document.getElementById('r-fill');const rg=document.getElementById('r-glow');
+  if(rf)rf.className=`r-fill ${ph.cls}`;
+  if(rg)rg.className=`r-glow ${ph.cls}`;
+  // Stripe
+  const st=document.getElementById('tc-stripe');
+  if(st)st.className=`tc-stripe ${ph.stripe}`;
+  // Countdown color
+  const cd=document.getElementById('countdown');
+  if(cd)cd.className=`cp${S.phase}`;
+  // Badge
+  const b=document.getElementById('fast-badge');
+  if(b){b.textContent='En jeûne 18:6';b.classList.add('active');}
+  // Button
+  const btn=document.getElementById('action-btn');
+  if(btn){btn.textContent='Arrêter le jeûne';btn.className='btn btn-stop';}
+  // Start row
+  const sr=document.getElementById('start-row');
+  if(sr)sr.style.display='flex';
+  const sd=document.getElementById('start-disp');
+  if(sd&&S.fast.startTime)sd.textContent=F.t(new Date(S.fast.startTime));
+}
+
+function updateTimeline(h){
+  const checkpoints=[0,2,4,8,12,15,17,18,FAST_DURATION];
+  for(let i=0;i<8;i++){
+    const seg=document.getElementById(`seg${i}`);if(!seg)continue;
+    const start=checkpoints[i],end=checkpoints[i+1]||FAST_DURATION;
+    seg.classList.remove('done','cur');
+    if(h>=end)seg.classList.add('done');
+    else if(h>=start)seg.classList.add('cur');
   }
 }
 
-function updateTimeline(elH){
-  const segs=document.querySelectorAll('.phase-segment');
-  const checkpoints=[0,1,4,8,12,16];
-  segs.forEach((seg,i)=>{
-    const start=checkpoints[i]||0;
-    const end=checkpoints[i+1]||S.settings.duration;
-    seg.classList.remove('active','completed');
-    if(elH>=end)seg.classList.add('completed');
-    else if(elH>=start)seg.classList.add('active');
-  });
-}
-
-function updateUINotFasting(){
-  const els={
-    cd:document.getElementById('countdown'),
-    lbl:document.getElementById('timer-lbl'),
-    pl:document.getElementById('progress-lbl'),
-    btn:document.getElementById('fast-action-btn'),
-    badge:document.getElementById('fast-badge'),
-    fill:document.getElementById('ring-fill'),
-    glow:document.getElementById('ring-glow'),
-    info:document.getElementById('fast-start-info'),
-    card:document.getElementById('timer-card')
-  };
-  if(els.cd)els.cd.textContent='00:00:00';
-  if(els.lbl)els.lbl.textContent='PRÊT À JEÛNER';
-  if(els.pl){
-    const h=new Date().getHours();
-    els.pl.textContent=getMotivationMessage(h,false,0);
-  }
-  if(els.btn){els.btn.textContent='Démarrer le jeûne';els.btn.className='btn btn-start';}
-  if(els.badge){els.badge.textContent='Fenêtre de repas';els.badge.classList.remove('active');}
-  if(els.fill){els.fill.style.strokeDashoffset='565';els.fill.className='ring-fill';}
-  if(els.glow){els.glow.style.strokeDashoffset='565';els.glow.className='ring-glow';}
-  if(els.info)els.info.style.display='none';
-  if(els.card)els.card.className='timer-card';
-  // Phase reset
+function resetUI(){
   const ph=PHASES[0];
-  ['phase-title','phase-desc'].forEach((id,i)=>{const el=document.getElementById(id);if(el)el.textContent=i===0?ph.title:ph.desc;});
-  const orb=document.getElementById('phase-orb');if(orb){orb.textContent=ph.icon;orb.className='phase-orb';}
-  S.currentPhase=0;
-  document.querySelectorAll('.phase-segment').forEach(s=>s.classList.remove('active','completed'));
+  const set=(id,v,txt=true)=>{const el=document.getElementById(id);if(el)el[txt?'textContent':'innerHTML']=v;};
+  set('countdown','00:00:00');
+  set('pi-name',ph.name);set('pi-desc',ph.desc);
+  const orb=document.getElementById('pi-orb');if(orb){orb.textContent=ph.icon;orb.className='pi-orb';}
+  const pt=document.getElementById('pi-time');if(pt){pt.textContent=ph.time;pt.className='pi-time';}
+  const bc=document.getElementById('pi-benefits');if(bc)bc.innerHTML=ph.tags.map(t=>`<span class="pi-tag">${t}</span>`).join('');
+  set('prog-lbl','Prêt à commencer votre jeûne 18:6');
+  const b=document.getElementById('fast-badge');if(b){b.textContent='Fenêtre alimentaire';b.classList.remove('active');}
+  const btn=document.getElementById('action-btn');if(btn){btn.textContent='Démarrer le jeûne 18h';btn.className='btn btn-start';}
+  const rf=document.getElementById('r-fill');if(rf){rf.style.strokeDashoffset='565';rf.className='r-fill';}
+  const rg=document.getElementById('r-glow');if(rg){rg.style.strokeDashoffset='565';rg.className='r-glow';}
+  const sr=document.getElementById('start-row');if(sr)sr.style.display='none';
+  const st=document.getElementById('tc-stripe');if(st)st.className='tc-stripe';
+  const cd=document.getElementById('countdown');if(cd)cd.className='';
+  for(let i=0;i<8;i++){const s=document.getElementById(`seg${i}`);if(s)s.classList.remove('done','cur');}
+  S.phase=0;
   setMode(S.settings.mode||'auto');
+}
+
+// ─── ADJUST TIME ───
+function openAdjust(){
+  const inp=document.getElementById('adjust-input');
+  if(S.fast.startTime&&inp)inp.value=F.dtL(new Date(S.fast.startTime));
+  document.getElementById('drawer-adjust')?.classList.add('open');
+  document.getElementById('overlay')?.classList.add('active');
+}
+function saveAdjust(){
+  const v=document.getElementById('adjust-input')?.value;if(!v)return;
+  const d=new Date(v);if(isNaN(d)){alert('Date invalide');return;}
+  if(d>new Date()){alert('Heure future impossible');return;}
+  S.fast.startTime=d.toISOString();DB.sj(K.FS,S.fast);
+  addLog('AJUSTEMENT',`Heure modifiée : ${F.t(d)}`,'adjust');
+  closeDrawers();
+  if(S.timer){clearInterval(S.timer);startTimer();}
+  toast('Heure mise à jour',true);
 }
 
 // ─── SLEEP ───
 function toggleSleep(){
-  const sl=Store.getJ(K.SLEEP,{isSleeping:false,startTime:null});
-  const btn=document.getElementById('sleep-btn');
-  const st=document.getElementById('sleep-status');
+  const sl=DB.gj(K.SL,{isSleeping:false,startTime:null});
+  const btn=document.getElementById('sleep-btn'),st=document.getElementById('sleep-status');
   if(!sl.isSleeping){
-    sl.isSleeping=true;sl.startTime=new Date().toISOString();
-    Store.setJ(K.SLEEP,sl);
+    sl.isSleeping=true;sl.startTime=new Date().toISOString();DB.sj(K.SL,sl);
     if(btn)btn.innerHTML='☀️ Se réveiller';
-    if(st)st.textContent='Dodo depuis '+Fmt.time(new Date());
-    addLog('SOMMEIL','Couchage','sleep');
+    if(st)st.textContent='Dodo depuis '+F.t(new Date());
+    addLog('SOMMEIL','Couché','sleep');
   }else{
     const dur=(new Date()-new Date(sl.startTime))/3600000;
-    sl.isSleeping=false;Store.setJ(K.SLEEP,sl);
+    sl.isSleeping=false;DB.sj(K.SL,sl);
     if(btn)btn.innerHTML='🛌 Se coucher';
-    if(st)st.textContent=`Dernière nuit : ${Fmt.dur(dur)}`;
-    addLog('RÉVEIL',`${Fmt.dur(dur)} de sommeil`,'sleep');
+    if(st)st.textContent=`Dernière nuit : ${F.h(dur)}`;
+    addLog('RÉVEIL',`${F.h(dur)} de sommeil`,'sleep');
   }
-}
-
-// ─── ADJUST TIME ───
-function openAdjustTimeDrawer(){
-  const inp=document.getElementById('adjust-time-input');
-  if(S.fast.startTime&&inp)inp.value=Fmt.dtLocal(new Date(S.fast.startTime));
-  document.getElementById('drawer-adjust')?.classList.add('open');
-  document.getElementById('overlay')?.classList.add('active');
-}
-
-function saveAdjustedTime(){
-  const inp=document.getElementById('adjust-time-input');
-  if(!inp?.value)return;
-  const d=new Date(inp.value);
-  if(isNaN(d)){alert('Date invalide');return;}
-  if(d>new Date()){alert('L\'heure ne peut pas être dans le futur');return;}
-  S.fast.startTime=d.toISOString();
-  Store.setJ(K.FAST_STATE,S.fast);
-  addLog('MODIFICATION',`Heure ajustée : ${Fmt.time(d)}`,'adjust');
-  closeDrawers();
-  if(S.timerInterval){clearInterval(S.timerInterval);startTimer();}
-  showToast('Heure mise à jour',true);
 }
 
 // ─── WEIGHT & CHART ───
 function saveWeight(){
-  const inp=document.getElementById('w-input');
-  const v=parseFloat(inp?.value);
-  if(!v||isNaN(v)||v<30||v>300){alert('Veuillez entrer un poids valide entre 30 et 300 kg');return;}
+  const v=parseFloat(document.getElementById('w-input')?.value);
+  if(!v||isNaN(v)||v<30||v>300){alert('Poids valide entre 30 et 300 kg');return;}
   S.weights.push({d:new Date().toISOString(),v:parseFloat(v.toFixed(1))});
-  Store.setJ(K.WEIGHTS,S.weights);
-  if(inp)inp.value='';
-  closeDrawers();
-  addLog('POIDS',`${v.toFixed(1)} kg`,'weight');
-  initChart();
-  showToast('Poids enregistré ⚖️',true);
+  DB.sj(K.W,S.weights);document.getElementById('w-input').value='';
+  closeDrawers();addLog('POIDS',`${v.toFixed(1)} kg`,'weight');initChart();updateStats();toast('Poids enregistré ⚖️',true);
 }
-
-function setFastType(h){
-  S.settings.duration=parseInt(h);
-  Store.setJ(K.SETTINGS,S.settings);
-  [16,18,20].forEach(v=>{
-    const el=document.getElementById(`type-${v}`);
-    if(el)el.classList.toggle('active',v===h);
-  });
-  const lbl=document.getElementById('duration-label');if(lbl)lbl.textContent=h+' heures';
-  const inp=document.getElementById('fast-duration');if(inp)inp.value=h;
-}
-
-function updateFastSettings(){
-  const ti=document.getElementById('fast-start-time');
-  const di=document.getElementById('fast-duration');
-  if(ti)S.settings.startTime=ti.value;
-  if(di){const v=parseInt(di.value);if(v>=12&&v<=23)S.settings.duration=v;}
-  Store.setJ(K.SETTINGS,S.settings);
-  const lbl=document.getElementById('duration-label');if(lbl)lbl.textContent=S.settings.duration+' heures';
-}
-
 function initChart(){
-  const ctx=document.getElementById('weightChart');
-  if(!ctx||S.weights.length===0)return;
+  const ctx=document.getElementById('weightChart');if(!ctx||!S.weights.length)return;
   if(S.chart){S.chart.destroy();S.chart=null;}
-  const data=S.weights.slice(-7);
-  S.chart=new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:data.map(w=>Fmt.date(new Date(w.d))),
-      datasets:[{
-        label:'Poids (kg)',data:data.map(w=>parseFloat(w.v)),
-        borderColor:'#C8803A',backgroundColor:'rgba(200,128,58,0.08)',
-        tension:0.4,fill:true,pointRadius:5,
-        pointBackgroundColor:'#C8803A',pointBorderColor:'#fff',pointBorderWidth:2
-      }]
-    },
-    options:{
-      responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(42,37,32,0.9)',padding:12,cornerRadius:10,displayColors:false,callbacks:{label:c=>c.parsed.y+' kg'}}},
-      scales:{
-        y:{beginAtZero:false,grid:{color:'rgba(42,37,32,0.04)'},ticks:{callback:v=>v+' kg',font:{family:'Nunito'}}},
-        x:{grid:{display:false},ticks:{font:{family:'Nunito'}}}
-      }
-    }
-  });
+  const data=S.weights.slice(-10);
+  S.chart=new Chart(ctx,{type:'line',data:{labels:data.map(w=>F.d(new Date(w.d))),datasets:[{label:'Poids',data:data.map(w=>parseFloat(w.v)),borderColor:'#C8803A',backgroundColor:'rgba(200,128,58,0.07)',tension:0.4,fill:true,pointRadius:5,pointBackgroundColor:'#C8803A',pointBorderColor:'#fff',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'rgba(42,37,32,0.92)',padding:12,cornerRadius:10,displayColors:false,callbacks:{label:c=>c.parsed.y+' kg'}}},scales:{y:{beginAtZero:false,grid:{color:'rgba(42,37,32,0.04)'},ticks:{callback:v=>v+' kg'}},x:{grid:{display:false}}}}});
+}
+function updateStats(){
+  const fastLogs=S.logs.filter(l=>l.type==='JEÛNE 18H').length;
+  const sv=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  sv('sv-fasts',fastLogs);
+  sv('sv-weight',S.weights.length?S.weights[S.weights.length-1].v+'kg':'--');
+  sv('sv-streak',calcStreak());
+  sv('sv-best',S.bestFast>0?F.h(S.bestFast):'--');
+}
+function calcStreak(){
+  let streak=0,d=new Date();d.setHours(0,0,0,0);
+  const doneSet=new Set(S.logs.filter(l=>l.type==='FIN JEÛNE'||l.type==='OBJECTIF 18H').map(l=>new Date(l.time).toDateString()));
+  while(doneSet.has(d.toDateString())){streak++;d.setDate(d.getDate()-1);}
+  return streak;
+}
+function updateSettings(){
+  const ti=document.getElementById('fast-start-time');
+  if(ti)S.settings.startTime=ti.value;
+  DB.sj(K.SET,S.settings);
 }
 
 // ─── LOGS ───
 function addLog(type,desc,cls=''){
   S.logs.unshift({id:Date.now(),type,desc,time:new Date().toISOString(),class:cls});
-  if(S.logs.length>50)S.logs=S.logs.slice(0,50);
-  Store.setJ(K.LOGS,S.logs);
-  updateLogs();
+  if(S.logs.length>60)S.logs=S.logs.slice(0,60);
+  DB.sj(K.L,S.logs);updateLogs();
 }
-
-function renderLog(log,showDate=false){
-  const d=new Date(log.time);
-  return `<div class="log-item ${log.class||''}">
-    <div class="log-content"><h4>${esc(log.type)}</h4><p>${esc(log.desc)}</p></div>
-    <div class="log-time">${showDate?Fmt.date(d)+'<br>':''}${Fmt.time(d)}</div>
-  </div>`;
+function renderLog(l,showDate=false){
+  const d=new Date(l.time);
+  return`<div class="log-item ${l.class||''}"><div class="lc"><h4>${esc(l.type)}</h4><p>${esc(l.desc)}</p></div><div class="lt">${showDate?F.d(d)+'<br>':''}${F.t(d)}</div></div>`;
 }
-
 function updateLogs(){
   const c=document.getElementById('recent-logs');if(!c)return;
-  const today=new Date().toDateString();
-  const tl=S.logs.filter(l=>new Date(l.time).toDateString()===today).slice(0,5);
-  c.innerHTML=tl.length?tl.map(l=>renderLog(l)).join(''):`<div class="empty-state"><div class="empty-icon">📋</div><p>Aucune activité aujourd'hui</p></div>`;
+  const tl=S.logs.filter(l=>new Date(l.time).toDateString()===new Date().toDateString()).slice(0,6);
+  c.innerHTML=tl.length?tl.map(l=>renderLog(l)).join(''):`<div class="empty-state"><div class="ei">📋</div><p>Aucune activité aujourd'hui</p></div>`;
 }
-
 function updateFullLogs(){
   const c=document.getElementById('full-logs');if(!c)return;
-  c.innerHTML=S.logs.length?S.logs.slice(0,50).map(l=>renderLog(l,true)).join(''):`<div class="empty-state"><div class="empty-icon">📜</div><p>Aucun historique</p></div>`;
+  c.innerHTML=S.logs.length?S.logs.slice(0,60).map(l=>renderLog(l,true)).join(''):`<div class="empty-state"><div class="ei">📜</div><p>Aucun historique</p></div>`;
 }
 
-// ─── DROPBOX ───
-function checkDropboxStatus(){
-  const tok=Store.get(K.DROPBOX_TOKEN);
-  const oc=document.getElementById('oauth-connect');
-  const cc=document.getElementById('cloud-connected');
-  const st=document.getElementById('cloud-status-text');
-  const btn=document.querySelector('#cloud-card .btn-sync');
-  updateSyncPhaseDisplay();
-  if(tok){
-    oc?.classList.add('hidden');cc?.classList.remove('hidden');
-    if(st)st.textContent='Connecté';
-    if(btn){btn.textContent='Gérer';btn.onclick=()=>openDrawer('cloud');}
+// ═══════════════════════════════════
+//  IA GEMINI — CONNECTÉE & GRATUITE
+// ═══════════════════════════════════
+const GEMINI_MODEL='gemini-2.0-flash';
+const GEMINI_URL=`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
+function getGeminiKey(){return DB.g(K.GEMINI,null);}
+function saveGeminiKey(){
+  const v=document.getElementById('gemini-key-input')?.value.trim();
+  if(!v||!v.startsWith('AIza')){toast('Clé invalide — doit commencer par AIza',false);return;}
+  DB.s(K.GEMINI,v);updateKeyStatus();closeDrawers();toast('Clé Gemini sauvegardée ✅',true);updateAIStatus();
+}
+function clearGeminiKey(){DB.rm(K.GEMINI);updateKeyStatus();updateAIStatus();toast('Clé supprimée',true);}
+function updateKeyStatus(){
+  const k=getGeminiKey();
+  const badge=document.getElementById('key-status-badge');
+  if(badge){badge.textContent=k?'✅ Clé configurée':'⚠ Aucune clé configurée';badge.className=`key-status ${k?'':'nok'}`;}
+  const inp=document.getElementById('gemini-key-input');if(inp&&k)inp.value='AIza•••••'+k.slice(-4);
+}
+function updateAIStatus(){
+  const k=getGeminiKey();const on=S.on;
+  const badge=document.getElementById('ai-status-badge');
+  const txt=document.getElementById('ai-status-txt');
+  const inp=document.getElementById('ai-input');
+  if(badge){badge.className=`ai-status ${(!k||!on)?'offline':''}`;}
+  if(txt)txt.textContent=k&&on?'Gemini actif':(!k?'Mode local (hors-ligne)':'Hors connexion');
+  if(inp)inp.placeholder=k&&on?'Posez votre question à Gemini...':'Posez votre question (IA locale)...';
+}
+
+function buildGeminiContext(){
+  const ctx={
+    protocole:'Jeûne intermittent 18:6 (18h jeûne, 6h fenêtre)',
+    phase_actuelle:PHASES[S.phase]?.name||'Fenêtre alimentaire',
+    heure_jeune:S.fast.isFasting?F.h(calcElapsed()):'Pas de jeûne en cours',
+    poids_recent:S.weights.length?S.weights[S.weights.length-1].v+' kg':'Non renseigné',
+    jeunes_realises:S.logs.filter(l=>l.type==='JEÛNE 18H').length,
+    objectif:'18 heures',
+    utilisateur:'Hicham'
+  };
+  return`Tu es NutriAI, assistant expert en jeûne intermittent pour ${ctx.utilisateur}. 
+Contexte actuel : ${JSON.stringify(ctx)}.
+Réponds en français, de façon précise, scientifique mais accessible. 
+Utilise des emojis avec parcimonie. Max 200 mots sauf si bilan demandé.
+Si on te demande un bilan, sois détaillé avec les données fournies.`;
+}
+
+async function callGemini(userMsg){
+  const key=getGeminiKey();
+  if(!key||!S.on)return null; // fallback local
+  try{
+    const res=await fetch(`${GEMINI_URL}?key=${key}`,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        system_instruction:{parts:[{text:buildGeminiContext()}]},
+        contents:[{parts:[{text:userMsg}]}],
+        generationConfig:{maxOutputTokens:512,temperature:0.7}
+      })
+    });
+    if(!res.ok){const err=await res.json();throw new Error(err?.error?.message||'Gemini error');}
+    const data=await res.json();
+    return data?.candidates?.[0]?.content?.parts?.[0]?.text||null;
+  }catch(e){console.error('[Gemini]',e);return null;}
+}
+
+// ─── LOCAL AI FALLBACK ───
+const LOCAL_KB={
+  faim:`La faim en jeûne vient par vagues de 20 min max. Buvez de l'eau chaude avec citron, du thé vert ou du café noir — ça stoppe naturellement la sensation de faim. Rappelez-vous : la faim n'est PAS un signal d'urgence, c'est une habitude.`,
+  cafe:`☕ Le café noir est 100% autorisé pendant le jeûne 18:6. Il accélère même la cétose et augmente les corps cétoniques. Évitez sucre, lait, crème. Le café peut également augmenter la durée de l'autophagie.`,
+  sport:`L'exercice à jeun est puissant ! En phase de lipolyse (4-12h), le corps brûle jusqu'à 20% plus de graisses. Cardio léger à modéré est idéal. Évitez l'intensité maximale les 2 premières semaines d'adaptation.`,
+  fatigue:`La fatigue initiale est normale (1-3 semaines). Causes : manque d'électrolytes. Solution : sel de l'Himalaya dans l'eau, magnésium le soir, potassium. Assurez-vous de dormir 7-9h. Ça disparaît totalement après l'adaptation.`,
+  casser:`Pour casser votre jeûne 18:6 de façon optimale : commencez par de la protéine légère (œufs, poisson, fromage blanc), attendez 20-30 min, puis mangez normalement. Évitez les glucides simples en premier repas.`,
+  resultats:`Les résultats du 18:6 arrivent en 2-4 semaines pour la perte de poids, 4-8 semaines pour les changements métaboliques profonds. La régularité > l'intensité. Chaque jeûne complété est une victoire.`
+};
+function localResponse(q){
+  const lo=q.toLowerCase();
+  if(lo.match(/faim|affam|creux|ventre/i))return LOCAL_KB.faim;
+  if(lo.match(/caf[ée]|th[ée]|noir/i))return LOCAL_KB.cafe;
+  if(lo.match(/sport|exercice|muscu|entrainement|course/i))return LOCAL_KB.sport;
+  if(lo.match(/fatigu|crev[ée]|energy|énergie/i))return LOCAL_KB.fatigue;
+  if(lo.match(/casser|briser|reprendre|manger après/i))return LOCAL_KB.casser;
+  if(lo.match(/résultat|résultat|quand|combien|temps/i))return LOCAL_KB.resultats;
+  if(lo.match(/bonjour|salut|coucou|hello/i))return`Bonjour Hicham ! 👋 Je suis en mode local (configurez une clé Gemini pour l'IA complète). Je peux vous aider sur : la faim, le café, le sport, la fatigue, ou comment casser le jeûne.`;
+  if(lo.match(/phase|étape|progression|métabolique/i)){
+    const ph=PHASES[S.phase]||PHASES[0];
+    return`📊 <strong>Votre phase actuelle : ${ph.name}</strong><br>${ph.time}<br><br>${ph.desc}<br><br>Conseil : ${ph.tags.join(' · ')}`;
+  }
+  if(lo.match(/autophagie|autophag/i))return`✨ L'autophagie commence vers 17h de jeûne. C'est pourquoi le 18:6 est si puissant — vous atteignez cette phase chaque jour ! Prix Nobel 2016. Le corps recycle ses cellules endommagées, prévient Alzheimer et Parkinson.`;
+  return`Je comprends votre question sur "${esc(q.substring(0,30))}". Pour des réponses IA avancées, configurez votre clé Gemini gratuite (bouton ⚙️). En mode local, je peux vous aider sur : faim, café/thé, sport, fatigue, casser le jeûne, phases métaboliques.`;
+}
+
+// ─── AI MODE ───
+function setAIMode(mode){
+  S.aiMode=mode;DB.s(K.AIM,mode);
+  const is=x=>mode===x;
+  ['ai','sr'].forEach(m=>{document.getElementById(`btn-${m}`)?.classList.toggle('active',mode===m);});
+  document.getElementById('btn-cfg')?.classList.toggle('active',mode==='config');
+  if(is('config')){openDrawer('config');updateKeyStatus();return;}
+  const hero=document.getElementById('ai-hero');
+  const orb=document.getElementById('ai-orb');
+  if(is('ai')){
+    hero?.classList.remove('sm');if(orb)orb.textContent='🧠';
+    document.getElementById('ai-title').textContent='NutriAI — Gemini Pro';
+    document.getElementById('ai-sub').textContent='IA connectée · Spécialiste jeûne 18:6';
+    document.getElementById('search-info')?.classList.add('hidden');
+    document.getElementById('btn-send')?.classList.remove('sm');
+    document.getElementById('ai-input')?.classList.remove('sm');
+    updateAIChips();
   }else{
-    oc?.classList.remove('hidden');cc?.classList.add('hidden');
-    if(st)st.textContent='Non connecté';
+    hero?.classList.add('sm');if(orb)orb.textContent='🔍';
+    document.getElementById('ai-title').textContent='Recherche Nutrition';
+    document.getElementById('ai-sub').textContent='Open Food Facts & Wikipedia';
+    document.getElementById('search-info')?.classList.remove('hidden');
+    document.getElementById('btn-send')?.classList.add('sm');
+    document.getElementById('ai-input')?.classList.add('sm');
+    document.getElementById('ai-input').placeholder='Rechercher un aliment...';
+    const ch=document.getElementById('ai-chips');
+    if(ch)ch.innerHTML=['🥑 Avocat','🐟 Saumon','🥚 Œufs','🫐 Myrtilles','🥩 Bœuf','🥦 Brocoli'].map(s=>`<button class="chip sr" onclick="sfood('${s.split(' ')[1]}')">${s}</button>`).join('');
+  }
+  updateAIStatus();
+}
+function updateAIChips(){
+  const ch=document.getElementById('ai-chips');if(!ch)return;
+  const chips=['🍽️ Quoi manger pour casser le jeûne ?','☕ Café autorisé ?','😫 J\'ai faim, que faire ?','💪 Sport à jeun ?','✨ Expliquez l\'autophagie','📊 Mon bilan 18:6'];
+  ch.innerHTML=chips.map(s=>`<button class="chip" onclick="setS('${s.replace(/'/g,"\\'")}')">${s}</button>`).join('');
+}
+function setS(t){const inp=document.getElementById('ai-input');if(inp){inp.value=t;handleAI();}}
+function handleAI(){S.aiMode==='search'?doSearch():sendAI();}
+
+async function sendAI(){
+  const inp=document.getElementById('ai-input');
+  const txt=inp?.value.trim();if(!txt)return;
+  addMsg(txt,'user');inp.value='';
+  showTyping();
+  const key=getGeminiKey();
+  const useGemini=!!(key&&S.on);
+  let response;
+  if(useGemini){
+    response=await callGemini(txt);
+    if(!response){removeTyping();addMsg('⚠️ Erreur Gemini. Vérifiez votre clé API ou votre connexion. Passage en mode local.','bot');response=localResponse(txt);}
+  }else{
+    await new Promise(r=>setTimeout(r,600+Math.random()*400));
+    response=localResponse(txt);
+  }
+  removeTyping();addMsg(response,'bot');
+}
+
+async function genReport(){
+  const ctx={
+    jeunes:S.logs.filter(l=>l.type==='JEÛNE 18H').length,
+    best:S.bestFast>0?F.h(S.bestFast):'--',
+    poids:S.weights.length?S.weights.slice(-3).map(w=>w.v+'kg').join(' → '):'Non renseigné',
+    streak:calcStreak(),
+    phase:PHASES[S.phase]?.name,
+    en_jeune:S.fast.isFasting?`Oui, depuis ${F.h(calcElapsed())}`:'Non'
+  };
+  const prompt=`Génère un bilan hebdomadaire complet et personnalisé pour mon jeûne 18:6. Données : ${JSON.stringify(ctx)}. Inclus : analyse progression, points forts, points à améliorer, conseils pour la semaine prochaine. Sois encourageant mais précis.`;
+  addMsg('📊 Génère mon bilan hebdomadaire...','user');
+  showTyping();
+  const key=getGeminiKey();
+  let response;
+  if(key&&S.on){response=await callGemini(prompt);}
+  if(!response){
+    response=`📊 <strong>Bilan Hebdomadaire 18:6</strong><br><br>🔥 <strong>Jeûnes réalisés :</strong> ${ctx.jeunes}<br>📅 <strong>Jours consécutifs :</strong> ${ctx.streak}<br>⚖️ <strong>Évolution poids :</strong> ${ctx.poids}<br>🏆 <strong>Meilleur jeûne :</strong> ${ctx.best}<br>🧬 <strong>Phase actuelle :</strong> ${ctx.phase}<br><br>💡 <strong>Conseil semaine prochaine :</strong><br>Maintenez votre régularité. La constance du 18:6 est plus importante que la perfection. Hydratez-vous +2L/jour et dormez 7-9h pour optimiser l'autophagie.`;
+  }
+  removeTyping();addMsg(response,'bot');
+}
+
+// ─── SEARCH (Food Facts) ───
+async function doSearch(){
+  const inp=document.getElementById('ai-input'),msgs=document.getElementById('chat-msgs');
+  const q=inp?.value.trim();if(!q||!msgs)return;
+  addMsg(q,'user');inp.value='';
+  const ldId='ld'+Date.now();
+  const ld=document.createElement('div');
+  ld.id=ldId;ld.className='s-load';
+  ld.innerHTML='<div class="spin"></div> Recherche en cours...';
+  msgs.appendChild(ld);scrollChat();
+  try{
+    const r=isFood(q)?await searchOFF(q):await searchWiki(q);
+    document.getElementById(ldId)?.remove();dispResult(r);
+  }catch(e){
+    document.getElementById(ldId)?.remove();
+    addMsg('❌ Erreur. Vérifiez la connexion ou reformulez.','bot');
   }
 }
-
-function updateSyncPhaseDisplay(){
-  const pt=document.getElementById('current-phase-text');
-  if(!pt)return;
-  if(S.fast.isFasting){
-    const ph=PHASES[S.currentPhase]||PHASES[0];
-    pt.textContent=`${ph.title} (${Fmt.dur(calcElapsed())})`;
-  }else{pt.textContent='Aucun jeûne en cours';}
+function isFood(q){return['pomme','banane','poulet','riz','pâtes','poisson','viande','avocat','saumon','amande','oeuf','tomate','carotte','salade','fromage','brocoli','myrtille','boeuf','agneau','thon','sardine'].some(k=>q.toLowerCase().includes(k))||q.length<10;}
+async function searchOFF(q){
+  const r=await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=1`);
+  if(!r.ok)throw new Error();
+  const d=await r.json();if(!d.products?.length)throw new Error();
+  const p=d.products[0];
+  return{type:'food',title:p.product_name||q,brand:p.brands||'',nutrition:{cal:p.nutriments?.energy_kcal_100g||'N/A',prot:p.nutriments?.proteins_100g||'N/A',carb:p.nutriments?.carbohydrates_100g||'N/A',fat:p.nutriments?.fat_100g||'N/A',fib:p.nutriments?.fiber_100g||'N/A'},src:'Open Food Facts'};
 }
+async function searchWiki(q){
+  const r=await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`);
+  if(r.ok){const d=await r.json();return{type:'wiki',title:d.title,extract:d.extract,url:d.content_urls?.desktop?.page,src:'Wikipedia'};}
+  const sr=await fetch(`https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`);
+  const sd=await sr.json();if(!sd.query?.search?.length)throw new Error();
+  const pr=await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(sd.query.search[0].title)}`);
+  const pd=await pr.json();return{type:'wiki',title:pd.title,extract:pd.extract,url:pd.content_urls?.desktop?.page,src:'Wikipedia'};
+}
+function dispResult(r){
+  const c=document.getElementById('chat-msgs');if(!c)return;
+  const div=document.createElement('div');div.className='msg sr';
+  const ts=F.t(new Date());
+  if(r.type==='food'){
+    const c18=parseFloat(r.nutrition.cal)||0,p=parseFloat(r.nutrition.prot)||0,cb=parseFloat(r.nutrition.carb)||0;
+    const adv=p>15?'🥩 Excellent en protéines ! Idéal pour casser votre jeûne 18:6.':cb<5?'🔥 Très low-carb ! Parfait pour maintenir la cétose.':c18>500?'⚠️ Calorique — à consommer en début de fenêtre.':'✅ Équilibré, bon choix pour votre fenêtre de 6h.';
+    div.innerHTML=`<div class="sr-title">🍽️ ${esc(r.title)}${r.brand?' — <span style="font-weight:400;font-size:0.8rem;">'+esc(r.brand)+'</span>':''}</div><div class="nutr-card"><div class="nutr-r"><span>Calories</span><strong>${r.nutrition.cal} kcal/100g</strong></div><div class="nutr-r"><span>Protéines</span><strong>${r.nutrition.prot}g</strong></div><div class="nutr-r"><span>Glucides</span><strong>${r.nutrition.carb}g</strong></div><div class="nutr-r"><span>Lipides</span><strong>${r.nutrition.fat}g</strong></div>${r.nutrition.fib!=='N/A'?`<div class="nutr-r"><span>Fibres</span><strong>${r.nutrition.fib}g</strong></div>`:''}</div><p style="margin-top:9px;font-size:0.78rem;color:var(--ink-60);">${adv}</p><div class="sr-meta"><span>📊 ${r.src}</span><span>🕒 ${ts}</span></div>`;
+  }else{
+    div.innerHTML=`<div class="sr-title">📖 ${esc(r.title)}</div><p style="font-size:0.8rem;line-height:1.55;">${esc(r.extract||'')}</p>${r.url?`<a href="${r.url}" target="_blank" rel="noopener" style="color:var(--slate);display:inline-block;margin-top:7px;font-weight:800;font-size:0.78rem;">Lire sur Wikipedia →</a>`:''}<div class="sr-meta"><span>🌐 ${r.src}</span><span>🕒 ${ts}</span></div>`;
+  }
+  c.appendChild(div);scrollChat();addLog('RECHERCHE',r.title,'search');
+}
+function sfood(f){const inp=document.getElementById('ai-input');if(inp){inp.value=f;doSearch();}}
 
+// ─── CHAT HELPERS ───
+function addMsg(text,type){
+  const c=document.getElementById('chat-msgs');if(!c)return;
+  const div=document.createElement('div');div.className=`msg ${type}`;
+  div.innerHTML=`${type==='user'?esc(text):text}<span class="ts">${F.t(new Date())}</span>`;
+  c.appendChild(div);scrollChat();
+}
+function showTyping(){
+  const c=document.getElementById('chat-msgs');if(!c)return;
+  removeTyping();
+  const d=document.createElement('div');d.id='typing';d.className='typing-w';
+  d.innerHTML='<div class="tdot"></div><div class="tdot"></div><div class="tdot"></div>';
+  c.appendChild(d);scrollChat();
+}
+function removeTyping(){document.getElementById('typing')?.remove();}
+function scrollChat(){setTimeout(()=>{const c=document.getElementById('chat-msgs');if(c)c.scrollTop=c.scrollHeight;},80);}
+
+// ─── CLOUD ───
+function checkCloud(){
+  const tok=DB.g(K.DBX);
+  const ob=document.getElementById('oauth-box'),cc=document.getElementById('cloud-connected');
+  const st=document.getElementById('cloud-status-text');
+  // Update phase info
+  const cp=document.getElementById('cur-phase-txt');
+  if(cp)cp.textContent=S.fast.isFasting?`${PHASES[S.phase]?.name} (${F.h(calcElapsed())})`:'Aucun jeûne';
+  if(tok){ob?.classList.add('hidden');cc?.classList.remove('hidden');if(st)st.textContent='Connecté';}
+  else{ob?.classList.remove('hidden');cc?.classList.add('hidden');if(st)st.textContent='Non connecté';}
+}
 function startOAuth(){
-  const tok='db_'+Date.now()+'_'+Math.random().toString(36).substr(2,9);
-  Store.set(K.DROPBOX_TOKEN,tok);
-  syncToDropbox();checkDropboxStatus();showToast('Connecté à Dropbox !',true);
-  setTimeout(closeDrawers,600);
+  DB.s(K.DBX,'db_'+Date.now()+'_'+Math.random().toString(36).substr(2,9));
+  syncUp();checkCloud();toast('Connecté à Dropbox !',true);setTimeout(closeDrawers,600);
 }
-
-function disconnect(){Store.del(K.DROPBOX_TOKEN);Store.del(K.CLOUD_DATA);checkDropboxStatus();showToast('Déconnecté',true);}
-
-function syncToDropbox(){
-  showToast('Sauvegarde...',false);
-  const data={version:'4.0',timestamp:new Date().toISOString(),weights:S.weights,logs:S.logs,settings:S.settings,fastState:S.fast,currentPhase:S.currentPhase,checkin:Store.getJ(K.CHECKIN,null)};
-  setTimeout(()=>{Store.setJ(K.CLOUD_DATA,data);Store.set(K.LAST_SYNC,new Date().toISOString());showToast('Sauvegardé ✅',true);updateSyncPhaseDisplay();},800);
+function disconnect(){DB.rm(K.DBX);DB.rm(K.CLOUD);checkCloud();toast('Déconnecté',true);}
+function syncUp(){
+  toast('Sauvegarde...',false);
+  const data={v:'4.1',ts:new Date().toISOString(),weights:S.weights,logs:S.logs,settings:S.settings,fast:S.fast,phase:S.phase,bestFast:S.bestFast,checkin:DB.gj(K.CI,null)};
+  setTimeout(()=>{DB.sj(K.CLOUD,data);DB.s(K.SYNC,new Date().toISOString());toast('Sauvegardé ✅',true);},800);
 }
-
-function syncFromDropbox(){
-  showToast('Restauration...',false);
+function syncDown(){
+  toast('Restauration...',false);
   setTimeout(()=>{
-    const d=Store.getJ(K.CLOUD_DATA,null);
-    if(!d){showToast('Aucune donnée trouvée',true);return;}
-    if(d.weights)S.weights=d.weights;
-    if(d.logs)S.logs=d.logs;
-    if(d.settings)S.settings={...S.settings,...d.settings};
-    if(d.fastState)S.fast=d.fastState;
-    if(typeof d.currentPhase==='number')S.currentPhase=d.currentPhase;
-    Store.setJ(K.WEIGHTS,S.weights);Store.setJ(K.LOGS,S.logs);
-    Store.setJ(K.SETTINGS,S.settings);Store.setJ(K.FAST_STATE,S.fast);
-    if(S.fast.isFasting&&S.fast.startTime){const el=calcElapsed();updatePhaseUI(el);startTimer();}
-    else{updateUINotFasting();}
-    updateLogs();updateFullLogs();checkDailyCheckin();
-    showToast('Données restaurées !',true);updateSyncPhaseDisplay();
-    switchTab('main');
+    const d=DB.gj(K.CLOUD,null);if(!d){toast('Aucune donnée trouvée',true);return;}
+    if(d.weights)S.weights=d.weights;if(d.logs)S.logs=d.logs;
+    if(d.settings)S.settings={...S.settings,...d.settings};if(d.fast)S.fast=d.fast;
+    if(typeof d.phase==='number')S.phase=d.phase;if(d.bestFast)S.bestFast=d.bestFast;
+    DB.sj(K.W,S.weights);DB.sj(K.L,S.logs);DB.sj(K.SET,S.settings);DB.sj(K.FS,S.fast);
+    if(S.fast.isFasting&&S.fast.startTime){const el=calcElapsed();updatePhaseUI();startTimer();}else resetUI();
+    updateLogs();updateFullLogs();checkCheckin();updateStats();
+    toast('Données restaurées !',true);switchTab('main');
   },800);
 }
 
 // ─── DRAWERS ───
-function openDrawer(type){
-  if(type==='cloud')checkDropboxStatus();
-  document.getElementById(`drawer-${type}`)?.classList.add('open');
+function openDrawer(t){
+  if(t==='config'){updateKeyStatus();}
+  if(t==='cloud'){checkCloud();}
+  document.getElementById(`drawer-${t}`)?.classList.add('open');
   document.getElementById('overlay')?.classList.add('active');
 }
 function closeDrawers(){
@@ -1369,195 +1428,21 @@ function closeDrawers(){
   document.getElementById('overlay')?.classList.remove('active');
 }
 
-// ─── AI ───
-function setAIMode(mode){
-  S.aiMode=mode;Store.set(K.AI_MODE,mode);
-  const isAI=mode==='ai';
-  document.getElementById('btn-mode-ai')?.classList.toggle('active',isAI);
-  document.getElementById('btn-mode-search')?.classList.toggle('active',!isAI);
-  const hero=document.getElementById('ai-hero');
-  const av=document.getElementById('ai-avatar');
-  const title=document.getElementById('ai-title');
-  const sub=document.getElementById('ai-subtitle');
-  const inp=document.getElementById('ai-input');
-  const btn=document.getElementById('ai-send');
-  const si=document.getElementById('search-info');
-  if(isAI){
-    hero?.classList.remove('search-mode');
-    if(av)av.textContent='🧠';
-    if(title)title.textContent='NutriAI Assistant';
-    if(sub)sub.textContent='Spécialiste jeûne intermittent & nutrition';
-    if(inp){inp.placeholder='Posez votre question...';inp.classList.remove('search');}
-    btn?.classList.remove('search');
-    si?.classList.add('hidden');
-    updateAIChips();
-  }else{
-    hero?.classList.add('search-mode');
-    if(av)av.textContent='🔍';
-    if(title)title.textContent='Recherche Nutrition';
-    if(sub)sub.textContent='Open Food Facts & Wikipedia';
-    if(inp){inp.placeholder='Rechercher un aliment...';inp.classList.add('search');}
-    btn?.classList.add('search');
-    si?.classList.remove('hidden');
-    const ch=document.getElementById('ai-chips');
-    if(ch)ch.innerHTML=['🥑 Avocat','🐟 Saumon','🥜 Amandes','📖 Jeûne'].map(s=>`<button class="chip search" onclick="searchFood('${s.split(' ')[1]}')">${s}</button>`).join('');
-  }
+// ─── TOAST ───
+function toast(txt,ok=false){
+  const t=document.getElementById('toast'),i=document.getElementById('t-icon'),tx=document.getElementById('t-text');
+  if(!t)return;t.classList.add('show');if(i)i.textContent=ok?'✅':'🔄';if(tx)tx.textContent=txt;
+  if(ok)setTimeout(()=>t.classList.remove('show'),2800);
 }
-
-function updateAIChips(){
-  const ch=document.getElementById('ai-chips');if(!ch)return;
-  const chips=['Comment gérer la faim ?','Café pendant le jeûne ?','Meilleurs aliments pour casser le jeûne','Analysez ma progression'];
-  ch.innerHTML=chips.map(s=>`<button class="chip" onclick="setAndSend('${s}')">${s}</button>`).join('');
-}
-
-function setAndSend(t){const inp=document.getElementById('ai-input');if(inp){inp.value=t;handleAIInput();}}
-
-function handleAIInput(){S.aiMode==='search'?doSearch():sendMsg();}
-
-function sendMsg(){
-  const inp=document.getElementById('ai-input');
-  const txt=inp?.value.trim();if(!txt)return;
-  addMsg(txt,'user');inp.value='';
-  showTyping();
-  setTimeout(()=>{removeTyping();addMsg(genResponse(txt),'assistant');},600+Math.random()*400);
-}
-
-function addMsg(text,type){
-  const c=document.getElementById('chat-msgs');if(!c)return;
-  const div=document.createElement('div');
-  div.className=`msg ${type}`;
-  const safe=type==='assistant'?text:esc(text);
-  div.innerHTML=`${safe}<span class="ts">${Fmt.time(new Date())}</span>`;
-  c.appendChild(div);scrollChat();
-}
-
-function showTyping(){
-  const c=document.getElementById('chat-msgs');if(!c)return;
-  removeTyping();
-  const d=document.createElement('div');
-  d.id='typing';d.className='typing-wrap';
-  d.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-  c.appendChild(d);scrollChat();
-}
-function removeTyping(){document.getElementById('typing')?.remove();}
-
-function genResponse(q){
-  const lo=q.toLowerCase();
-  const ctx=getCtx();
-  if(lo.match(/faim|affam|creux/i))return AI_KB.faim+`<br><br>💡 <strong>Conseil (${PHASES[S.currentPhase]?.title}) :</strong> ${getRandConseil(S.currentPhase)}`;
-  if(lo.match(/caf[ée]|th[ée]/i))return AI_KB.cafe;
-  if(lo.match(/sport|exercice|muscu|course/i))return AI_KB.sport;
-  if(lo.match(/fatigu|crev/i))return AI_KB.fatigue;
-  if(lo.match(/poids|maigrir|perdre/i))return `📊 <strong>Votre progression</strong><br>Tendance : ${calcWeightTrend()}${ctx.lastW?`<br>Dernier poids : <strong>${ctx.lastW} kg</strong>`:''}`;
-  if(lo.match(/phase|je[ûu]ne|progression/i))return `🕐 <strong>État actuel</strong><br>Phase : ${PHASES[S.currentPhase]?.title||'—'}<br>Durée : ${S.fast.isFasting?Fmt.dur(calcElapsed()):'Pas de jeûne'}<br>Objectif : ${ctx.dur}h<br><br>${getRandConseil(S.currentPhase)}`;
-  if(lo.match(/bonjour|salut|coucou/i))return `Bonjour Hicham ! 👋 Je suis là pour vous guider sur la nutrition et le jeûne intermittent.`;
-  if(lo.match(/analys|bilan|rapport/i)){generateAIReport();return '';}
-  return `Je comprends votre question. En tant que spécialiste du jeûne intermittent, je peux vous aider sur :<br>• La gestion de la faim<br>• Les boissons autorisées<br>• L'exercice pendant le jeûne<br>• Votre progression (phase actuelle : <strong>${PHASES[S.currentPhase]?.title}</strong>)<br><br>Que souhaitez-vous explorer ?`;
-}
-
-function getCtx(){
-  const lw=S.weights.length>0?S.weights[S.weights.length-1]:null;
-  return{phase:S.currentPhase,phaseName:PHASES[S.currentPhase]?.title,isFasting:S.fast.isFasting,dur:S.settings.duration,lastW:lw?lw.v:null};
-}
-
-function calcWeightTrend(){
-  if(S.weights.length<2)return 'stable ➡️';
-  const r=S.weights.slice(-7);if(r.length<2)return 'stable ➡️';
-  const diff=r[r.length-1].v-r[0].v;
-  if(diff<-0.3)return 'descendante 📉';if(diff>0.3)return 'ascendante 📈';return 'stable ➡️';
-}
-
-function getRandConseil(phase){
-  const p=Math.min(phase,4);const pool=AI_KB.conseils[p];
-  return pool[Math.floor(Math.random()*pool.length)];
-}
-
-function generateAIReport(){
-  const ctx=getCtx();
-  const fastLogs=S.logs.filter(l=>l.type==='JEÛNE').length;
-  const r=`📊 <strong>Bilan Hebdomadaire Personnalisé</strong><br><br>🔥 <strong>Jeûnes réalisés :</strong> ${fastLogs}<br>⚖️ <strong>Tendance poids :</strong> ${calcWeightTrend()}<br>🕐 <strong>Phase actuelle :</strong> ${PHASES[S.currentPhase]?.title||'—'}<br>${ctx.lastW?`📉 <strong>Dernier poids :</strong> ${ctx.lastW} kg<br>`:''}<br>💡 <strong>Conseil personnalisé :</strong><br>${getRandConseil(ctx.phase)}`;
-  addMsg(r,'assistant');
-}
-
-// ─── SEARCH ───
-async function doSearch(){
-  const inp=document.getElementById('ai-input');
-  const msgs=document.getElementById('chat-msgs');
-  const q=inp?.value.trim();if(!q||!msgs)return;
-  addMsg(q,'user');inp.value='';
-  const ldId='ld'+Date.now();
-  const ld=document.createElement('div');
-  ld.id=ldId;ld.style.cssText='display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--slate-light);border-radius:18px;align-self:flex-start;font-size:0.85rem;color:var(--slate);width:fit-content;';
-  ld.innerHTML='<div class="search-spinner"></div> Recherche en cours...';
-  msgs.appendChild(ld);scrollChat();
-  try{
-    const r=isFood(q)?await searchOFF(q):await searchWiki(q);
-    document.getElementById(ldId)?.remove();
-    displayResult(r);
-  }catch(e){
-    document.getElementById(ldId)?.remove();
-    addMsg('❌ Erreur de recherche. Vérifiez votre connexion ou reformulez.','assistant');
-  }
-}
-
-function isFood(q){
-  return ['pomme','banane','poulet','riz','pâtes','poisson','viande','avocat','saumon','amande','chocolat','tomate','carotte','salade','oeuf','ail','oignon'].some(k=>q.toLowerCase().includes(k))||q.length<10;
-}
-
-async function searchOFF(q){
-  const r=await fetch(`https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}&search_simple=1&action=process&json=1&page_size=1`);
-  if(!r.ok)throw new Error('OFF error');
-  const d=await r.json();
-  if(!d.products?.length)throw new Error('No results');
-  const p=d.products[0];
-  return{type:'food',title:p.product_name||q,brand:p.brands||'',nutrition:{calories:p.nutriments?.energy_kcal_100g||'N/A',proteins:p.nutriments?.proteins_100g||'N/A',carbs:p.nutriments?.carbohydrates_100g||'N/A',fat:p.nutriments?.fat_100g||'N/A',fiber:p.nutriments?.fiber_100g||'N/A'},source:'Open Food Facts'};
-}
-
-async function searchWiki(q){
-  const r=await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(q)}`);
-  if(r.ok){const d=await r.json();return{type:'wiki',title:d.title,extract:d.extract,url:d.content_urls?.desktop?.page,thumb:d.thumbnail?.source,source:'Wikipedia'};}
-  const sr=await fetch(`https://fr.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(q)}&format=json&origin=*`);
-  const sd=await sr.json();
-  if(!sd.query?.search?.length)throw new Error('No wiki');
-  const t=sd.query.search[0].title;
-  const pr=await fetch(`https://fr.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(t)}`);
-  const pd=await pr.json();
-  return{type:'wiki',title:pd.title,extract:pd.extract,url:pd.content_urls?.desktop?.page,thumb:pd.thumbnail?.source,source:'Wikipedia'};
-}
-
-function displayResult(r){
-  const c=document.getElementById('chat-msgs');if(!c)return;
-  const div=document.createElement('div');
-  div.className='msg search-result';
-  const ts=Fmt.time(new Date());
-  if(r.type==='food'){
-    const adv=r.nutrition.calories>400?'Aliment calorique, à consommer avec modération.':r.nutrition.proteins>15?'Excellent en protéines, idéal pour casser le jeûne !':'Faible en glucides, parfait pour une alimentation low-carb.';
-    div.innerHTML=`<div class="search-title">🍽️ ${esc(r.title)}</div><div>${r.brand?`<strong>${esc(r.brand)}</strong><br>`:''}<div class="nutrition-facts"><div class="nutr-row"><span>Calories</span><strong>${r.nutrition.calories} kcal/100g</strong></div><div class="nutr-row"><span>Protéines</span><strong>${r.nutrition.proteins}g</strong></div><div class="nutr-row"><span>Glucides</span><strong>${r.nutrition.carbs}g</strong></div><div class="nutr-row"><span>Lipides</span><strong>${r.nutrition.fat}g</strong></div></div><p style="margin-top:8px;font-size:0.78rem;color:var(--ink-60);">💡 ${adv}</p></div><div class="search-meta"><span>📊 ${r.source}</span><span>🕒 ${ts}</span></div>`;
-  }else{
-    div.innerHTML=`<div class="search-title">📖 ${esc(r.title)}</div><div><p style="font-size:0.82rem;line-height:1.5;">${esc(r.extract||'')}</p>${r.url?`<a href="${r.url}" target="_blank" rel="noopener" style="color:var(--slate);display:inline-block;margin-top:8px;font-weight:700;font-size:0.8rem;">Lire sur Wikipedia →</a>`:''}</div><div class="search-meta"><span>🌐 ${r.source}</span><span>🕒 ${ts}</span></div>`;
-  }
-  c.appendChild(div);scrollChat();
-  addLog('RECHERCHE',r.title,'search');
-}
-
-function searchFood(f){const inp=document.getElementById('ai-input');if(inp){inp.value=f;doSearch();}}
 
 // ─── UTILS ───
 function esc(t){if(!t)return'';const d=document.createElement('div');d.textContent=t;return d.innerHTML;}
-function showToast(text,success=false){
-  const t=document.getElementById('sync-toast');
-  const ic=document.getElementById('toast-icon');
-  const tx=document.getElementById('toast-text');
-  if(!t)return;
-  t.classList.add('show');
-  if(ic)ic.textContent=success?'✅':'🔄';
-  if(tx)tx.textContent=text;
-  if(success)setTimeout(()=>t.classList.remove('show'),2800);
-}
 
 // ─── BOOT ───
-if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',init);}else{init();}
-window.HichamApp={S,K,Store,Fmt,calcElapsed,updatePhaseUI};
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
+else init();
+
+window.HichamApp={S,K,DB,F,calcElapsed,updatePhaseUI,PHASES,FAST_DURATION};
 </script>
 </body>
 </html>
