@@ -525,143 +525,219 @@ input[type=password]{letter-spacing:.1em;}
 
 <!-- ══════════════════════ VUE PHASES ══════════════════════ -->
 <main class="view" id="view-stats">
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.65rem;font-weight:700;flex-shrink:0;">Votre Jeûne 18:6</div>
-  <div class="stat-grid">
-    <div class="stat-card"><div class="sv" id="sv-fasts">0</div><div class="sl">Jeûnes réalisés</div></div>
-    <div class="stat-card"><div class="sv" id="sv-weight">--</div><div class="sl">Dernier poids</div></div>
-    <div class="stat-card"><div class="sv" id="sv-streak">0</div><div class="sl">Jours consécutifs</div></div>
-    <div class="stat-card"><div class="sv" id="sv-best">--</div><div class="sl">Meilleur jeûne</div></div>
-  </div>
-  <div class="chart-card"><canvas id="weightChart"></canvas></div>
-  <button class="btn btn-amber btn-full" onclick="openDrawer('poids')">⚖️ Enregistrer mon poids</button>
 
-  <!-- ═══ TABLEAU HEBDOMADAIRE POIDS ═══ -->
-  <div class="weight-section">
-    <!-- En-tête -->
-    <div class="ws-header">
-      <span class="ws-title">📊 Suivi Hebdomadaire du Poids</span>
-      <div class="ws-actions">
-        <button class="ws-btn ws-btn-exp" onclick="exportWeightCSV()" title="Exporter CSV">⬇️ CSV</button>
-        <button class="ws-btn ws-btn-add" onclick="toggleWeightForm()">+ Ajouter</button>
+  <!-- Titre -->
+  <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;flex-shrink:0;color:var(--ink);">Votre Jeûne 18:6</h2>
+
+  <!-- Stats rapides -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;flex-shrink:0;">
+    <div style="background:#fff;padding:13px;border-radius:16px;border:1px solid rgba(42,37,32,.08);box-shadow:0 2px 20px rgba(42,37,32,.07);">
+      <div id="sv-fasts" style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--ink);">0</div>
+      <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:rgba(42,37,32,.6);margin-top:2px;">Jeûnes réalisés</div>
+    </div>
+    <div style="background:#fff;padding:13px;border-radius:16px;border:1px solid rgba(42,37,32,.08);box-shadow:0 2px 20px rgba(42,37,32,.07);">
+      <div id="sv-weight" style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--ink);">--</div>
+      <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:rgba(42,37,32,.6);margin-top:2px;">Dernier poids</div>
+    </div>
+    <div style="background:#fff;padding:13px;border-radius:16px;border:1px solid rgba(42,37,32,.08);box-shadow:0 2px 20px rgba(42,37,32,.07);">
+      <div id="sv-streak" style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--ink);">0</div>
+      <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:rgba(42,37,32,.6);margin-top:2px;">Jours consécutifs</div>
+    </div>
+    <div style="background:#fff;padding:13px;border-radius:16px;border:1px solid rgba(42,37,32,.08);box-shadow:0 2px 20px rgba(42,37,32,.07);">
+      <div id="sv-best" style="font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--ink);">--</div>
+      <div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:rgba(42,37,32,.6);margin-top:2px;">Meilleur jeûne</div>
+    </div>
+  </div>
+
+  <!-- Graphique -->
+  <div style="background:#fff;padding:16px;border-radius:22px;height:220px;box-shadow:0 2px 20px rgba(42,37,32,.07);border:1px solid rgba(42,37,32,.08);flex-shrink:0;display:block;">
+    <canvas id="weightChart"></canvas>
+  </div>
+
+  <!-- ══════════════ TABLEAU POIDS ══════════════ -->
+  <div style="background:#fff;border-radius:22px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+
+    <!-- En-tête avec bouton ajouter -->
+    <div style="padding:14px 16px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;justify-content:space-between;align-items:center;background:#fff;">
+      <span style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;color:var(--ink);">📊 Suivi Hebdomadaire du Poids</span>
+      <div style="display:flex;gap:7px;">
+        <button onclick="exportWeightCSV()" style="height:32px;padding:0 11px;border-radius:9px;border:1px solid rgba(42,37,32,.1);background:#F2EDE4;color:rgba(42,37,32,.6);font-size:.72rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">⬇️ CSV</button>
+        <button onclick="toggleWeightForm()" style="height:32px;padding:0 14px;border-radius:9px;border:none;background:#C8803A;color:#fff;font-size:.78rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;">+ Ajouter</button>
       </div>
     </div>
-    <!-- Formulaire saisie rapide -->
-    <div class="ws-quick-form" id="ws-quick-form">
-      <div class="ws-field">
-        <label>Date</label>
-        <input type="date" id="wt-date-inp">
+
+    <!-- Formulaire saisie (caché par défaut) -->
+    <div id="ws-quick-form" style="display:none;padding:12px 14px;background:#FDF0DC;border-bottom:1px solid rgba(200,128,58,.15);">
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:90px;">
+          <label style="font-size:.62rem;font-weight:800;color:rgba(42,37,32,.6);text-transform:uppercase;letter-spacing:.05em;">Date</label>
+          <input type="date" id="wt-date-inp" style="background:#fff;border:1.5px solid rgba(200,128,58,.3);padding:9px 10px;border-radius:10px;font-size:.88rem;font-weight:700;color:#2A2520;font-family:'Nunito',sans-serif;margin:0;width:100%;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:80px;">
+          <label style="font-size:.62rem;font-weight:800;color:rgba(42,37,32,.6);text-transform:uppercase;letter-spacing:.05em;">Poids (kg)</label>
+          <input type="number" id="wt-poids-inp" step="0.1" min="30" max="300" placeholder="72.5" inputmode="decimal" style="background:#fff;border:1.5px solid rgba(200,128,58,.3);padding:9px 10px;border-radius:10px;font-size:.88rem;font-weight:700;color:#2A2520;font-family:'Nunito',sans-serif;margin:0;width:100%;">
+        </div>
+        <div style="display:flex;flex-direction:column;gap:3px;flex:1;min-width:75px;">
+          <label style="font-size:.62rem;font-weight:800;color:rgba(42,37,32,.6);text-transform:uppercase;letter-spacing:.05em;">Taille (cm)</label>
+          <input type="number" id="wt-height-inp" step="1" min="100" max="250" placeholder="175" inputmode="numeric" style="background:#fff;border:1.5px solid rgba(200,128,58,.3);padding:9px 10px;border-radius:10px;font-size:.88rem;font-weight:700;color:#2A2520;font-family:'Nunito',sans-serif;margin:0;width:100%;">
+        </div>
+        <button onclick="saveWeightManual()" style="height:42px;padding:0 16px;border-radius:11px;background:#C8803A;color:#fff;border:none;font-weight:800;font-size:.85rem;cursor:pointer;font-family:'Nunito',sans-serif;white-space:nowrap;flex-shrink:0;">✓ Valider</button>
       </div>
-      <div class="ws-field" style="max-width:110px;">
-        <label>Poids (kg)</label>
-        <input type="number" id="wt-poids-inp" step="0.1" min="30" max="300" placeholder="72.5" inputmode="decimal">
-      </div>
-      <div class="ws-field" style="max-width:110px;">
-        <label>Taille (cm)</label>
-        <input type="number" id="wt-height-inp" step="1" min="100" max="250" placeholder="175" inputmode="numeric">
-      </div>
-      <button class="ws-confirm" onclick="saveWeightManual()">✓ Valider</button>
     </div>
-    <!-- Tableau -->
-    <div class="ws-table-wrap">
-      <table class="ws-table">
+
+    <!-- Tableau des pesées -->
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch;">
+      <table style="width:100%;border-collapse:collapse;font-size:.8rem;">
         <thead>
-          <tr>
-            <th>Semaine</th>
-            <th>Date</th>
-            <th>Poids</th>
-            <th>Évolution</th>
-            <th>Tendance</th>
-            <th>IMC</th>
-            <th></th>
+          <tr style="background:#F2EDE4;">
+            <th style="padding:9px 10px;text-align:left;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:rgba(42,37,32,.6);white-space:nowrap;">Semaine</th>
+            <th style="padding:9px 10px;text-align:left;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:rgba(42,37,32,.6);white-space:nowrap;">Date</th>
+            <th style="padding:9px 10px;text-align:left;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:rgba(42,37,32,.6);">Poids</th>
+            <th style="padding:9px 10px;text-align:left;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:rgba(42,37,32,.6);">Évolution</th>
+            <th style="padding:9px 10px;text-align:center;font-size:.62rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:rgba(42,37,32,.6);">IMC</th>
+            <th style="padding:9px 6px;"></th>
           </tr>
         </thead>
         <tbody id="wt-tbody">
-          <tr><td colspan="7"><div class="ws-empty"><div class="ei">⚖️</div><p>Aucune pesée enregistrée</p></div></td></tr>
+          <tr><td colspan="6" style="padding:28px;text-align:center;color:rgba(42,37,32,.5);font-size:.82rem;">
+            <div style="font-size:2rem;margin-bottom:8px;opacity:.3;">⚖️</div>
+            <div>Cliquez sur <strong style="color:#C8803A;">+ Ajouter</strong> pour saisir votre première pesée</div>
+          </td></tr>
         </tbody>
       </table>
     </div>
-    <!-- Récap stats en bas -->
-    <div class="ws-footer" id="wt-footer" style="display:none;">
-      <span>Total pesées : <strong id="wt-count">0</strong></span>
-      <span>Perte/gain : <strong id="wt-total-delta">--</strong></span>
-      <span>Moyenne : <strong id="wt-avg">--</strong> kg</span>
+
+    <!-- Récap footer -->
+    <div id="wt-footer" style="display:none;padding:10px 14px;background:#F2EDE4;border-top:1px solid rgba(42,37,32,.06);font-size:.72rem;color:rgba(42,37,32,.6);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
+      <span>Pesées : <strong id="wt-count" style="color:#2A2520;">0</strong></span>
+      <span>Total : <strong id="wt-total-delta" style="color:#2A2520;">--</strong></span>
+      <span>Moy. : <strong id="wt-avg" style="color:#2A2520;">--</strong> kg</span>
     </div>
   </div>
 
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex-shrink:0;">Les 8 Phases Métaboliques</div>
+  <!-- Bouton enregistrer poids rapide -->
+  <div style="flex-shrink:0;display:block;">
+    <button onclick="openDrawer('poids')" style="width:100%;height:60px;border-radius:19px;border:none;font-weight:800;font-size:.9rem;cursor:pointer;font-family:'Nunito',sans-serif;background:linear-gradient(135deg,#C8803A,#C26B4A);color:#fff;box-shadow:0 4px 16px rgba(200,128,58,.3);display:flex;align-items:center;justify-content:center;gap:8px;">
+      ⚖️ Pesée rapide (aujourd'hui)
+    </button>
+  </div>
 
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--amber-soft);">🍽️</div><div><div class="psh-title">Absorption & Digestion</div><div class="psh-sub" style="color:var(--amber);">0 — 2 heures</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt"><strong>Pic insulinique :</strong> l'insuline monte pour stocker le glucose dans les muscles et le foie.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt"><strong>Glycogène rechargé :</strong> les réserves d'énergie rapide se reconstituent complètement.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt">Conseil : protéines + fibres pour ralentir l'absorption et prolonger la satiété.</div></div>
+  <!-- 8 Phases -->
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:700;flex-shrink:0;color:var(--ink);">Les 8 Phases Métaboliques</h3>
+
+  <!-- Phase 1 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#FDF0DC;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">🍽️</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Absorption & Digestion</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#C8803A;">0 — 2 heures</div></div>
     </div>
-  </div>
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--amber-soft);">📉</div><div><div class="psh-title">Chute de l'Insuline</div><div class="psh-sub" style="color:var(--amber);">2 — 4 heures</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt"><strong>Glucagon monte :</strong> hormone antagoniste, signal de mobilisation énergétique.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--amber)"></div><div class="psh-txt">Légère faim possible — buvez de l'eau ou du thé vert, elle passe en 20 min.</div></div>
-    </div>
-  </div>
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--sage-light);">🔥</div><div><div class="psh-title">Combustion des Graisses</div><div class="psh-sub" style="color:var(--sage);">4 — 8 heures</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt"><strong>Lipolyse déclenchée :</strong> les triglycérides stockés sont libérés dans le sang.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt"><strong>β-oxydation :</strong> conversion des acides gras en énergie mitochondriale.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt">Clarté mentale en hausse. Excellent moment pour le travail cognitif.</div></div>
-    </div>
-  </div>
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--sage-light);">⚡</div><div><div class="psh-title">Cétose Légère</div><div class="psh-sub" style="color:var(--sage);">8 — 12 heures</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt"><strong>Corps cétoniques (BHB) :</strong> le foie produit du carburant premium pour le cerveau.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--sage)"></div><div class="psh-txt">Énergie stable, pas de crash. Exercice modéré à jeun optimal maintenant.</div></div>
-    </div>
-  </div>
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--slate-light);">🧬</div><div><div class="psh-title">Cétose Profonde & BDNF</div><div class="psh-sub" style="color:var(--slate);">12 — 15 heures</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt"><strong>BDNF élevé :</strong> hormone de croissance du cerveau. Mémoire et neuroprotection.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt"><strong>Insulino-sensibilité maximale :</strong> prévention naturelle du diabète de type 2.</div></div>
-    </div>
-  </div>
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--slate-light);">🛡️</div><div><div class="psh-title">Anti-Inflammatoire</div><div class="psh-sub" style="color:var(--slate);">15 — 17 heures</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt"><strong>IL-6 & TNF-α en baisse :</strong> marqueurs inflammatoires chroniques qui diminuent.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--slate)"></div><div class="psh-txt">Bénéfique pour douleurs chroniques, arthrite, maladies auto-immunes.</div></div>
-    </div>
-  </div>
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--violet-light);">✨</div><div><div class="psh-title">Autophagie — Régénération</div><div class="psh-sub" style="color:var(--violet);">17 — 18 heures</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--violet)"></div><div class="psh-txt"><strong>Autophagie activée</strong> (Prix Nobel 2016). Les cellules recyclent leurs composants endommagés.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--violet)"></div><div class="psh-txt"><strong>Mitophagie :</strong> renouvellement des mitochondries pour plus d'énergie cellulaire.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--violet)"></div><div class="psh-txt">Prévention Alzheimer, Parkinson, cancers. C'est l'objectif du 18:6 !</div></div>
-    </div>
-  </div>
-  <div class="phase-sheet">
-    <div class="psh-head"><div class="psh-icon" style="background:var(--gold-light);">👑</div><div><div class="psh-title">Pic Hormones de Croissance</div><div class="psh-sub" style="color:var(--gold);">18h — OBJECTIF ATTEINT</div></div></div>
-    <div class="psh-body">
-      <div class="psh-row"><div class="psh-dot" style="background:var(--gold)"></div><div class="psh-txt"><strong>GH x2000% :</strong> Growth Hormone au maximum — préservation musculaire et lipolyse accélérée.</div></div>
-      <div class="psh-row"><div class="psh-dot" style="background:var(--gold)"></div><div class="psh-txt"><strong>Casser le jeûne idéal :</strong> œufs, poisson, fromage blanc. Évitez les glucides rapides.</div></div>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#C8803A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Pic insulinique :</strong> l'insuline monte et stocke le glucose dans les muscles et le foie.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#C8803A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Glycogène rechargé :</strong> les réserves d'énergie rapide se reconstituent complètement.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#C8803A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;">Conseil : protéines + fibres pour ralentir l'absorption et prolonger la satiété.</div></div>
     </div>
   </div>
 
-  <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;flex-shrink:0;">Paramètres</div>
-  <div class="settings-card">
-    <div class="set-row">
-      <div><div class="set-lbl">Début auto du jeûne</div><div class="set-desc">Heure de référence</div></div>
-      <input type="time" id="fast-start-time" value="20:00" style="width:auto;margin:0;" onchange="saveSettings()">
+  <!-- Phase 2 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#FDF0DC;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">📉</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Chute de l'Insuline</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#C8803A;">2 — 4 heures</div></div>
     </div>
-    <div class="set-row">
-      <div><div class="set-lbl">Protocole</div><div class="set-desc">18h jeûne · 6h fenêtre alimentaire</div></div>
-      <span style="font-weight:800;color:var(--amber);font-size:.88rem;">18:6 ✓</span>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#C8803A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Glucagon monte :</strong> hormone antagoniste de l'insuline, signal de libération d'énergie.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#C8803A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;">Légère faim passagère normale — eau ou thé vert, elle passe en 20 min.</div></div>
     </div>
   </div>
-</main>
+
+  <!-- Phase 3 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#E4EDE4;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">🔥</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Combustion des Graisses</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#6A8C6A;">4 — 8 heures</div></div>
+    </div>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#6A8C6A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Lipolyse déclenchée :</strong> les triglycérides stockés sont libérés dans le sang comme carburant.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#6A8C6A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">β-oxydation :</strong> conversion des acides gras en énergie dans les mitochondries.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#6A8C6A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;">Clarté mentale en hausse. Excellent moment pour le travail cognitif.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 4 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#E4EDE4;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">⚡</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Cétose Légère</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#6A8C6A;">8 — 12 heures</div></div>
+    </div>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#6A8C6A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Corps cétoniques (BHB) :</strong> le foie produit du carburant premium pour le cerveau.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#6A8C6A;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;">Énergie stable, pas de crash. Exercice modéré à jeun optimal maintenant.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 5 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#EBF0FA;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">🧬</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Cétose Profonde & BDNF</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#7B8CAE;">12 — 15 heures</div></div>
+    </div>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#7B8CAE;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">BDNF élevé :</strong> hormone de croissance du cerveau. Mémoire et neuroprotection.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#7B8CAE;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Insulino-sensibilité maximale :</strong> prévention naturelle du diabète de type 2.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 6 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#EBF0FA;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">🛡️</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Anti-Inflammatoire</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#7B8CAE;">15 — 17 heures</div></div>
+    </div>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#7B8CAE;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">IL-6 & TNF-α en baisse :</strong> marqueurs inflammatoires chroniques qui diminuent.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#7B8CAE;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;">Bénéfique pour douleurs chroniques, arthrite, maladies auto-immunes.</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 7 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#F0EAFB;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">✨</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Autophagie — Régénération</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#8A6DAE;">17 — 18 heures</div></div>
+    </div>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#8A6DAE;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Autophagie activée</strong> (Prix Nobel 2016). Les cellules recyclent leurs composants endommagés.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#8A6DAE;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Mitophagie :</strong> renouvellement des mitochondries pour plus d'énergie cellulaire.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#8A6DAE;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;">Prévention Alzheimer, Parkinson, cancers. C'est l'objectif du 18:6 !</div></div>
+    </div>
+  </div>
+
+  <!-- Phase 8 -->
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);display:flex;align-items:center;gap:11px;">
+      <div style="width:44px;height:44px;border-radius:13px;background:#FBF4DC;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0;">👑</div>
+      <div><div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">Pic Hormones de Croissance</div><div style="font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em;margin-top:2px;color:#D4A830;">18h — OBJECTIF !</div></div>
+    </div>
+    <div style="padding:10px 14px;">
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;border-bottom:1px solid rgba(42,37,32,.04);"><div style="width:6px;height:6px;border-radius:50%;background:#D4A830;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">GH x2000% :</strong> Growth Hormone au maximum — préservation musculaire et lipolyse accélérée.</div></div>
+      <div style="display:flex;align-items:flex-start;gap:9px;padding:6px 0;"><div style="width:6px;height:6px;border-radius:50%;background:#D4A830;flex-shrink:0;margin-top:5px;"></div><div style="font-size:.77rem;color:rgba(42,37,32,.6);line-height:1.45;"><strong style="color:#2A2520;">Casser le jeûne :</strong> oeufs, poisson, fromage blanc. Évitez les glucides rapides.</div></div>
+    </div>
+  </div>
+
+  <!-- Paramètres -->
+  <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;flex-shrink:0;color:var(--ink);">Paramètres</h3>
+  <div style="background:#fff;border-radius:20px;border:1px solid rgba(42,37,32,.08);overflow:hidden;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;display:block;">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 14px;border-bottom:1px solid rgba(42,37,32,.06);">
+      <div><div style="font-weight:800;font-size:.84rem;color:#2A2520;">Début auto du jeûne</div><div style="font-size:.68rem;color:rgba(42,37,32,.6);margin-top:2px;">Heure de référence</div></div>
+      <input type="time" id="fast-start-time" value="20:00" style="background:#F2EDE4;border:none;padding:8px 10px;border-radius:9px;font-size:.9rem;font-weight:700;color:#2A2520;font-family:'Nunito',sans-serif;margin:0;width:auto;" onchange="saveSettings()">
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:13px 14px;">
+      <div><div style="font-weight:800;font-size:.84rem;color:#2A2520;">Protocole</div><div style="font-size:.68rem;color:rgba(42,37,32,.6);margin-top:2px;">18h jeûne · 6h fenêtre alimentaire</div></div>
+      <span style="font-weight:800;color:#C8803A;font-size:.88rem;">18:6 ✓</span>
+    </div>
+  </div>
+
+</main></main>
 
 <!-- ══════════════════════ VUE HISTORIQUE ══════════════════════ -->
 <main class="view" id="view-history">
