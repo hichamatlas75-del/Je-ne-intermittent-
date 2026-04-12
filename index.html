@@ -360,6 +360,41 @@ input[type=password]{letter-spacing:.1em;}
 .bmi-tag.obese{background:rgba(201,64,64,.1);color:var(--danger);}
 .ws-footer{padding:10px 14px;background:var(--cream-deep);border-top:1px solid var(--ink-10);font-size:.72rem;color:var(--ink-60);display:flex;justify-content:space-between;align-items:center;}
 .ws-footer strong{color:var(--ink);}
+/* ── WATER TRACKER ── */
+.water-card{background:linear-gradient(135deg,#E8F4FD,#F0F8FF);border:1.5px solid rgba(74,144,226,.18);padding:16px;border-radius:24px;flex-shrink:0;}
+.water-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
+.water-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
+.water-count{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:#4A90E2;}
+.water-glasses{display:flex;gap:6px;flex-wrap:wrap;}
+.glass-btn{width:38px;height:38px;border-radius:10px;border:2px solid rgba(74,144,226,.25);background:#fff;font-size:1.1rem;cursor:pointer;transition:all .2s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;justify-content:center;}
+.glass-btn.filled{background:#4A90E2;border-color:#4A90E2;transform:scale(1.06);}
+.glass-btn:active{transform:scale(.9);}
+.water-goal-txt{font-size:.7rem;color:rgba(42,37,32,.5);margin-top:8px;font-weight:700;text-align:center;}
+/* ── STEPS ── */
+.steps-card{background:linear-gradient(135deg,#E8F8EE,#F0FAF4);border:1.5px solid rgba(106,140,106,.18);padding:16px;border-radius:24px;flex-shrink:0;}
+.steps-row{display:flex;justify-content:space-between;align-items:center;}
+.steps-info h3{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:700;}
+.steps-info p{font-size:.72rem;color:rgba(42,37,32,.6);margin-top:2px;}
+.steps-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:#6A8C6A;line-height:1;}
+.steps-target{font-size:.65rem;color:rgba(106,140,106,.7);font-weight:700;}
+.steps-bar{height:5px;background:rgba(106,140,106,.15);border-radius:10px;margin-top:10px;overflow:hidden;}
+.steps-bar-fill{height:100%;background:linear-gradient(90deg,#6A8C6A,#8FBC8F);border-radius:10px;transition:width .5s ease;}
+.btn-steps-edit{height:36px;padding:0 13px;border-radius:11px;background:#fff;border:1.5px solid rgba(106,140,106,.2);color:#6A8C6A;font-size:.78rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
+/* ── AUTOPHAGY FLAME ── */
+.autophagy-banner{background:linear-gradient(135deg,var(--violet-light),#F8F0FF);border:2px solid rgba(138,109,174,.3);padding:14px 16px;border-radius:20px;display:flex;align-items:center;gap:12px;flex-shrink:0;animation:popIn .5s cubic-bezier(.34,1.56,.64,1);}
+.flame-anim{font-size:2rem;animation:flameWave 1.2s ease-in-out infinite alternate;flex-shrink:0;}
+@keyframes flameWave{from{transform:scale(1) rotate(-3deg);}to{transform:scale(1.15) rotate(3deg);}}
+.autophagy-txt h4{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:var(--violet);margin-bottom:2px;}
+.autophagy-txt p{font-size:.75rem;color:rgba(42,37,32,.6);line-height:1.4;}
+.autophagy-pct{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:700;color:var(--violet);margin-left:auto;flex-shrink:0;}
+/* ── CHEAT DAY ── */
+.cheat-banner{background:linear-gradient(135deg,var(--gold-light),#FFF8E0);border:2px solid rgba(212,168,48,.3);padding:12px 14px;border-radius:16px;display:flex;align-items:center;gap:10px;flex-shrink:0;}
+.cheat-banner p{font-size:.8rem;color:rgba(42,37,32,.6);flex:1;line-height:1.4;}
+.cheat-banner strong{color:var(--gold);}
+.btn-end-cheat{height:34px;padding:0 12px;border-radius:9px;background:var(--gold);color:#fff;border:none;font-size:.75rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;flex-shrink:0;}
+/* ── MILESTONE BANNER ── */
+.notif-milestone{position:fixed;top:0;left:0;right:0;background:linear-gradient(135deg,var(--violet),#B09ACE);color:#fff;padding:max(14px,env(safe-area-inset-top)) 20px 14px;text-align:center;font-weight:800;font-size:.9rem;z-index:2000;transform:translateY(-100%);transition:transform .4s cubic-bezier(.34,1.56,.64,1);}
+.notif-milestone.show{transform:translateY(0);}
 .nav{position:fixed;bottom:0;left:0;right:0;background:rgba(250,247,242,.97);display:flex;justify-content:space-around;padding:8px 0;padding-bottom:max(8px,env(safe-area-inset-bottom));border-top:1px solid var(--ink-10);z-index:500;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);}
 .ni{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--ink-30);cursor:pointer;padding:5px 12px;border-radius:13px;flex:1;transition:all .18s;user-select:none;}
 .ni-ic{font-size:1.2rem;} .ni-lb{font-size:.57rem;font-weight:800;text-transform:uppercase;letter-spacing:.07em;}
@@ -497,6 +532,23 @@ input[type=password]{letter-spacing:.1em;}
     </div>
   </div>
 
+  <!-- AUTOPHAGY FLAME (visible > 16h seulement) -->
+  <div id="autophagy-banner" class="autophagy-banner hidden">
+    <div class="flame-anim">🔥</div>
+    <div class="autophagy-txt">
+      <h4>Autophagie Active ✨</h4>
+      <p>Nettoyage cellulaire en cours. Mode anti-âge activé. Vous êtes dans la zone !</p>
+    </div>
+    <div class="autophagy-pct" id="autophagy-pct">0%</div>
+  </div>
+
+  <!-- CHEAT DAY BANNER (visible si cheat day actif) -->
+  <div id="cheat-banner" class="cheat-banner hidden">
+    <div style="font-size:1.5rem;flex-shrink:0;">🌴</div>
+    <p><strong>Jour d'exception actif</strong><br>Votre série n'est pas interrompue.</p>
+    <button class="btn-end-cheat" onclick="endCheatDay()">Terminer</button>
+  </div>
+
   <!-- SLEEP CARD -->
   <div class="sleep-card">
     <div class="sc-top">
@@ -506,9 +558,50 @@ input[type=password]{letter-spacing:.1em;}
       </div>
       <button class="btn-sleep" onclick="toggleSleep()" id="sleep-btn">🛌 Se coucher</button>
     </div>
-    <!-- bouton saisie manuelle -->
     <div class="sc-btns">
       <button class="btn-sleep add-manual" onclick="openDrawer('sleep-manual')">✏️ Ajouter manuellement</button>
+      <button class="btn-sleep add-manual" onclick="startCheatDay()" id="cheat-day-btn" style="color:var(--gold);border-color:rgba(212,168,48,.25);background:var(--gold-light);">🌴 Jour d'exception</button>
+    </div>
+  </div>
+
+  <!-- WATER TRACKER -->
+  <div class="water-card">
+    <div class="water-top">
+      <span class="water-title">💧 Hydratation</span>
+      <span class="water-count"><span id="water-drunk">0</span>/8 verres</span>
+    </div>
+    <div class="water-glasses" id="water-glasses"></div>
+    <div class="water-goal-txt" id="water-goal-txt">Objectif : 8 verres · 2L d'eau par jour</div>
+  </div>
+
+  <!-- STEPS TRACKER -->
+  <div class="steps-card">
+    <div class="steps-row">
+      <div class="steps-info">
+        <h3>🦶 Pas du jour</h3>
+        <p id="steps-sub">Objectif : 10 000 pas</p>
+      </div>
+      <div style="text-align:right;">
+        <div class="steps-num" id="steps-count">0</div>
+        <div class="steps-target" id="steps-pct-lbl">0%</div>
+      </div>
+    </div>
+    <div class="steps-bar"><div class="steps-bar-fill" id="steps-bar-fill" style="width:0%"></div></div>
+    <div style="display:flex;gap:7px;margin-top:10px;">
+      <button class="btn-steps-edit" onclick="openDrawer('steps')" style="flex:1;">✏️ Saisir manuellement</button>
+      <button class="btn-steps-edit" onclick="requestPedometer()" style="flex:1;color:var(--slate);border-color:rgba(123,140,174,.2);">📱 Auto (capteur)</button>
+    </div>
+  </div>
+
+  <!-- IMC LIVE -->
+  <div id="imc-live-card" style="background:#fff;border-radius:18px;border:1px solid rgba(42,37,32,.08);padding:14px 16px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 2px 20px rgba(42,37,32,.07);flex-shrink:0;">
+    <div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:700;color:#2A2520;">📊 Indice de Masse Corporelle</div>
+      <div style="font-size:.72rem;color:rgba(42,37,32,.6);margin-top:2px;">Taille fixe : 182 cm</div>
+    </div>
+    <div style="text-align:right;">
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--violet);" id="imc-val">--</div>
+      <div style="font-size:.68rem;font-weight:800;margin-top:1px;" id="imc-tag-live">Saisissez un poids</div>
     </div>
   </div>
 
@@ -791,6 +884,22 @@ input[type=password]{letter-spacing:.1em;}
   <button class="ni" id="nav-history" onclick="switchTab('history')"><span class="ni-ic">📜</span><span class="ni-lb">Historique</span></button>
 </nav>
 
+<!-- MILESTONE BANNER (top notification) -->
+<div class="notif-milestone" id="notif-milestone"></div>
+
+<!-- DRAWER STEPS -->
+<div class="drawer" id="drawer-steps">
+  <div class="handle" onclick="closeDrawers()"></div>
+  <div class="dr-title">Saisir mes pas</div>
+  <div class="adj-info">Entrez le nombre de pas effectués aujourd'hui. La barre de progression se mettra à jour automatiquement.</div>
+  <div class="inp-lbl">Nombre de pas</div>
+  <input type="number" id="steps-input" min="0" max="99999" step="100" placeholder="8500" inputmode="numeric">
+  <div class="inp-lbl">Objectif journalier</div>
+  <input type="number" id="steps-goal-input" min="1000" max="50000" step="500" placeholder="10000" inputmode="numeric">
+  <button class="btn btn-start btn-full" onclick="saveSteps()">Enregistrer</button>
+  <button class="btn btn-ghost btn-full" onclick="closeDrawers()">Annuler</button>
+</div>
+
 <div class="overlay" id="overlay" onclick="closeDrawers()"></div>
 <div class="toast" id="toast"><span id="t-ic">✅</span><span id="t-tx"></span></div>
 
@@ -911,7 +1020,11 @@ const K = {
   DBX_ACCESS:   'HICHAM_DBX_ACCESS_v4',   // Access token (cache ~4h)
   DBX_EXPIRES:  'HICHAM_DBX_EXPIRES_v4',  // Expiry timestamp
   GEM:'HICHAM_GEMINI_KEY_v4', BEST:'HICHAM_BEST_FAST_v4',
-  SYNC_TS:'HICHAM_LAST_SYNC_v4'
+  SYNC_TS:'HICHAM_LAST_SYNC_v4',
+  WATER:'HICHAM_WATER_v4',       // compteur eau quotidien
+  STEPS:'HICHAM_STEPS_v4',       // pas quotidiens
+  PAUSE:'HICHAM_PAUSE_v4',       // jours d'exception (cheat days)
+  NOTIF:'HICHAM_NOTIF_v4'        // préférences notifications
 };
 
 const FAST_DUR = 18; // 18:6 fixe
@@ -1000,6 +1113,12 @@ function bootApp() {
 
   updateGreeting();
   updateClock();
+  // Check daily reset chaque minute (eau + pas remis à 0 à minuit)
+  setInterval(() => {
+    const h=new Date().getHours(), m=new Date().getMinutes();
+    if(h===0 && m===0) { initWater(); initSteps(); }
+    updateClock();
+  }, 60000);
   setInterval(updateClock, 1000);
 
   if (S.fast.isFasting && S.fast.startTime) startTimer();
@@ -1019,7 +1138,15 @@ function bootApp() {
 
   setAIMode(S.aiMode);
   updateCloudUI();
-  renderWeightTable(); // tableau poids visible dès l'ouverture de l'onglet Phases
+  renderWeightTable();
+  initWater();           // reset compteur eau si nouveau jour
+  initSteps();           // reset pas si nouveau jour
+  updateIMCLive();       // afficher IMC avec dernier poids
+  renderCheatUI();       // afficher bannière cheat day si actif
+  // Demander permission notifications au démarrage (silencieux)
+  if ('Notification' in window && Notification.permission === 'default') {
+    setTimeout(() => Notification.requestPermission(), 3000);
+  }
 }
 
 // ─── UTILS ───
@@ -1103,8 +1230,10 @@ function stopFast() {
   addLog('FIN JEÛNE', `Durée : ${F.h(dur)}`, 'success');
   S.fast = { isFasting:false, startTime:null };
   S.phase = 0;
+  _lastMilestoneH = 0; // reset milestones
   DB.sj(K.FS, S.fast);
   resetUI();
+  updateAutophagyBanner(0); // cacher la bannière
   if(navigator.vibrate) navigator.vibrate([60,120,60]);
   toast(`Bravo ! ${F.h(dur)} accomplis 🏆`, true);
 }
@@ -1155,6 +1284,12 @@ function tick() {
 
   // Phase bar
   updateBar(elH);
+
+  // Autophagy banner (> 16h)
+  updateAutophagyBanner(elH);
+
+  // Phase milestones
+  checkMilestones(elH);
 }
 
 function phaseFromHours(h) {
@@ -1310,7 +1445,7 @@ function saveWeight() {
   $('w-input').value='';
   closeDrawers();
   addLog('POIDS',`${v.toFixed(1)} kg`,'weight');
-  initChart(); updateStats(); renderWeightTable();
+  initChart(); updateStats(); renderWeightTable(); updateIMCLive();
   toast('Poids enregistré ⚖️',true);
 }
 function saveSettings() {
@@ -1341,6 +1476,8 @@ function updateStats() {
   set('sv-weight',S.weights.length?S.weights[S.weights.length-1].v+' kg':'--');
   set('sv-streak',calcStreak());
   set('sv-best',S.bestFast>0?F.h(S.bestFast):'--');
+  // Mise à jour IMC en direct
+  updateIMCLive();
 }
 // ─── TABLEAU POIDS HEBDOMADAIRE ───
 function toggleWeightForm() {
@@ -1406,6 +1543,7 @@ function saveWeightManual() {
   initChart();
   updateStats();
   addLog('POIDS', `${poidsVal.toFixed(1)} kg · ${new Date(dateVal).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`, 'weight');
+  updateIMCLive();
   toast(`Pesée enregistrée : ${poidsVal.toFixed(1)} kg ⚖️`, true);
 }
 
@@ -1416,6 +1554,7 @@ function deleteWeight(idx) {
   renderWeightTable();
   initChart();
   updateStats();
+  updateIMCLive();
   toast('Pesée supprimée', true);
 }
 
@@ -1540,13 +1679,7 @@ function exportWeightCSV() {
   toast('Export CSV téléchargé ⬇️', true);
 }
 
-function calcStreak() {
-  let n=0; const d=new Date(); d.setHours(0,0,0,0);
-  const done=new Set(S.logs.filter(l=>['FIN JEÛNE','OBJECTIF 18H'].includes(l.type)).map(l=>new Date(l.time).toDateString()));
-  const ck=new Date(d);
-  while(done.has(ck.toDateString())){n++;ck.setDate(ck.getDate()-1);}
-  return n;
-}
+function calcStreak() { return calcStreakWithCheat(); }
 
 // ─── LOGS ───
 function addLog(type,desc,cls='') {
@@ -1698,11 +1831,14 @@ async function syncUp() {
   if(btn){btn.textContent='⏳ Sauvegarde…';btn.disabled=true;}
   setSyncBadge('pending','Sauvegarde en cours…');
   const payload = JSON.stringify({
-    version:'4.3', timestamp:new Date().toISOString(),
+    version:'4.4', timestamp:new Date().toISOString(),
     weights:S.weights, logs:S.logs, settings:S.settings,
     fast:S.fast, phase:S.phase, bestFast:S.bestFast,
     checkin:DB.gj(K.CI,null),
-    height:DB.g('HICHAM_HEIGHT_v4', null)   // taille pour calcul IMC
+    height:DB.g('HICHAM_HEIGHT_v4', null),
+    water:DB.gj(K.WATER, null),
+    steps:DB.gj(K.STEPS, null),
+    cheatDays:DB.gj(K.PAUSE, [])
   });
   try {
     const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
@@ -1755,11 +1891,15 @@ async function syncDown() {
     if(typeof data.phase==='number')    S.phase   = data.phase;
     if(typeof data.bestFast==='number') S.bestFast= data.bestFast;
     if(data.checkin) DB.sj(K.CI, data.checkin);
-    if(data.height)  DB.s('HICHAM_HEIGHT_v4', String(data.height)); // restaure la taille
+    if(data.height)  DB.s('HICHAM_HEIGHT_v4', String(data.height));
+    if(data.water)   DB.sj(K.WATER, data.water);
+    if(data.steps)   DB.sj(K.STEPS, data.steps);
+    if(Array.isArray(data.cheatDays)) DB.sj(K.PAUSE, data.cheatDays);
     DB.sj(K.W,S.weights); DB.sj(K.L,S.logs);
     DB.sj(K.SET,S.settings); DB.sj(K.FS,S.fast); DB.sj(K.BEST,S.bestFast);
     if(S.fast.isFasting&&S.fast.startTime){applyPhaseUI();startTimer();}else resetUI();
     updateLogs(); updateFullLogs(); checkCheckin(); updateStats(); renderWeightTable();
+    updateIMCLive(); renderWater(); renderSteps(); renderCheatUI();
     DB.s(K.SYNC_TS, new Date().toISOString());
     updateCloudUI();
     toast('Données restaurées ✅', true);
@@ -2016,11 +2156,310 @@ function showTyping(){
 function removeTyping(){$('typing')?.remove();}
 function scrollChat(){setTimeout(()=>{const c=$('chat-msgs');if(c)c.scrollTop=c.scrollHeight;},80);}
 
-// ─── DRAWERS ───
+// ════════════════════════════════════════════════
+//  WATER TRACKER
+// ════════════════════════════════════════════════
+const WATER_GOAL = 8;
+
+function initWater() {
+  const today = new Date().toDateString();
+  const saved = DB.gj(K.WATER, null);
+  // Reset if new day
+  if (!saved || saved.day !== today) {
+    DB.sj(K.WATER, {day: today, count: 0});
+  }
+  renderWater();
+}
+
+function renderWater() {
+  const today = new Date().toDateString();
+  const saved = DB.gj(K.WATER, {day: today, count: 0});
+  const count = saved.day === today ? saved.count : 0;
+  const wrap = $('water-glasses');
+  const countEl = $('water-drunk');
+  const goalTxt = $('water-goal-txt');
+  if (!wrap) return;
+  if (countEl) countEl.textContent = count;
+
+  let html = '';
+  for (let i = 0; i < WATER_GOAL; i++) {
+    html += `<button class="glass-btn${i < count ? ' filled' : ''}" onclick="setWater(${i+1})" title="Verre ${i+1}">💧</button>`;
+  }
+  wrap.innerHTML = html;
+
+  if (goalTxt) {
+    if (count >= WATER_GOAL) {
+      goalTxt.textContent = '🎉 Objectif atteint ! Excellente hydratation.';
+      goalTxt.style.color = '#6A8C6A';
+    } else {
+      goalTxt.textContent = `${WATER_GOAL - count} verre${WATER_GOAL - count > 1 ? 's' : ''} restant${WATER_GOAL - count > 1 ? 's' : ''} pour atteindre 2L`;
+      goalTxt.style.color = '';
+    }
+  }
+}
+
+function setWater(n) {
+  const today = new Date().toDateString();
+  const saved = DB.gj(K.WATER, {day: today, count: 0});
+  // Toggle: click on filled glass removes it
+  const current = saved.day === today ? saved.count : 0;
+  const newCount = n === current ? n - 1 : n;
+  DB.sj(K.WATER, {day: today, count: Math.max(0, newCount)});
+  if (navigator.vibrate) navigator.vibrate(15);
+  if (newCount >= WATER_GOAL) {
+    showMilestone('💧 Objectif hydratation atteint ! 8 verres bu aujourd\'hui 🎉');
+  }
+  renderWater();
+}
+
+// ════════════════════════════════════════════════
+//  STEPS TRACKER
+// ════════════════════════════════════════════════
+function initSteps() {
+  const today = new Date().toDateString();
+  const saved = DB.gj(K.STEPS, null);
+  if (!saved || saved.day !== today) {
+    DB.sj(K.STEPS, {day: today, count: 0, goal: 10000});
+  }
+  renderSteps();
+}
+
+function renderSteps() {
+  const today = new Date().toDateString();
+  const saved = DB.gj(K.STEPS, {day: today, count: 0, goal: 10000});
+  const count = saved.day === today ? (saved.count || 0) : 0;
+  const goal  = saved.goal || 10000;
+  const pct   = Math.min(100, Math.round(count / goal * 100));
+
+  set('steps-count', count.toLocaleString('fr-FR'));
+  set('steps-pct-lbl', `${pct}% de l'objectif`);
+  set('steps-sub', `Objectif : ${goal.toLocaleString('fr-FR')} pas`);
+  const bar = $('steps-bar-fill');
+  if (bar) bar.style.width = pct + '%';
+
+  if (pct >= 100 && count > 0) {
+    const sub = $('steps-sub');
+    if (sub) sub.textContent = '🎉 Objectif atteint !';
+  }
+}
+
+function saveSteps() {
+  const today = new Date().toDateString();
+  const v = parseInt($('steps-input')?.value) || 0;
+  const g = parseInt($('steps-goal-input')?.value) || 10000;
+  if (v < 0) { alert('Nombre de pas invalide'); return; }
+  const prev = DB.gj(K.STEPS, {day: today, count: 0, goal: 10000});
+  DB.sj(K.STEPS, {day: today, count: v, goal: g});
+  closeDrawers();
+  addLog('PAS', `${v.toLocaleString('fr-FR')} pas · Objectif ${g.toLocaleString('fr-FR')}`, 'success');
+  renderSteps();
+  if (navigator.vibrate) navigator.vibrate([20, 40, 20]);
+  // Milestone si objectif atteint
+  if (v >= g && (prev.count || 0) < g) {
+    showMilestone(`🦶 ${v.toLocaleString('fr-FR')} pas ! Objectif journalier atteint 🎉`);
+  }
+  toast(`${v.toLocaleString('fr-FR')} pas enregistrés`, true);
+}
+
+function requestPedometer() {
+  // Vérifier si l'API Pedometer est disponible (certains navigateurs mobiles)
+  if ('permissions' in navigator) {
+    navigator.permissions.query({name: 'accelerometer'}).then(r => {
+      if (r.state === 'granted' || r.state === 'prompt') {
+        toast('Capteur de pas non disponible dans ce navigateur. Saisie manuelle recommandée.', false);
+      }
+    }).catch(() => {});
+  }
+  // Pré-remplir le drawer avec les données existantes
+  const today = new Date().toDateString();
+  const saved = DB.gj(K.STEPS, {day: today, count: 0, goal: 10000});
+  const si = $('steps-input'), gi = $('steps-goal-input');
+  if (si && saved.day === today) si.value = saved.count || '';
+  if (gi) gi.value = saved.goal || 10000;
+  openDrawer('steps');
+}
+
+// Sync steps in Dropbox payload
+function getStepsForSync() {
+  return DB.gj(K.STEPS, null);
+}
+
+// ════════════════════════════════════════════════
+//  IMC LIVE (taille fixe 182 cm)
+// ════════════════════════════════════════════════
+const FIXED_HEIGHT_CM = 182;
+
+function updateIMCLive() {
+  const lastW = S.weights.length ? S.weights[S.weights.length - 1].v : null;
+  const valEl = $('imc-val');
+  const tagEl = $('imc-tag-live');
+  if (!valEl || !tagEl) return;
+
+  if (!lastW) {
+    valEl.textContent = '--';
+    tagEl.textContent = 'Saisissez un poids';
+    tagEl.style.color = 'rgba(42,37,32,.4)';
+    return;
+  }
+
+  const h = FIXED_HEIGHT_CM / 100;
+  const imc = +(lastW / (h * h)).toFixed(1);
+  valEl.textContent = imc;
+
+  let label, color;
+  if (imc < 18.5)      { label = 'Insuffisant ⚠️'; color = '#7B8CAE'; }
+  else if (imc < 25)   { label = 'Normal ✓';        color = '#6A8C6A'; }
+  else if (imc < 30)   { label = 'Surpoids';         color = '#C8803A'; }
+  else if (imc < 35)   { label = 'Obésité modérée'; color = '#C94040'; }
+  else                 { label = 'Obésité sévère';  color = '#C94040'; }
+
+  tagEl.textContent = label;
+  tagEl.style.color = color;
+  valEl.style.color = color;
+}
+
+// ════════════════════════════════════════════════
+//  CHEAT DAY (Jour d'exception)
+// ════════════════════════════════════════════════
+function startCheatDay() {
+  const today = new Date().toDateString();
+  const saved = DB.gj(K.PAUSE, []);
+  if (saved.includes(today)) { toast('Jour d\'exception déjà actif aujourd\'hui', false); return; }
+  saved.push(today);
+  DB.sj(K.PAUSE, saved);
+  renderCheatUI();
+  addLog('JOUR D\'EXCEPTION', 'Série préservée 🌴', 'mood');
+  toast('Jour d\'exception actif — votre série est préservée 🌴', true);
+  if (navigator.vibrate) navigator.vibrate([30, 60, 30]);
+}
+
+function endCheatDay() {
+  const today = new Date().toDateString();
+  const saved = (DB.gj(K.PAUSE, [])).filter(d => d !== today);
+  DB.sj(K.PAUSE, saved);
+  renderCheatUI();
+  toast('Jour d\'exception terminé', true);
+}
+
+function isCheatDay() {
+  const saved = DB.gj(K.PAUSE, []);
+  return saved.includes(new Date().toDateString());
+}
+
+function renderCheatUI() {
+  const banner = $('cheat-banner');
+  const btn    = $('cheat-day-btn');
+  const isCheat = isCheatDay();
+  banner?.classList.toggle('hidden', !isCheat);
+  if (btn) btn.style.display = isCheat ? 'none' : '';
+}
+
+// Override calcStreak to skip cheat days
+function calcStreakWithCheat() {
+  let n = 0;
+  const ck = new Date(); ck.setHours(0,0,0,0);
+  const done  = new Set(S.logs.filter(l=>['FIN JEÛNE','OBJECTIF 18H'].includes(l.type)).map(l=>new Date(l.time).toDateString()));
+  const cheat = new Set(DB.gj(K.PAUSE, []));
+  while (done.has(ck.toDateString()) || cheat.has(ck.toDateString())) {
+    n++; ck.setDate(ck.getDate() - 1);
+  }
+  return n;
+}
+
+// ════════════════════════════════════════════════
+//  AUTOPHAGY INDICATOR (visible après 16h)
+// ════════════════════════════════════════════════
+function updateAutophagyBanner(elapsedHours) {
+  const banner = $('autophagy-banner');
+  const pctEl  = $('autophagy-pct');
+  if (!banner) return;
+
+  if (!S.fast.isFasting || elapsedHours < 16) {
+    banner.classList.add('hidden');
+    return;
+  }
+
+  banner.classList.remove('hidden');
+  // Entre 16h et 18h : 0% → 100% de l'autophagie "maximale"
+  const pct = Math.min(100, Math.round((elapsedHours - 16) / 2 * 100));
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  // Intensifier la flamme avec la progression
+  const flame = banner.querySelector('.flame-anim');
+  if (flame) {
+    if (pct >= 80)     flame.textContent = '🔥🔥🔥';
+    else if (pct >= 40) flame.textContent = '🔥🔥';
+    else                flame.textContent = '🔥';
+  }
+}
+
+// ════════════════════════════════════════════════
+//  NOTIFICATIONS / MILESTONES
+// ════════════════════════════════════════════════
+function showMilestone(msg, duration = 4000) {
+  const el = $('notif-milestone');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  if (navigator.vibrate) navigator.vibrate([50, 100, 50, 100, 50]);
+  setTimeout(() => el.classList.remove('show'), duration);
+}
+
+// Phase milestones during fasting
+const MILESTONE_PHASES = {
+  4:  '🔥 Phase lipolyse déclenchée ! Votre corps brûle les graisses.',
+  8:  '⚡ Cétose légère ! Corps cétoniques produits.',
+  12: '🧬 BDNF en hausse — neuroprotection maximale.',
+  15: '🛡️ Anti-inflammatoire actif.',
+  16: '✨ AUTOPHAGIE ACTIVÉE ! Mode régénération cellulaire.',
+  17: '✨ Autophagie en plein pic — nettoyage cellulaire +++',
+  18: '👑 OBJECTIF 18H ATTEINT ! GH x2000%. Félicitations !'
+};
+let _lastMilestoneH = 0;
+
+function checkMilestones(elH) {
+  const thresholds = [4, 8, 12, 15, 16, 17, 18];
+  for (const t of thresholds) {
+    if (elH >= t && _lastMilestoneH < t) {
+      _lastMilestoneH = t;
+      showMilestone(MILESTONE_PHASES[t]);
+      // Demander permission notification navigateur
+      if ('Notification' in window && Notification.permission === 'default') {
+        Notification.requestPermission();
+      }
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Hicham · Jeûne 18:6', {
+          body: MILESTONE_PHASES[t],
+          icon: 'votre-photo.jpg'
+        });
+      }
+      break;
+    }
+  }
+}
+
+function requestNotifications() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(p => {
+      toast(p === 'granted' ? 'Notifications activées ✅' : 'Notifications refusées', p === 'granted');
+    });
+  } else {
+    toast('Notifications non supportées sur cet appareil', false);
+  }
+}
+
+// ── DRAWERS ───
 function openDrawer(t) {
   if(t==='sleep-manual') openSleepManual();
   if(t==='cloud')  updateCloudUI();
   if(t==='gemini') updateGemStatus();
+  if(t==='steps') {
+    const today=new Date().toDateString();
+    const saved=DB.gj(K.STEPS,{day:today,count:0,goal:10000});
+    const si=$('steps-input'), gi=$('steps-goal-input');
+    if(si&&saved.day===today) si.value=saved.count||'';
+    if(gi) gi.value=saved.goal||10000;
+  }
   $(`drawer-${t}`)?.classList.add('open');
   $('overlay')?.classList.add('active');
 }
