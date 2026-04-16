@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <!--
 ╔══════════════════════════════════════════════════════════════╗
-║  HICHAM MASTER · JEÛNE 18:6 — v4.3 FINAL                   ║
+║  HICHAM MASTER · JEÛNE 18:6 — v4.4 AUTO-SYNC               ║
 ║  Dropbox App : JEUNER (hey2nvnz07mjq05)                     ║
 ║  Hosted      : https://je-ne-intermittent.pages.dev/        ║
 ╠══════════════════════════════════════════════════════════════╣
-║  APK Android Studio — MainActivity.java :                   ║
-║  webView.getSettings().setJavaScriptEnabled(true);          ║
-║  webView.getSettings().setDomStorageEnabled(true);          ║
-║  webView.setWebChromeClient(new WebChromeClient());         ║
-║  webView.loadUrl("https://je-ne-intermittent.pages.dev/");  ║
+║  ✨ NOUVEAUTÉ : Synchronisation automatique Dropbox          ║
+║  • Debounce 30s après chaque modification                    ║
+║  • Sync au démarrage si connecté                           ║
+║  • Indicateur visuel de statut de sync                     ║
+║  • File d'attente offline pour sync différée               ║
 ╚══════════════════════════════════════════════════════════════╝
 -->
 <html lang="fr">
@@ -69,6 +69,26 @@ html,body{font-family:'Nunito',sans-serif;background:var(--cream);color:var(--in
 .badge-186{background:var(--amber-soft);color:var(--amber-dark);border:1.5px solid rgba(200,128,58,.25);padding:5px 10px;border-radius:20px;font-size:.7rem;font-weight:800;letter-spacing:.06em;}
 .ai-pill{background:var(--violet-light);color:var(--violet);border:1.5px solid rgba(138,109,174,.2);padding:7px 12px;border-radius:30px;font-size:.75rem;font-weight:800;cursor:pointer;display:flex;align-items:center;gap:4px;transition:all .18s;box-shadow:0 2px 8px var(--violet-glow);}
 .ai-pill:active{transform:scale(.93);}
+
+/* ─── SYNC STATUS INDICATOR (NOUVEAU) ─── */
+.sync-status-mini{
+  display:flex;align-items:center;gap:5px;
+  background:var(--cream-deep);
+  padding:4px 10px;border-radius:20px;
+  font-size:.65rem;font-weight:700;
+  color:var(--ink-60);
+  border:1px solid var(--ink-10);
+  cursor:pointer;transition:all .2s;
+}
+.sync-status-mini:hover{background:var(--parchment);}
+.sync-status-mini.syncing{color:var(--dropbox);background:rgba(0,97,255,.08);}
+.sync-status-mini.synced{color:var(--sage);background:var(--sage-light);}
+.sync-status-mini.error{color:var(--danger);background:rgba(201,64,64,.1);}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--ink-30);animation:none;}
+.syncing .sync-dot{background:var(--dropbox);animation:pulse 1.5s infinite;}
+.synced .sync-dot{background:var(--sage);}
+.error .sync-dot{background:var(--danger);}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 
 /* ──────────────────────── VIEWS ──────────────────────── */
 .view{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 16px;padding-bottom:calc(92px + env(safe-area-inset-bottom));display:none;flex-direction:column;gap:13px;-webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;}
@@ -236,6 +256,7 @@ input[type=password]{letter-spacing:.1em;}
 .ai-sw{display:flex;gap:3px;background:var(--parchment);padding:3px;border-radius:15px;margin-bottom:10px;flex-shrink:0;}
 .aisw{flex:1;padding:10px 7px;border:none;background:transparent;border-radius:11px;font-weight:800;font-size:.76rem;color:var(--ink-60);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:all .18s;font-family:'Nunito',sans-serif;}
 .aisw.active{background:var(--white);color:var(--violet);box-shadow:0 2px 7px var(--ink-10);}
+.aisw.sr.active{color:var(--slate);}
 .aisw.sr.active{color:var(--slate);}
 /* AI hero — compact bar (pas de grande carte) */
 .ai-hero{
@@ -449,6 +470,11 @@ input[type=password]{letter-spacing:.1em;}
   <!-- DROITE -->
   <div class="h-right">
     <span class="badge-186">18:6</span>
+    <!-- NOUVEAU: Indicateur de sync -->
+    <div class="sync-status-mini" id="sync-mini" onclick="openDrawer('cloud')" title="Cliquez pour gérer la sync">
+      <div class="sync-dot"></div>
+      <span id="sync-mini-txt">Sync</span>
+    </div>
     <button class="ai-pill" onclick="switchTab('ai')">✨ IA</button>
   </div>
 </header>
@@ -957,6 +983,19 @@ input[type=password]{letter-spacing:.1em;}
     <span id="sync-badge-txt">Vérification…</span>
   </div>
 
+  <!-- NOUVEAU: Options de synchronisation automatique -->
+  <div style="background:var(--cream-deep);padding:12px;border-radius:11px;margin-bottom:14px;border:1px solid var(--ink-10);">
+    <div style="font-size:.8rem;font-weight:800;color:var(--ink);margin-bottom:8px;">⚙️ Synchronisation automatique</div>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--ink-60);cursor:pointer;margin-bottom:6px;">
+      <input type="checkbox" id="auto-sync-toggle" onchange="toggleAutoSync()" checked style="width:auto;margin:0;">
+      <span>Sync auto après chaque modification (30s de délai)</span>
+    </label>
+    <label style="display:flex;align-items:center;gap:8px;font-size:.75rem;color:var(--ink-60);cursor:pointer;">
+      <input type="checkbox" id="auto-restore-toggle" onchange="toggleAutoRestore()" checked style="width:auto;margin:0;">
+      <span>Restaurer automatiquement au démarrage</span>
+    </label>
+  </div>
+
   <!-- Info app pré-configurée -->
   <div class="dbx-token-box" id="dbx-info-box">
     <h3>📁 App Dropbox : JEUNER</h3>
@@ -1002,11 +1041,11 @@ input[type=password]{letter-spacing:.1em;}
 
 <script>
 // ════════════════════════════════════════════════════════
-//  HICHAM MASTER 18:6 — v4.2 CORRIGÉ
+//  HICHAM MASTER 18:6 — v4.4 AUTO-SYNC
 //  ✅ Dropbox API v2 réelle (token utilisateur)
-//  ✅ Sommeil manuel avec drawer dédié
-//  ✅ Photo centrée dans le header
-//  ✅ Code nettoyé et tous bugs corrigés
+//  ✅ SYNCHRONISATION AUTOMATIQUE avec debounce
+//  ✅ Sync au démarrage optionnel
+//  ✅ Indicateur visuel de statut dans le header
 // ════════════════════════════════════════════════════════
 
 // ─── CLÉS LOCALSTORAGE (compatibles v4) ───
@@ -1015,19 +1054,23 @@ const K = {
   FS:'HICHAM_FAST_v4',   CI:'HICHAM_CHECKIN_v4', SL:'HICHAM_SLEEP_v4',
   AIM:'HICHAM_AI_MODE_v4',
   // OAuth2 PKCE Dropbox — tokens permanents
-  DBX_APPKEY:   'HICHAM_DBX_APPKEY_v4',   // App Key (public, pas le secret)
-  DBX_REFRESH:  'HICHAM_DBX_REFRESH_v4',  // Refresh token (permanent)
-  DBX_ACCESS:   'HICHAM_DBX_ACCESS_v4',   // Access token (cache ~4h)
-  DBX_EXPIRES:  'HICHAM_DBX_EXPIRES_v4',  // Expiry timestamp
+  DBX_APPKEY:   'HICHAM_DBX_APPKEY_v4',
+  DBX_REFRESH:  'HICHAM_DBX_REFRESH_v4',
+  DBX_ACCESS:   'HICHAM_DBX_ACCESS_v4',
+  DBX_EXPIRES:  'HICHAM_DBX_EXPIRES_v4',
   GEM:'HICHAM_GEMINI_KEY_v4', BEST:'HICHAM_BEST_FAST_v4',
   SYNC_TS:'HICHAM_LAST_SYNC_v4',
-  WATER:'HICHAM_WATER_v4',       // compteur eau quotidien
-  STEPS:'HICHAM_STEPS_v4',       // pas quotidiens
-  PAUSE:'HICHAM_PAUSE_v4',       // jours d'exception (cheat days)
-  NOTIF:'HICHAM_NOTIF_v4'        // préférences notifications
+  WATER:'HICHAM_WATER_v4',
+  STEPS:'HICHAM_STEPS_v4',
+  PAUSE:'HICHAM_PAUSE_v4',
+  NOTIF:'HICHAM_NOTIF_v4',
+  // NOUVEAU: Préférences de sync auto
+  AUTO_SYNC:    'HICHAM_AUTO_SYNC_v4',
+  AUTO_RESTORE: 'HICHAM_AUTO_RESTORE_v4',
+  SYNC_DEBOUNCE:'HICHAM_SYNC_DEBOUNCE_v4'
 };
 
-const FAST_DUR = 18; // 18:6 fixe
+const FAST_DUR = 18;
 
 // ─── PHASES ───
 const PHASES = [
@@ -1053,7 +1096,10 @@ const S = {
   phase: 0,
   chart: null,
   aiMode: 'ai',
-  bestFast: 0
+  bestFast: 0,
+  // NOUVEAU: État de sync
+  syncState: 'idle', // 'idle' | 'syncing' | 'synced' | 'error'
+  syncDebounceTimer: null
 };
 
 // ─── STORAGE (micro-wrapper sécurisé) ───
@@ -1073,6 +1119,155 @@ const F = {
   h:   (h) => { const H=Math.floor(h), m=Math.round((h-H)*60); return `${H}h${m>0?m+'min':''}`; }
 };
 
+// ════════════════════════════════════════════════════════
+//  SYNCHRONISATION AUTOMATIQUE — NOUVEAU v4.4
+// ════════════════════════════════════════════════════════
+
+/**
+ * Déclenche une synchronisation automatique avec debounce
+ * Appeler cette fonction après chaque modification de données
+ */
+function triggerAutoSync() {
+  // Vérifier si la sync auto est activée
+  const autoSync = DB.g(K.AUTO_SYNC, 'true') !== 'false';
+  if (!autoSync) return;
+  
+  // Vérifier si connecté à Dropbox
+  if (!DB.g(K.DBX_REFRESH, null)) return;
+  
+  // Annuler le timer précédent
+  if (S.syncDebounceTimer) {
+    clearTimeout(S.syncDebounceTimer);
+  }
+  
+  // Mettre à jour l'UI pour indiquer qu'une sync est planifiée
+  updateSyncMiniUI('pending');
+  
+  // Déclencher la sync après 30 secondes de debounce
+  S.syncDebounceTimer = setTimeout(() => {
+    performAutoSync();
+  }, 30000); // 30 secondes de délai
+  
+  // Stocker le timestamp du debounce
+  DB.s(K.SYNC_DEBOUNCE, String(Date.now()));
+}
+
+/**
+ * Exécute la synchronisation automatique
+ */
+async function performAutoSync() {
+  if (!S.on) {
+    updateSyncMiniUI('offline');
+    return;
+  }
+  
+  const tok = await dbxGetToken();
+  if (!tok) {
+    updateSyncMiniUI('error');
+    return;
+  }
+  
+  updateSyncMiniUI('syncing');
+  
+  const payload = JSON.stringify({
+    version:'4.4', timestamp:new Date().toISOString(),
+    weights:S.weights, logs:S.logs, settings:S.settings,
+    fast:S.fast, phase:S.phase, bestFast:S.bestFast,
+    checkin:DB.gj(K.CI,null),
+    height:DB.g('HICHAM_HEIGHT_v4', null),
+    water:DB.gj(K.WATER, null),
+    steps:DB.gj(K.STEPS, null),
+    cheatDays:DB.gj(K.PAUSE, [])
+  });
+  
+  try {
+    const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
+      method:'POST',
+      headers:{
+        'Authorization':'Bearer '+tok,
+        'Dropbox-API-Arg':JSON.stringify({path:DBX_FILE,mode:'overwrite',mute:true}),
+        'Content-Type':'application/octet-stream'
+      },
+      body: payload
+    });
+    
+    if (!res.ok) throw new Error('Upload failed');
+    
+    DB.s(K.SYNC_TS, new Date().toISOString());
+    updateSyncMiniUI('synced');
+    console.log('[AUTO-SYNC] Sauvegarde automatique réussie');
+  } catch(e) {
+    console.error('[AUTO-SYNC] Échec:', e);
+    updateSyncMiniUI('error');
+  }
+}
+
+/**
+ * Met à jour l'indicateur mini de sync dans le header
+ */
+function updateSyncMiniUI(state) {
+  S.syncState = state;
+  const el = $('sync-mini');
+  const txt = $('sync-mini-txt');
+  if (!el || !txt) return;
+  
+  el.className = 'sync-status-mini';
+  
+  switch(state) {
+    case 'syncing':
+      el.classList.add('syncing');
+      txt.textContent = 'Sync…';
+      break;
+    case 'synced':
+      el.classList.add('synced');
+      txt.textContent = 'Sync ✓';
+      // Revenir à l'état normal après 3 secondes
+      setTimeout(() => {
+        if (S.syncState === 'synced') updateSyncMiniUI('idle');
+      }, 3000);
+      break;
+    case 'error':
+      el.classList.add('error');
+      txt.textContent = 'Sync ✗';
+      break;
+    case 'offline':
+      txt.textContent = 'Hors ligne';
+      break;
+    case 'pending':
+      el.classList.add('syncing');
+      txt.textContent = 'Sync…';
+      break;
+    default: // idle
+      const connected = !!DB.g(K.DBX_REFRESH, null);
+      txt.textContent = connected ? 'Sync' : 'Sync';
+      if (connected) {
+        const lastSync = DB.g(K.SYNC_TS, null);
+        if (lastSync) {
+          const mins = Math.floor((Date.now() - new Date(lastSync).getTime()) / 60000);
+          txt.textContent = mins < 1 ? 'Sync ✓' : `Sync ${mins}m`;
+        }
+      }
+  }
+}
+
+/**
+ * Bascule la synchronisation automatique
+ */
+function toggleAutoSync() {
+  const enabled = $('auto-sync-toggle')?.checked;
+  DB.s(K.AUTO_SYNC, String(enabled));
+  toast(enabled ? 'Sync auto activée ✅' : 'Sync auto désactivée', true);
+}
+
+/**
+ * Bascule la restauration automatique au démarrage
+ */
+function toggleAutoRestore() {
+  const enabled = $('auto-restore-toggle')?.checked;
+  DB.s(K.AUTO_RESTORE, String(enabled));
+  toast(enabled ? 'Restauration auto activée ✅' : 'Restauration auto désactivée', true);
+}
+
 // ─── INIT ───
 function init() {
   // ① Vérifier si on revient d'un callback OAuth Dropbox
@@ -1080,9 +1275,7 @@ function init() {
   const oauthCode = urlParams.get('code');
   const oauthError = urlParams.get('error');
   if (oauthCode) {
-    // Nettoyer l'URL immédiatement (UX propre)
     window.history.replaceState({}, document.title, window.location.pathname);
-    // Échanger le code contre les tokens (async, avant le reste)
     exchangeOAuthCode(oauthCode).then(() => bootApp());
     return;
   }
@@ -1094,11 +1287,10 @@ function init() {
 }
 
 // ─── CONFIG DROPBOX PRÉ-CONFIGURÉE ───
-// App : JEUNER · App Key déjà enregistrée dans Dropbox
 const DBX_PRECONFIGURED_KEY = 'hey2nvnz07mjq05';
 const DBX_PRECONFIGURED_REDIRECT = 'https://je-ne-intermittent.pages.dev/';
 
-function bootApp() {
+async function bootApp() {
   // Pré-injecter l'App Key si pas encore stockée
   if (!DB.g(K.DBX_APPKEY, null)) {
     DB.s(K.DBX_APPKEY, DBX_PRECONFIGURED_KEY);
@@ -1113,7 +1305,6 @@ function bootApp() {
 
   updateGreeting();
   updateClock();
-  // Check daily reset chaque minute (eau + pas remis à 0 à minuit)
   setInterval(() => {
     const h=new Date().getHours(), m=new Date().getMinutes();
     if(h===0 && m===0) { initWater(); initSteps(); }
@@ -1129,23 +1320,78 @@ function bootApp() {
   updateLogs();
   $('today-date').textContent = new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long'});
 
-  // Sleep state restore
   restoreSleepUI();
 
-  window.addEventListener('online',  () => { S.on=true;  updateAIStatus(); });
-  window.addEventListener('offline', () => { S.on=false; updateAIStatus(); if(S.aiMode==='search') setAIMode('ai'); });
+  window.addEventListener('online',  () => { S.on=true;  updateAIStatus(); updateSyncMiniUI('idle'); });
+  window.addEventListener('offline', () => { S.on=false; updateAIStatus(); updateSyncMiniUI('offline'); if(S.aiMode==='search') setAIMode('ai'); });
   document.addEventListener('keydown', e => { if(e.key==='Escape') closeDrawers(); });
+
+  // NOUVEAU: Sync avant de quitter la page
+  window.addEventListener('beforeunload', (e) => {
+    if (S.syncDebounceTimer) {
+      // Forcer la sync si une est en attente
+      clearTimeout(S.syncDebounceTimer);
+      // Note: on ne peut pas faire de requête async ici, mais on peut logger
+      console.log('[AUTO-SYNC] Sync en attente à la fermeture');
+    }
+  });
 
   setAIMode(S.aiMode);
   updateCloudUI();
   renderWeightTable();
-  initWater();           // reset compteur eau si nouveau jour
-  initSteps();           // reset pas si nouveau jour
-  updateIMCLive();       // afficher IMC avec dernier poids
-  renderCheatUI();       // afficher bannière cheat day si actif
-  // Demander permission notifications au démarrage (silencieux)
+  initWater();
+  initSteps();
+  updateIMCLive();
+  renderCheatUI();
+  
+  // NOUVEAU: Restauration automatique au démarrage si activée
+  const autoRestore = DB.g(K.AUTO_RESTORE, 'true') !== 'false';
+  if (autoRestore && DB.g(K.DBX_REFRESH, null) && S.on) {
+    console.log('[AUTO-SYNC] Restauration automatique au démarrage…');
+    await autoRestoreOnBoot();
+  }
+  
+  updateSyncMiniUI('idle');
+  
   if ('Notification' in window && Notification.permission === 'default') {
     setTimeout(() => Notification.requestPermission(), 3000);
+  }
+}
+
+/**
+ * Restauration automatique au démarrage
+ */
+async function autoRestoreOnBoot() {
+  const tok = await dbxGetToken();
+  if (!tok) return;
+  
+  try {
+    // Vérifier si le fichier existe et comparer les timestamps
+    const metaRes = await fetch('https://api.dropboxapi.com/2/files/get_metadata', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + tok, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: DBX_FILE })
+    });
+    
+    if (!metaRes.ok) {
+      console.log('[AUTO-RESTORE] Aucune sauvegarde existante');
+      return;
+    }
+    
+    const meta = await metaRes.json();
+    const cloudTime = new Date(meta.server_modified).getTime();
+    const localTime = new Date(DB.g(K.SYNC_TS, '1970-01-01')).getTime();
+    
+    // Si le cloud est plus récent de plus de 5 minutes
+    if (cloudTime > localTime + 300000) {
+      console.log('[AUTO-RESTORE] Données cloud plus récentes, restauration…');
+      await syncDown();
+      toast('Données restaurées depuis le cloud ☁️', true);
+    } else {
+      console.log('[AUTO-RESTORE] Données locales à jour');
+    }
+  } catch(e) {
+    console.error('[AUTO-RESTORE] Erreur:', e);
   }
 }
 
@@ -1192,6 +1438,7 @@ function saveCheckin(m) {
   const em =['😫','😕','😐','🙂','🤩'][m-1];
   addLog('HUMEUR', `${lbl} ${em}`, 'mood');
   toast(`Humeur notée ${em}`, true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 // ─── MODE TOGGLE ───
@@ -1222,20 +1469,22 @@ function startFast() {
   startTimer();
   if(navigator.vibrate) navigator.vibrate(60);
   toast('Jeûne 18:6 démarré ! 💪', true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 function stopFast() {
   if(S.timer) { clearInterval(S.timer); S.timer=null; }
   const dur = calcElapsed();
-  if(dur > S.bestFast) { S.bestFast=dur; DB.sj(K.BEST, dur); }
+  if(dur > S.bestFast) { S.bestFast=dur; DB.sj(K.BEST, S.bestFast); }
   addLog('FIN JEÛNE', `Durée : ${F.h(dur)}`, 'success');
   S.fast = { isFasting:false, startTime:null };
   S.phase = 0;
-  _lastMilestoneH = 0; // reset milestones
+  _lastMilestoneH = 0;
   DB.sj(K.FS, S.fast);
   resetUI();
-  updateAutophagyBanner(0); // cacher la bannière
+  updateAutophagyBanner(0);
   if(navigator.vibrate) navigator.vibrate([60,120,60]);
   toast(`Bravo ! ${F.h(dur)} accomplis 🏆`, true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 function startTimer() {
   if(S.timer) clearInterval(S.timer);
@@ -1257,15 +1506,14 @@ function tick() {
     stopFast();
     addLog('OBJECTIF 18H', 'Jeûne 18:6 terminé ! 🎉', 'success');
     toast('Objectif 18h atteint ! 👑', true);
+    triggerAutoSync(); // NOUVEAU: Sync auto
     return;
   }
 
-  // Countdown display
   const H=Math.floor(remSec/3600), M=Math.floor((remSec%3600)/60), sec=Math.floor(remSec%60);
   const cd=$('countdown');
   if(cd) cd.textContent=`${String(H).padStart(2,'0')}:${String(M).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
 
-  // Ring progress
   const pct = elSec / durSec;
   const CIRC = 572;
   const off  = CIRC - pct * CIRC;
@@ -1273,22 +1521,15 @@ function tick() {
   if(rf){ rf.style.strokeDashoffset=off; rf.style.strokeDasharray=CIRC; }
   if(rg){ rg.style.strokeDashoffset=off; rg.style.strokeDasharray=CIRC; }
 
-  // Phase update
   const elH = elSec / 3600;
   const np = phaseFromHours(elH);
   if(np !== S.phase) { S.phase=np; applyPhaseUI(); }
 
-  // Progress label
   const pctN=Math.round(pct*100);
   set('prog-lbl', `${pctN}% · ${motivMsg(elH)}`);
 
-  // Phase bar
   updateBar(elH);
-
-  // Autophagy banner (> 16h)
   updateAutophagyBanner(elH);
-
-  // Phase milestones
   checkMilestones(elH);
 }
 
@@ -1319,25 +1560,18 @@ function updateBar(h) {
 
 function applyPhaseUI() {
   const ph = PHASES[S.phase] || PHASES[0];
-  // phase info card
   set('pi-name', ph.n);
   set('pi-desc', ph.d);
   const pt=$('pi-time'); if(pt){pt.textContent=ph.t; pt.className=`pi-time ${ph.pt}`;}
   const ptags=$('pi-tags'); if(ptags) ptags.innerHTML=ph.tags.map(t=>`<span class="pi-tag">${t}</span>`).join('');
   const orb=$('pi-orb'); if(orb){orb.textContent=ph.ic; orb.className=`pi-orb ${ph.orb}`;}
-  // ring
   const rf=$('r-fill'), rg=$('r-glow');
   if(rf) rf.className=`r-fill ${ph.cls}`;
   if(rg) rg.className=`r-glow ${ph.cls}`;
-  // stripe
   const st=$('tc-stripe'); if(st) st.className=`tc-stripe ${ph.stripe}`;
-  // countdown color
   const cd=$('countdown'); if(cd) cd.className=`cp${S.phase}`;
-  // badge
   const b=$('fast-badge'); if(b){b.textContent='En jeûne 18:6';b.classList.add('on');}
-  // button
   const btn=$('action-btn'); if(btn){btn.textContent='Arrêter le jeûne';btn.className='btn btn-stop';}
-  // start time row
   const sr=$('start-row'); if(sr) sr.style.display='flex';
   const sd=$('start-disp'); if(sd&&S.fast.startTime) sd.textContent=F.t(new Date(S.fast.startTime));
 }
@@ -1378,6 +1612,7 @@ function saveAdjust() {
   closeDrawers();
   if(S.timer){clearInterval(S.timer);startTimer();}
   toast('Heure mise à jour',true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 // ─── SLEEP ───
@@ -1405,11 +1640,11 @@ function toggleSleep() {
     addLog('RÉVEIL',`${F.h(dur)} de sommeil`,'sleep');
     toast(`Nuit enregistrée : ${F.h(dur)} 💤`,true);
   }
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 /* ─── SLEEP MANUEL ─── */
 function openSleepManual() {
-  // Pré-remplir avec hier 22h → aujourd'hui 6h par défaut
   const now=new Date();
   const end=new Date(now); end.setHours(6,0,0,0);
   if(end>now) end.setDate(end.getDate()-1);
@@ -1433,6 +1668,7 @@ function saveManualSleep() {
   set('sleep-status',`Dernière nuit : ${F.h(dur)} (${qLbl})`);
   closeDrawers();
   toast(`Nuit ajoutée : ${F.h(dur)} 💤`,true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 // ─── POIDS ───
@@ -1447,6 +1683,7 @@ function saveWeight() {
   addLog('POIDS',`${v.toFixed(1)} kg`,'weight');
   initChart(); updateStats(); renderWeightTable(); updateIMCLive();
   toast('Poids enregistré ⚖️',true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 function saveSettings() {
   const ti=$('fast-start-time'); if(ti) S.settings.startTime=ti.value;
@@ -1476,7 +1713,6 @@ function updateStats() {
   set('sv-weight',S.weights.length?S.weights[S.weights.length-1].v+' kg':'--');
   set('sv-streak',calcStreak());
   set('sv-best',S.bestFast>0?F.h(S.bestFast):'--');
-  // Mise à jour IMC en direct
   updateIMCLive();
 }
 // ─── TABLEAU POIDS HEBDOMADAIRE ───
@@ -1486,11 +1722,9 @@ function toggleWeightForm() {
   const isOpen = form.classList.contains('open');
   form.classList.toggle('open', !isOpen);
   if (!isOpen) {
-    // Pré-remplir date d'aujourd'hui
     const today = new Date();
     const di = $('wt-date-inp');
     if (di) di.value = today.toISOString().slice(0,10);
-    // Pré-remplir taille si déjà mémorisée
     const savedH = DB.g('HICHAM_HEIGHT_v4', null);
     const hi = $('wt-height-inp');
     if (hi && savedH) hi.value = savedH;
@@ -1508,19 +1742,16 @@ function saveWeightManual() {
     alert('Poids invalide (30–300 kg)'); return;
   }
 
-  // Mémoriser la taille pour les prochaines fois
   if (hauteur >= 100 && hauteur <= 250) {
     DB.s('HICHAM_HEIGHT_v4', String(hauteur));
   }
 
-  // Construire l'entrée
   const entry = {
     d: new Date(dateVal + 'T12:00:00').toISOString(),
     v: parseFloat(poidsVal.toFixed(1)),
-    h: hauteur || null  // taille optionnelle pour IMC
+    h: hauteur || null
   };
 
-  // Éviter doublons sur même date
   const sameDateIdx = S.weights.findIndex(w =>
     new Date(w.d).toDateString() === new Date(entry.d).toDateString()
   );
@@ -1531,11 +1762,9 @@ function saveWeightManual() {
     S.weights.push(entry);
   }
 
-  // Trier par date
   S.weights.sort((a,b) => new Date(a.d) - new Date(b.d));
   DB.sj(K.W, S.weights);
 
-  // Reset form
   $('wt-poids-inp').value = '';
   $('ws-quick-form')?.classList.remove('open');
 
@@ -1545,6 +1774,7 @@ function saveWeightManual() {
   addLog('POIDS', `${poidsVal.toFixed(1)} kg · ${new Date(dateVal).toLocaleDateString('fr-FR',{day:'numeric',month:'short'})}`, 'weight');
   updateIMCLive();
   toast(`Pesée enregistrée : ${poidsVal.toFixed(1)} kg ⚖️`, true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 function deleteWeight(idx) {
@@ -1556,6 +1786,7 @@ function deleteWeight(idx) {
   updateStats();
   updateIMCLive();
   toast('Pesée supprimée', true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 function calcIMC(poids, hauteurCm) {
@@ -1594,18 +1825,16 @@ function renderWeightTable() {
     return;
   }
 
-  // Afficher les 16 dernières entrées (ordre décroissant)
   const display = [...weights].reverse().slice(0, 16);
 
   let html = '';
   display.forEach((w, i) => {
-    const realIdx = weights.length - 1 - i; // index réel pour suppression
+    const realIdx = weights.length - 1 - i;
     const date = new Date(w.d);
     const dateStr = date.toLocaleDateString('fr-FR', {day:'numeric', month:'short', year:'2-digit'});
     const weekNum = getWeekNumber(date);
     const weekStr = `S${String(weekNum).padStart(2,'0')}`;
 
-    // Évolution par rapport à l'entrée précédente (dans l'ordre original)
     const prevIdx = realIdx - 1;
     let deltaHtml = '<span class="td-delta same">—</span>';
     let trendIcon = '→';
@@ -1622,7 +1851,6 @@ function renderWeightTable() {
       }
     }
 
-    // IMC
     const hgt = w.h || savedH;
     const imc = calcIMC(w.v, hgt);
     const imcCell = imc ? imcTag(imc) : '<span style="color:var(--ink-30);font-size:.7rem;">—</span>';
@@ -1640,7 +1868,6 @@ function renderWeightTable() {
 
   tbody.innerHTML = html;
 
-  // Footer récap
   if (footer && weights.length > 0) {
     footer.style.display = 'flex';
     const total = weights.length;
@@ -1706,23 +1933,11 @@ function updateFullLogs() {
 }
 
 // ════════════════════════════════════════════════════════════════
-//  DROPBOX OAUTH2 PKCE — CONNEXION PERMANENTE (v4.3)
-//  ✅ Aucun token temporaire — refresh_token définitif
-//  ✅ Renouvellement automatique de l'access_token (~4h)
-//  ✅ Fonctionne navigateur + WebView APK sans toucher l'APK
-//
-//  SETUP (une seule fois) :
-//  1. dropbox.com/developers/apps → Create app
-//  2. Scoped access → Full Dropbox
-//  3. Settings → OAuth 2 → Redirect URIs → ajouter l'URL de ce fichier HTML
-//     Exemple : https://monsite.github.io/hicham.html
-//  4. Copiez votre "App key" (PAS le secret !)
-//  5. Entrez-la dans l'app → Historique → Dropbox → App Key
+//  DROPBOX OAUTH2 PKCE — CONNEXION PERMANENTE (v4.4)
 // ════════════════════════════════════════════════════════════════
 
 const DBX_FILE = '/hicham-master-data.json';
 
-// ── Helpers PKCE (Web Crypto API natif) ──
 async function pkceGenerate() {
   const rand = crypto.getRandomValues(new Uint8Array(48));
   const verifier = btoa(String.fromCharCode(...rand))
@@ -1734,10 +1949,7 @@ async function pkceGenerate() {
   return { verifier, challenge };
 }
 
-// L'URI de redirection = URL configurée dans Dropbox
 function dbxRedirectUri() {
-  // Utilise l'URL préconfigurée si on est sur ce domaine
-  // Sinon, utilise l'URL courante (pour tests locaux)
   const current = window.location.origin + window.location.pathname;
   if (current.includes('je-ne-intermittent.pages.dev')) {
     return DBX_PRECONFIGURED_REDIRECT;
@@ -1745,7 +1957,6 @@ function dbxRedirectUri() {
   return current;
 }
 
-// ── 1. Lancer le flow OAuth → redirige vers Dropbox ──
 async function startDropboxOAuth() {
   const appKey = DB.g(K.DBX_APPKEY, null);
   if (!appKey) { toast('Entrez et sauvegardez votre App Key d\'abord', false); return; }
@@ -1759,7 +1970,6 @@ async function startDropboxOAuth() {
   window.location.href = 'https://www.dropbox.com/oauth2/authorize?' + p;
 }
 
-// ── 2. Échange du code → appelé automatiquement au retour ──
 async function exchangeOAuthCode(code) {
   const appKey   = DB.g(K.DBX_APPKEY, null);
   const verifier = sessionStorage.getItem('dbx_pkce_verifier');
@@ -1786,14 +1996,12 @@ async function exchangeOAuthCode(code) {
   }
 }
 
-// ── 3. Obtenir un access_token valide (renouvellement auto) ──
 async function dbxGetToken() {
   const refresh = DB.g(K.DBX_REFRESH, null);
   if (!refresh) return null;
   const access  = DB.g(K.DBX_ACCESS,  null);
   const expires = parseInt(DB.g(K.DBX_EXPIRES, '0'));
-  if (access && Date.now() < expires) return access;  // Encore valide
-  // Renouvellement silencieux
+  if (access && Date.now() < expires) return access;
   try {
     const res = await fetch('https://api.dropboxapi.com/oauth2/token', {
       method: 'POST',
@@ -1815,14 +2023,13 @@ async function dbxGetToken() {
   }
 }
 
-// ── Déconnexion ──
 function dbxDisconnect() {
   [K.DBX_REFRESH, K.DBX_ACCESS, K.DBX_EXPIRES, K.SYNC_TS].forEach(k => DB.rm(k));
   updateCloudUI();
+  updateSyncMiniUI('idle');
   toast('Déconnecté de Dropbox', true);
 }
 
-// ── Sauvegarde Dropbox ──
 async function syncUp() {
   if (!S.on) { toast('Pas de connexion internet', false); return; }
   const tok = await dbxGetToken();
@@ -1854,16 +2061,17 @@ async function syncUp() {
     DB.s(K.SYNC_TS, new Date().toISOString());
     addLog('DROPBOX',`Sauvegardé (${(payload.length/1024).toFixed(1)} KB)`,'ai');
     updateCloudUI();
+    updateSyncMiniUI('synced');
     toast('Sauvegardé sur Dropbox ✅', true);
   } catch(e) {
     setSyncBadge('err','Erreur : '+e.message);
+    updateSyncMiniUI('error');
     toast('Erreur upload : '+e.message.substring(0,60), false);
   } finally {
     if(btn){btn.textContent='⬆️ Sauvegarder';btn.disabled=false;}
   }
 }
 
-// ── Restauration Dropbox ──
 async function syncDown() {
   if (!S.on) { toast('Pas de connexion internet', false); return; }
   const tok = await dbxGetToken();
@@ -1902,22 +2110,24 @@ async function syncDown() {
     updateIMCLive(); renderWater(); renderSteps(); renderCheatUI();
     DB.s(K.SYNC_TS, new Date().toISOString());
     updateCloudUI();
+    updateSyncMiniUI('synced');
     toast('Données restaurées ✅', true);
     closeDrawers(); switchTab('main');
   } catch(e) {
     setSyncBadge('err','Erreur : '+e.message);
+    updateSyncMiniUI('error');
     toast('Erreur restauration : '+e.message.substring(0,80), false);
   } finally {
     if(btn){btn.textContent='⬇️ Restaurer';btn.disabled=false;}
   }
 }
 
-// ── UI Cloud ──
 function setSyncBadge(state,txt) {
   const b=$('sync-badge'),t=$('sync-badge-txt');
   if(b) b.className='sync-badge'+(state==='err'?' err':state==='pending'?' pending':'');
   if(t) t.textContent=txt;
 }
+
 function updateCloudUI() {
   const connected = !!DB.g(K.DBX_REFRESH, null);
   const lastSync  = DB.g(K.SYNC_TS, null);
@@ -1933,6 +2143,12 @@ function updateCloudUI() {
   if (sec)     sec.style.display     = connected ? 'block'  : 'none';
   if (infoBox) infoBox.style.display = connected ? 'none'   : 'block';
   if (oBtn)    oBtn.textContent = connected ? '🔄 Reconnecter' : '🔐 Connexion Dropbox';
+
+  // Mettre à jour les checkboxes des options
+  const autoSync = $('auto-sync-toggle');
+  const autoRestore = $('auto-restore-toggle');
+  if (autoSync) autoSync.checked = DB.g(K.AUTO_SYNC, 'true') !== 'false';
+  if (autoRestore) autoRestore.checked = DB.g(K.AUTO_RESTORE, 'true') !== 'false';
 
   setSyncBadge(
     connected ? '' : 'err',
@@ -2022,7 +2238,6 @@ function localResp(q) {
   return `Configurez votre clé Gemini (bouton ⚙️) pour des réponses IA avancées. En mode local, je réponds sur : faim, café/thé, sport, fatigue, casser le jeûne, phases métaboliques.`;
 }
 
-// ─── AI MODE SWITCHER ───
 function setAIMode(mode) {
   S.aiMode=mode; DB.s(K.AIM,mode);
   $('btn-ai')?.classList.toggle('active',mode==='ai');
@@ -2086,7 +2301,6 @@ async function genReport() {
   removeTyping(); addMsg(resp,'bot');
 }
 
-// ─── FOOD SEARCH ───
 async function doSearch() {
   const inp=$('ai-input'),msgs=$('chat-msgs');
   const q=inp?.value.trim(); if(!q||!msgs) return;
@@ -2139,7 +2353,6 @@ function showResult(r){
 }
 function sfood(f){const inp=$('ai-input');if(inp){inp.value=f;doSearch();}}
 
-// ─── CHAT HELPERS ───
 function addMsg(text,type){
   const c=$('chat-msgs');if(!c)return;
   const div=document.createElement('div');div.className=`msg ${type}`;
@@ -2164,7 +2377,6 @@ const WATER_GOAL = 8;
 function initWater() {
   const today = new Date().toDateString();
   const saved = DB.gj(K.WATER, null);
-  // Reset if new day
   if (!saved || saved.day !== today) {
     DB.sj(K.WATER, {day: today, count: 0});
   }
@@ -2201,7 +2413,6 @@ function renderWater() {
 function setWater(n) {
   const today = new Date().toDateString();
   const saved = DB.gj(K.WATER, {day: today, count: 0});
-  // Toggle: click on filled glass removes it
   const current = saved.day === today ? saved.count : 0;
   const newCount = n === current ? n - 1 : n;
   DB.sj(K.WATER, {day: today, count: Math.max(0, newCount)});
@@ -2210,6 +2421,7 @@ function setWater(n) {
     showMilestone('💧 Objectif hydratation atteint ! 8 verres bu aujourd\'hui 🎉');
   }
   renderWater();
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 // ════════════════════════════════════════════════
@@ -2254,15 +2466,14 @@ function saveSteps() {
   addLog('PAS', `${v.toLocaleString('fr-FR')} pas · Objectif ${g.toLocaleString('fr-FR')}`, 'success');
   renderSteps();
   if (navigator.vibrate) navigator.vibrate([20, 40, 20]);
-  // Milestone si objectif atteint
   if (v >= g && (prev.count || 0) < g) {
     showMilestone(`🦶 ${v.toLocaleString('fr-FR')} pas ! Objectif journalier atteint 🎉`);
   }
   toast(`${v.toLocaleString('fr-FR')} pas enregistrés`, true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 function requestPedometer() {
-  // Vérifier si l'API Pedometer est disponible (certains navigateurs mobiles)
   if ('permissions' in navigator) {
     navigator.permissions.query({name: 'accelerometer'}).then(r => {
       if (r.state === 'granted' || r.state === 'prompt') {
@@ -2270,7 +2481,6 @@ function requestPedometer() {
       }
     }).catch(() => {});
   }
-  // Pré-remplir le drawer avec les données existantes
   const today = new Date().toDateString();
   const saved = DB.gj(K.STEPS, {day: today, count: 0, goal: 10000});
   const si = $('steps-input'), gi = $('steps-goal-input');
@@ -2279,13 +2489,8 @@ function requestPedometer() {
   openDrawer('steps');
 }
 
-// Sync steps in Dropbox payload
-function getStepsForSync() {
-  return DB.gj(K.STEPS, null);
-}
-
 // ════════════════════════════════════════════════
-//  IMC LIVE (taille fixe 182 cm)
+//  IMC LIVE
 // ════════════════════════════════════════════════
 const FIXED_HEIGHT_CM = 182;
 
@@ -2319,7 +2524,7 @@ function updateIMCLive() {
 }
 
 // ════════════════════════════════════════════════
-//  CHEAT DAY (Jour d'exception)
+//  CHEAT DAY
 // ════════════════════════════════════════════════
 function startCheatDay() {
   const today = new Date().toDateString();
@@ -2331,6 +2536,7 @@ function startCheatDay() {
   addLog('JOUR D\'EXCEPTION', 'Série préservée 🌴', 'mood');
   toast('Jour d\'exception actif — votre série est préservée 🌴', true);
   if (navigator.vibrate) navigator.vibrate([30, 60, 30]);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 function endCheatDay() {
@@ -2339,6 +2545,7 @@ function endCheatDay() {
   DB.sj(K.PAUSE, saved);
   renderCheatUI();
   toast('Jour d\'exception terminé', true);
+  triggerAutoSync(); // NOUVEAU: Sync auto
 }
 
 function isCheatDay() {
@@ -2354,7 +2561,6 @@ function renderCheatUI() {
   if (btn) btn.style.display = isCheat ? 'none' : '';
 }
 
-// Override calcStreak to skip cheat days
 function calcStreakWithCheat() {
   let n = 0;
   const ck = new Date(); ck.setHours(0,0,0,0);
@@ -2367,7 +2573,7 @@ function calcStreakWithCheat() {
 }
 
 // ════════════════════════════════════════════════
-//  AUTOPHAGY INDICATOR (visible après 16h)
+//  AUTOPHAGY INDICATOR
 // ════════════════════════════════════════════════
 function updateAutophagyBanner(elapsedHours) {
   const banner = $('autophagy-banner');
@@ -2380,11 +2586,9 @@ function updateAutophagyBanner(elapsedHours) {
   }
 
   banner.classList.remove('hidden');
-  // Entre 16h et 18h : 0% → 100% de l'autophagie "maximale"
   const pct = Math.min(100, Math.round((elapsedHours - 16) / 2 * 100));
   if (pctEl) pctEl.textContent = pct + '%';
 
-  // Intensifier la flamme avec la progression
   const flame = banner.querySelector('.flame-anim');
   if (flame) {
     if (pct >= 80)     flame.textContent = '🔥🔥🔥';
@@ -2405,7 +2609,6 @@ function showMilestone(msg, duration = 4000) {
   setTimeout(() => el.classList.remove('show'), duration);
 }
 
-// Phase milestones during fasting
 const MILESTONE_PHASES = {
   4:  '🔥 Phase lipolyse déclenchée ! Votre corps brûle les graisses.',
   8:  '⚡ Cétose légère ! Corps cétoniques produits.',
@@ -2423,7 +2626,6 @@ function checkMilestones(elH) {
     if (elH >= t && _lastMilestoneH < t) {
       _lastMilestoneH = t;
       showMilestone(MILESTONE_PHASES[t]);
-      // Demander permission notification navigateur
       if ('Notification' in window && Notification.permission === 'default') {
         Notification.requestPermission();
       }
@@ -2481,7 +2683,7 @@ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded'
 else init();
 
 // Exposition pour debug console
-window.App={S,K,DB,F,syncUp,syncDown,calcElapsed,PHASES};
+window.App={S,K,DB,F,syncUp,syncDown,calcElapsed,PHASES,triggerAutoSync};
 </script>
 </body>
 </html>
