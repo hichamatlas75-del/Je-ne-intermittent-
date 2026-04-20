@@ -237,6 +237,9 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
 .sync-log-msg{flex:1;font-size:13px;color:var(--text2);}
 .sync-log-time{font-size:11px;color:var(--text3);}
 
+.oauth-connect-btn{width:100%;height:54px;background:#fff;border:none;border-radius:var(--r3);color:#0D0D0D;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;letter-spacing:0.01em;}
+.oauth-connect-btn:active{opacity:0.9;transform:scale(0.98);}
+.oauth-redirect-info{margin-top:12px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);}
 .sync-btns{display:flex;flex-direction:column;gap:8px;padding:0 24px 20px;}
 .sync-btn-push{height:50px;background:linear-gradient(135deg,var(--fire),var(--fire2));border:none;border-radius:var(--r3);color:#fff;font-family:'Syne';font-weight:700;font-size:15px;cursor:pointer;transition:opacity 0.2s;}
 .sync-btn-push:active{opacity:0.8;}
@@ -248,7 +251,39 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
 .divider{height:1px;background:var(--border);margin:0 24px 16px;}
 .spacer{height:16px;}
 
-/* TOAST */
+/* PHASE CARDS */
+.phase-card{border-radius:var(--r2);border:1px solid var(--border);background:var(--bg2);margin-bottom:8px;overflow:hidden;transition:border-color 0.3s;}
+.phase-card.done{border-color:rgba(0,212,168,0.2);}
+.phase-card.active-phase{border-color:rgba(255,90,31,0.45);background:rgba(255,90,31,0.04);}
+.phase-card.pending{opacity:0.55;}
+.phase-header{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;}
+.phase-icon-bubble{width:40px;height:40px;border-radius:var(--r3);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;transition:background 0.3s;}
+.phase-icon-bubble.done{background:rgba(0,212,168,0.15);}
+.phase-icon-bubble.active-phase{background:rgba(255,90,31,0.18);}
+.phase-icon-bubble.pending{background:var(--bg3);}
+.phase-header-body{flex:1;}
+.phase-hours-label{font-size:10px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;margin-bottom:3px;}
+.phase-hours-label.done{color:var(--teal);}
+.phase-hours-label.active-phase{color:var(--fire2);}
+.phase-hours-label.pending{color:var(--text3);}
+.phase-name{font-size:14px;font-weight:600;color:var(--text1);}
+.phase-status-badge{flex-shrink:0;display:flex;align-items:center;gap:5px;}
+.phase-chevron{width:14px;height:14px;stroke:var(--text3);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:transform 0.25s;}
+.phase-chevron.open{transform:rotate(180deg);}
+.phase-body{max-height:0;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1);}
+.phase-body.open{max-height:600px;}
+.phase-content{padding:0 16px 16px;}
+.phase-desc-text{font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px;}
+.phase-desc-text b{color:var(--text1);}
+.phase-tip{background:var(--bg3);border-radius:var(--r4);padding:10px 12px;font-size:12px;color:var(--text3);line-height:1.6;border-left:3px solid var(--fire);}
+.phase-tip b{color:var(--fire2);}
+.phase-hormones{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+.hormone-tag{background:rgba(255,90,31,0.1);border:1px solid rgba(255,90,31,0.2);border-radius:100px;padding:4px 10px;font-size:11px;color:var(--fire2);font-weight:500;}
+.active-pulse{width:8px;height:8px;border-radius:50%;background:var(--fire);flex-shrink:0;animation:blink 1.5s infinite;}
+/* STOP BUTTON */
+.stop-fast-btn{width:100%;height:48px;background:rgba(255,68,68,0.08);border:1.5px solid rgba(255,68,68,0.25);border-radius:var(--r3);color:#ff8888;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
+.stop-fast-btn:active{background:rgba(255,68,68,0.15);}
+/* STOP BUTTON */
 .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--bg3);border:1px solid var(--border2);border-radius:100px;padding:10px 20px;font-size:13px;font-weight:600;color:var(--text1);opacity:0;transition:all 0.3s;pointer-events:none;z-index:999;white-space:nowrap;}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
@@ -352,14 +387,35 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
         </div>
       </div>
 
-      <!-- Body states panel -->
-      <div class="body-panel">
-        <div class="body-panel-title">Ce qui se passe dans ton corps</div>
-        <div class="body-states" id="bodyStates"></div>
+      <!-- Stop fasting button -->
+      <div id="stopFastRow" style="padding:0 24px 4px;display:none;">
+        <button class="stop-fast-btn" onclick="confirmStopFast()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          Arrêter le jeûne maintenant
+        </button>
+      </div>
+
+      <!-- Rich phase cards -->
+      <div style="padding:0 24px 8px;">
+        <div style="font-size:11px;font-weight:700;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border);">CE QUI SE PASSE DANS TON CORPS</div>
+        <div id="phaseCards"></div>
       </div>
 
       <div class="spacer"></div>
     </div><!-- /home -->
+
+    <!-- STOP FAST MODAL -->
+    <div id="stopModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:flex-end;justify-content:center;z-index:200;">
+      <div style="width:390px;background:var(--bg2);border-radius:22px 22px 0 0;border-top:1px solid var(--border2);padding:24px 24px 44px;">
+        <div style="width:40px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 20px;"></div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text1);margin-bottom:8px;">Arrêter le jeûne ?</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.6;margin-bottom:24px;" id="stopModalMsg">Tu es à <b style="color:var(--fire2)" id="stopModalElapsed">—</b> sur 18h. Chaque heure compte — tu es si près !</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button onclick="doStopFast()" style="height:52px;background:rgba(255,68,68,0.15);border:1.5px solid rgba(255,68,68,0.35);border-radius:var(--r3);color:#ff6666;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;">Oui, arrêter le jeûne</button>
+          <button onclick="document.getElementById('stopModal').style.display='none'" style="height:52px;background:linear-gradient(135deg,var(--fire),var(--fire2));border:none;border-radius:var(--r3);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;">💪 Continuer — je tiens bon !</button>
+        </div>
+      </div>
+    </div>
 
     <!-- ══ SCREEN: POIDS ══ -->
     <div class="screen" id="s-poids">
@@ -503,15 +559,32 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
         </div>
       </div>
 
-      <!-- Token input -->
-      <div class="token-section">
-        <div class="token-label">Token d'accès Dropbox</div>
-        <div class="token-row">
-          <input class="token-input" id="tokenInput" type="password" placeholder="sl.xxxxxxxxxxxxxxxxxxxx..." autocomplete="off">
-          <button class="token-btn" onclick="connectDropbox()">Connecter</button>
+      <!-- OAuth connect / account card -->
+      <div id="oauthConnectSection" style="padding:0 24px 16px;">
+        <button class="oauth-connect-btn" onclick="startDropboxOAuth()">
+          <svg width="20" height="20" viewBox="0 0 40 40" fill="none" style="flex-shrink:0"><path d="M20 7.5L10 13.75 20 20 10 26.25 20 32.5 30 26.25 20 20 30 13.75z" fill="#0061FF"/><path d="M10 13.75L20 20 30 13.75 20 7.5z" fill="#0061FF" opacity=".6"/></svg>
+          Se connecter avec Dropbox
+        </button>
+        <div class="oauth-redirect-info" id="redirectInfo">
+          <div style="font-size:11px;color:var(--text3);line-height:1.7;">
+            <span style="color:var(--text2);font-weight:600;">⚙️ Dans ton app Dropbox</span> (<a href="https://www.dropbox.com/developers/apps" target="_blank" style="color:var(--blue)">dropbox.com/developers</a>), ajoute cette URL comme redirect URI autorisée :
+          </div>
+          <div id="redirectUriDisplay" style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r4);padding:8px 10px;margin-top:6px;font-size:10px;color:var(--teal);word-break:break-all;font-family:monospace;cursor:pointer;" onclick="copyRedirectUri()">
+            (chargement...)
+          </div>
+          <div style="font-size:10px;color:var(--text3);margin-top:4px;">Clique dessus pour copier ↑</div>
         </div>
-        <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6;">
-          Obtenir un token sur <span style="color:var(--blue)">dropbox.com/developers</span> → Apps → Créer une app → Token d'accès.
+      </div>
+
+      <!-- Connected account card -->
+      <div id="accountCard" style="display:none;padding:0 24px 16px;">
+        <div style="background:var(--bg2);border:1px solid rgba(0,97,255,0.25);border-radius:var(--r2);padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,97,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;">☁️</div>
+          <div style="flex:1;">
+            <div style="font-size:13px;font-weight:600;color:var(--text1);" id="accountNameDisplay">—</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:2px;">Token permanent via OAuth · se rafraîchit seul</div>
+          </div>
+          <button onclick="disconnectDropbox()" style="background:none;border:1px solid var(--border2);border-radius:var(--r4);color:var(--text3);font-size:11px;padding:5px 10px;cursor:pointer;">Déconnecter</button>
         </div>
       </div>
 
@@ -580,7 +653,10 @@ let appData = {
   bestStreak: 18,
   totalFasts: 47,
   startWeight: START_WEIGHT_INIT,
-  dropboxToken: '',
+  dropboxToken:        '',
+  dropboxRefreshToken: '',
+  dropboxTokenExpiry:  null,
+  dropboxAccountName:  '',
   lastSync: null
 };
 
@@ -670,10 +746,12 @@ function fmtHM(sec) {
 // UI — TIMER UPDATE
 // ═══════════════════════════════════════════
 const STAGES = [
-  { hours: [0, 4],   icon: '⚡', name: 'Glycogène', desc: 'Puisage dans les réserves de sucre' },
-  { hours: [4, 8],   icon: '🔄', name: 'Transition', desc: 'Glycogène presque épuisé' },
-  { hours: [8, 12],  icon: '🔥', name: 'Cétose légère', desc: 'Combustion des graisses en cours' },
-  { hours: [12, 18], icon: '💫', name: 'Cétose profonde', desc: 'Autophagie et régénération cellulaire' },
+  { hours: [0, 3],   icon: '🍽️', name: 'Digestion' },
+  { hours: [3, 9],   icon: '📉', name: 'Glucagon' },
+  { hours: [9, 11],  icon: '🔄', name: 'Transition' },
+  { hours: [11, 14], icon: '🔥', name: 'Combustion' },
+  { hours: [14, 16], icon: '⚡', name: 'Cétose' },
+  { hours: [16, 18], icon: '🧬', name: 'Autophagie' },
 ];
 
 function updateTimer() {
@@ -775,34 +853,232 @@ function updateStagePills(elapsedH) {
   });
 }
 
+// ═══════════════════════════════════════════
+// 6 RICH FASTING PHASES (based on Fastic content)
+// ═══════════════════════════════════════════
+const FASTING_PHASES = [
+  {
+    h: 0, endH: 3,
+    icon: '🍽️',
+    name: 'Digestion & Insuline',
+    shortDesc: 'Ton corps transforme les glucides en glucose. L\'insuline est à son pic.',
+    content: [
+      'Le corps commence <b>immédiatement à digérer</b> après le repas. Les glucides ingérés sont transformés et libérés dans le sang sous forme de glucose.',
+      'Ton taux de sucre augmente. Ton corps produit de <b>l\'insuline</b> — cette hormone a deux fonctions clés : elle stimule l\'<b>absorption du sucre sanguin</b> dans les tissus pour un apport d\'énergie rapide, et elle <b>stocke l\'excès d\'énergie</b> en glycogène dans le foie et les muscles.',
+      'Tant que l\'insuline circule, <b>la graisse n\'est pas brûlée</b>. C\'est la raison du jeûne !'
+    ],
+    tip: '<b>Conseil :</b> Ce premier repas à 10h est ta fenêtre. Mange des protéines, légumes et bons gras — pas de sucres rapides qui feraient pic d\'insuline.',
+  },
+  {
+    h: 3, endH: 9,
+    icon: '📉',
+    name: 'Chute de glycémie & Glucagon',
+    shortDesc: 'La glycémie baisse. Le glucagon entre en scène pour maintenir l\'énergie.',
+    content: [
+      'Une fois la nourriture digérée, l\'organisme <b>cesse de produire de l\'insuline</b>. C\'est une brève période de repos — mais elle ne dure pas longtemps.',
+      'Nos organes, muscles et processus cognitifs <b>continuent de consommer de l\'énergie</b>. Un nouvel acteur entre alors : <b>le glucagon</b>.',
+      'Dès que le taux de sucre baisse, le glucagon libère le glycogène précédemment stocké dans le sang. <b>Le taux de sucre reste constant et l\'approvisionnement en énergie est assuré</b>.'
+    ],
+    tip: '<b>Conseil :</b> C\'est le moment parfait pour bouger légèrement — marche, étirements. L\'activité douce amplifie la libération du glucagon.',
+  },
+  {
+    h: 9, endH: 11,
+    icon: '🔄',
+    name: 'Épuisement du Glycogène',
+    shortDesc: 'Les réserves de sucre s\'épuisent. Le corps cherche une autre source d\'énergie.',
+    content: [
+      'Le glycogène stocké dans le foie est rapidement épuisé. <b>Les besoins énergétiques incessants</b> commencent à peser sur les réserves.',
+      'Il est maintenant temps de se rabattre sur une ressource bien plus importante : <b>les réserves de graisse</b>. L\'apport calorique moyen d\'un adulte sous forme de graisses s\'élève à environ <b>80 000 calories</b>.',
+      'Ton corps <b>bascule vers la production d\'énergie à partir de la graisse</b> une fois que le glucose sanguin et le glycogène sont épuisés.'
+    ],
+    tip: '<b>Tu es à 9h de jeûne</b> — il est 01h du matin, tu dors et ton corps travaille en silence. C\'est magique.',
+  },
+  {
+    h: 11, endH: 14,
+    icon: '🔥',
+    name: 'Combustion des Graisses',
+    shortDesc: '6 hormones puissantes activées. Ton corps brûle tes réserves de graisses.',
+    content: [
+      'Afin de puiser dans les réserves graisseuses, le corps produit <b>6 hormones de combustion des graisses</b> impressionnantes, impliquées dans ce mécanisme vital.',
+      'Ces hormones remplissent toutes la même grande fonction : <b>libérer et brûler les graisses stockées</b>.'
+    ],
+    hormones: ["🧪 Hormone de croissance (GH)", "🔬 Somatomédine C (IGF-1)", "⚡ Glucagon", "💪 Testostérone", "🚀 Adrénaline", "⚖️ Cortisol"],
+    tip: '<b>C\'est là que la magie opère.</b> 11h de jeûne = ton corps est une machine à brûler les graisses. Tiens bon, Hicham !',
+  },
+  {
+    h: 14, endH: 16,
+    icon: '⚡',
+    name: 'Cétose profonde & Cerveau',
+    shortDesc: 'Les cétones alimentent ton cerveau. Concentration et productivité au maximum.',
+    content: [
+      'Les cétones sont produites dans le foie, <b>comme sous-produit de la combustion des graisses</b>. Ce processus commence 12 à 16 heures après le dernier repas.',
+      'Les cétones sont des <b>molécules d\'acides gras</b> qui se forment lorsque les cellules graisseuses sont décomposées. Elles fournissent de l\'énergie au <b>cœur, au cerveau et aux organes vitaux</b>.',
+      'Les cétones <b>activent tes cellules nerveuses</b>, renforcent tes capacités intellectuelles et développent de nouvelles cellules à partir des cellules souches de ton cerveau. C\'est la raison pour laquelle tu te sens <b>particulièrement concentré(e) et productif(ve)</b> pendant le jeûne.'
+    ],
+    tip: '<b>Conseil :</b> C\'est le meilleur moment pour travailler sur des tâches cognitives difficiles. Ton cerveau tourne au kérosène.',
+  },
+  {
+    h: 16, endH: 18,
+    icon: '🧬',
+    name: 'Autophagie — Régénération cellulaire',
+    shortDesc: 'Tes cellules se nettoient elles-mêmes. La phase la plus puissante du jeûne.',
+    content: [
+      'Voici <b>l\'autophagie</b> — processus déclenché par un jeûne prolongé et la combustion des graisses. L\'autophagie vient du grec ancien <i>αὐτόφαγος</i> (autóphagos) qui signifie <b>"se consommer soi-même"</b>.',
+      'C\'est exactement ce qui se passe : <b>tes cellules commencent à se transformer elles-mêmes</b>. Les anciens composants cellulaires et les protéines "mal repliées" sont <b>recyclés et complètement renouvelés</b>.',
+      'Ton corps subit un <b>grand nettoyage</b>. Cela rend tes cellules <b>plus efficaces</b> et prolonge également la <b>vie de tes cellules — et par conséquent, la tienne</b>.',
+      'Pour des résultats optimaux, jeûne environ <b>16 à 18 heures</b> — c\'est exactement ce que tu fais !'
+    ],
+    tip: '<b>Bravo Hicham !</b> Atteindre 16h+ c\'est entrer dans l\'élite du jeûne intermittent. Le mieux peut être l\'ennemi du bien — 18h est le sweet spot parfait.',
+  }
+];
+
+let expandedPhase = null;
+
 function updateBodyStates(elapsedH) {
-  const container = document.getElementById('bodyStates');
+  // Kept for compatibility — now calls renderPhaseCards
+  renderPhaseCards(elapsedH);
+}
+
+function renderPhaseCards(elapsedH) {
+  const container = document.getElementById('phaseCards');
+  const stopRow = document.getElementById('stopFastRow');
+  if (!container) return;
+
+  const isFasting = elapsedH >= 0;
+  if (stopRow) stopRow.style.display = isFasting ? 'block' : 'none';
+
+  // Only re-render if active phase changed
+  const currentActive = FASTING_PHASES.findIndex(p => isFasting && elapsedH >= p.h && elapsedH < p.endH);
+  if (container._lastActive === currentActive && container.children.length > 0) return;
+  container._lastActive = currentActive;
+
   container.innerHTML = '';
-  const allStates = [
-    { h: 0,  icon: '⚡', name: 'Réserves de glycogène', desc: 'Ton corps utilise le glucose stocké dans le foie et les muscles.' },
-    { h: 4,  icon: '🔄', name: 'Transition métabolique', desc: 'Épuisement du glycogène, début du basculement vers les acides gras.' },
-    { h: 8,  icon: '🔥', name: 'Cétose — combustion graisses', desc: 'Les graisses sont converties en corps cétoniques. Tu brûles tes réserves !' },
-    { h: 12, icon: '🧬', name: 'Autophagie cellulaire', desc: 'Nettoyage et régénération des cellules endommagées en profondeur.' },
-    { h: 16, icon: '💪', name: 'Sensibilité insuline max', desc: 'Pic d\'efficacité métabolique. Ton corps est en mode optimisation.' },
-  ];
-  allStates.forEach((st, i) => {
-    const done = elapsedH >= st.h && elapsedH >= 0;
-    const isActive = elapsedH >= 0 && elapsedH >= st.h && (i === allStates.length - 1 || elapsedH < allStates[i + 1].h);
-    const dotCls = !done ? 'bstate-dot pending' : isActive ? 'bstate-dot active' : 'bstate-dot done';
-    const isLast = i === allStates.length - 1;
-    container.innerHTML += `
-      <div class="body-state">
-        <div class="bstate-line">
-          <div class="${dotCls}"></div>
-          ${!isLast ? '<div class="bstate-vline"></div>' : ''}
-        </div>
-        <div class="bstate-body">
-          <div class="bstate-hour">${st.h}h après le début</div>
-          <div class="bstate-name">${st.icon} ${st.name}</div>
-          <div class="bstate-desc">${st.desc}</div>
-        </div>
-      </div>`;
+
+  FASTING_PHASES.forEach((phase, i) => {
+    const isDone   = isFasting && elapsedH >= phase.endH;
+    const isActive = isFasting && elapsedH >= phase.h && elapsedH < phase.endH;
+    const isPending= !isFasting || elapsedH < phase.h;
+
+    // ── Wrapper card ──
+    const card = document.createElement('div');
+    card.style.cssText = `
+      display:flex; gap:14px; margin-bottom:4px; position:relative;
+    `;
+
+    // ── Left column: timeline ──
+    const lineCol = document.createElement('div');
+    lineCol.style.cssText = 'display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:2px;';
+
+    // Dot
+    const dot = document.createElement('div');
+    let dotColor = 'var(--text3)'; let dotBg = 'transparent'; let dotShadow = '';
+    if (isDone)   { dotColor = 'var(--teal)'; dotBg = 'var(--teal)'; }
+    if (isActive) { dotColor = 'var(--fire)'; dotBg = 'var(--fire)'; dotShadow = '0 0 10px rgba(255,90,31,0.7)'; }
+    dot.style.cssText = `width:14px;height:14px;border-radius:50%;border:2.5px solid ${dotColor};background:${dotBg};flex-shrink:0;box-shadow:${dotShadow};margin-top:4px;`;
+    if (isActive) { dot.style.animation = 'blink 1.8s infinite'; }
+    lineCol.appendChild(dot);
+
+    // Vertical line (except last)
+    if (i < FASTING_PHASES.length - 1) {
+      const vline = document.createElement('div');
+      vline.style.cssText = `width:2px;flex:1;min-height:20px;margin-top:4px;background:${isDone ? 'rgba(0,212,168,0.3)' : 'var(--border2)'};border-radius:1px;`;
+      lineCol.appendChild(vline);
+    }
+
+    // ── Right column: content ──
+    const contentCol = document.createElement('div');
+    contentCol.style.cssText = 'flex:1;padding-bottom:20px;';
+
+    // Hours label
+    let hoursLabel = isPending ? `À ${phase.h}h de jeûne` : isDone ? `✓ Complété · ${phase.h}–${phase.endH}h` : `EN COURS · ${phase.h}h–${phase.endH}h`;
+    const hoursEl = document.createElement('div');
+    hoursEl.style.cssText = `font-size:10px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;margin-bottom:5px;color:${isActive ? 'var(--fire2)' : isDone ? 'var(--teal)' : 'var(--text3)'};`;
+    hoursEl.textContent = hoursLabel;
+    contentCol.appendChild(hoursEl);
+
+    // Phase name
+    const nameEl = document.createElement('div');
+    nameEl.style.cssText = `font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:${isPending ? 'var(--text3)' : 'var(--text1)'};margin-bottom:10px;display:flex;align-items:center;gap:8px;`;
+    nameEl.innerHTML = `<span style="font-size:18px;">${phase.icon}</span>${phase.name}`;
+    contentCol.appendChild(nameEl);
+
+    // Content paragraphs — ALWAYS VISIBLE
+    if (!isPending) {
+      phase.content.forEach(para => {
+        const p = document.createElement('p');
+        p.style.cssText = 'font-size:13px;color:var(--text2);line-height:1.75;margin-bottom:10px;';
+        p.innerHTML = para;
+        contentCol.appendChild(p);
+      });
+
+      // Hormones tags
+      if (phase.hormones) {
+        const hormonesWrap = document.createElement('div');
+        hormonesWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;';
+        phase.hormones.forEach(h => {
+          const tag = document.createElement('span');
+          tag.style.cssText = 'background:rgba(255,90,31,0.1);border:1px solid rgba(255,90,31,0.25);border-radius:100px;padding:4px 10px;font-size:11px;color:var(--fire2);font-weight:600;';
+          tag.textContent = h;
+          hormonesWrap.appendChild(tag);
+        });
+        contentCol.appendChild(hormonesWrap);
+      }
+
+      // Pro tip
+      if (phase.tip) {
+        const tip = document.createElement('div');
+        tip.style.cssText = `background:${isActive ? 'rgba(255,90,31,0.08)' : 'var(--bg3)'};border-radius:var(--r4);padding:10px 12px;font-size:12px;color:var(--text3);line-height:1.65;border-left:3px solid ${isActive ? 'var(--fire)' : 'var(--border2)'};`;
+        tip.innerHTML = phase.tip;
+        contentCol.appendChild(tip);
+      }
+    } else {
+      // Pending phase — show short preview
+      const prev = document.createElement('p');
+      prev.style.cssText = 'font-size:12px;color:var(--text3);line-height:1.6;font-style:italic;';
+      prev.textContent = phase.shortDesc;
+      contentCol.appendChild(prev);
+    }
+
+    card.appendChild(lineCol);
+    card.appendChild(contentCol);
+    container.appendChild(card);
   });
+}
+
+function togglePhase(i) { /* no longer used — content always visible */ }
+
+// ── STOP FAST ──
+function confirmStopFast() {
+  const state = getFastingState();
+  const elapsed = state.isFasting ? state.elapsedSec : 0;
+  const pct = Math.round(elapsed / (FAST_DURATION_H * 3600) * 100);
+  document.getElementById('stopModalElapsed').textContent = fmtHM(elapsed) + ' (' + pct + '%)';
+  let msg = '';
+  if (pct < 50) msg = `Tu es à seulement <b style="color:var(--fire2)" id="stopModalElapsed">${fmtHM(elapsed)} (${pct}%)</b> sur 18h. Le plus dur est encore à venir… mais aussi le meilleur ! 💪`;
+  else if (pct < 80) msg = `Tu es déjà à <b style="color:var(--fire2)">${fmtHM(elapsed)} (${pct}%)</b> sur 18h. Tu es si proche de la cétose profonde. Continue !`;
+  else msg = `Incroyable — tu es à <b style="color:var(--fire2)">${fmtHM(elapsed)} (${pct}%)</b> sur 18h. Tu es presque à l'autophagie. Vraiment, tiens bon !`;
+  document.getElementById('stopModalMsg').innerHTML = msg;
+  document.getElementById('stopModal').style.display = 'flex';
+}
+
+function doStopFast() {
+  document.getElementById('stopModal').style.display = 'none';
+  const state = getFastingState();
+  const elapsed = state.isFasting ? state.elapsedSec : 0;
+  const hours = (elapsed / 3600).toFixed(1);
+  // Log as partial fast
+  const now = new Date();
+  const dateStr = now.toISOString().slice(0, 10);
+  const existing = appData.fastingLog.findIndex(e => e.date === dateStr);
+  if (existing >= 0) {
+    appData.fastingLog[existing] = { date: dateStr, completed: false, hours: parseFloat(hours) };
+  } else {
+    appData.fastingLog.push({ date: dateStr, completed: false, hours: parseFloat(hours) });
+  }
+  saveLocal();
+  renderCalendar();
+  showToast(`Jeûne arrêté à ${hours}h. Bien joué quand même 💪`);
+  if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox();
 }
 
 // ═══════════════════════════════════════════
@@ -825,7 +1101,7 @@ function saveWeight() {
   saveLocal();
   renderWeightScreen();
   showToast('✅ Poids enregistré : ' + inputWeight.toFixed(1) + ' kg');
-  if (appData.dropboxToken) autoSyncDropbox();
+  if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox();
 }
 
 function renderWeightScreen() {
@@ -992,16 +1268,146 @@ function renderCalendar() {
 }
 
 // ═══════════════════════════════════════════
-// DROPBOX SYNC
+// DROPBOX OAUTH PKCE — clé app hey2nvnz07mjq05
+// Tokens permanents via refresh_token
 // ═══════════════════════════════════════════
+const DROPBOX_APP_KEY   = 'hey2nvnz07mjq05';
 const DROPBOX_FILE_PATH = '/fastflow-hicham-data.json';
 let syncLog = [];
 
+// ── PKCE helpers ──
+function getRedirectUri() {
+  return window.location.origin !== 'null'
+    ? window.location.origin + window.location.pathname
+    : window.location.href.split('?')[0].split('#')[0];
+}
+
+function copyRedirectUri() {
+  const uri = getRedirectUri();
+  navigator.clipboard.writeText(uri).then(() => showToast('📋 URI copiée !'));
+}
+
+function generateVerifier() {
+  const arr = new Uint8Array(32);
+  crypto.getRandomValues(arr);
+  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+async function sha256b64url(plain) {
+  const data = new TextEncoder().encode(plain);
+  const digest = await crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
+}
+
+// ── OAuth Launch ──
+async function startDropboxOAuth() {
+  const verifier = generateVerifier();
+  const challenge = await sha256b64url(verifier);
+  sessionStorage.setItem('dbx_pkce_verifier', verifier);
+
+  const params = new URLSearchParams({
+    client_id:             DROPBOX_APP_KEY,
+    response_type:         'code',
+    code_challenge:        challenge,
+    code_challenge_method: 'S256',
+    redirect_uri:          getRedirectUri(),
+    token_access_type:     'offline',
+    state:                 'ff_auth'
+  });
+  window.location.href = 'https://www.dropbox.com/oauth2/authorize?' + params.toString();
+}
+
+// ── Code exchange ──
+async function exchangeCode(code) {
+  const verifier = sessionStorage.getItem('dbx_pkce_verifier');
+  if (!verifier) throw new Error('PKCE verifier manquant — relance la connexion');
+  const body = new URLSearchParams({
+    code,
+    grant_type:    'authorization_code',
+    code_verifier: verifier,
+    redirect_uri:  getRedirectUri(),
+    client_id:     DROPBOX_APP_KEY
+  });
+  const res = await fetch('https://api.dropbox.com/oauth2/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error_description || data.error);
+  return data; // { access_token, refresh_token, expires_in, ... }
+}
+
+// ── Auto-refresh access token ──
+async function refreshAccessToken() {
+  if (!appData.dropboxRefreshToken) throw new Error('Aucun refresh token — reconnecte Dropbox');
+  const res = await fetch('https://api.dropbox.com/oauth2/token', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type:    'refresh_token',
+      refresh_token: appData.dropboxRefreshToken,
+      client_id:     DROPBOX_APP_KEY
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error_description || data.error);
+  appData.dropboxToken       = data.access_token;
+  appData.dropboxTokenExpiry = Date.now() + data.expires_in * 1000;
+  saveLocal();
+  addSyncLog('🔄', 'Token rafraîchi automatiquement');
+}
+
+async function getValidToken() {
+  if (!appData.dropboxToken) return null;
+  const MARGIN = 5 * 60 * 1000; // 5 min avant expiry
+  if (appData.dropboxTokenExpiry && Date.now() > appData.dropboxTokenExpiry - MARGIN) {
+    await refreshAccessToken();
+  }
+  return appData.dropboxToken;
+}
+
+// ── Disconnect ──
+function disconnectDropbox() {
+  appData.dropboxToken        = '';
+  appData.dropboxRefreshToken = '';
+  appData.dropboxTokenExpiry  = null;
+  appData.dropboxAccountName  = '';
+  saveLocal();
+  updateSyncUI();
+  addSyncLog('🚪', 'Compte Dropbox déconnecté');
+  showToast('Déconnecté de Dropbox');
+}
+
+// ── UI helpers ──
+function updateSyncChip(status, label) {
+  const chip = document.getElementById('syncChip');
+  chip.className = 'sync-status-chip ' + status;
+  document.getElementById('syncChipLabel').textContent = label;
+}
+
+function updateSyncUI() {
+  const connected = !!appData.dropboxRefreshToken;
+  document.getElementById('oauthConnectSection').style.display = connected ? 'none' : 'block';
+  document.getElementById('accountCard').style.display = connected ? 'block' : 'none';
+  if (connected) {
+    document.getElementById('accountNameDisplay').textContent = appData.dropboxAccountName || 'Hicham Dropbox';
+    updateSyncChip('connected', 'Connecté (OAuth)');
+  } else {
+    updateSyncChip('disconnected', 'Non connecté');
+  }
+  // Always show redirect URI hint
+  const el = document.getElementById('redirectUriDisplay');
+  if (el) el.textContent = getRedirectUri();
+}
+
+// ── Sync Log ──
 function addSyncLog(icon, msg) {
   const now = new Date();
   const t = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   syncLog.unshift({ icon, msg, t });
-  if (syncLog.length > 8) syncLog.pop();
+  if (syncLog.length > 10) syncLog.pop();
   renderSyncLog();
 }
 
@@ -1019,129 +1425,143 @@ function renderSyncLog() {
     </div>`).join('');
 }
 
-function connectDropbox() {
-  const token = document.getElementById('tokenInput').value.trim();
-  if (!token) { showToast('⚠️ Colle ton token Dropbox'); return; }
-  appData.dropboxToken = token;
-  saveLocal();
-  updateSyncChip('syncing', 'Connexion en cours...');
-  addSyncLog('🔗', 'Tentative de connexion Dropbox...');
-  // Validate token by getting account info
-  fetch('https://api.dropboxapi.com/2/users/get_current_account', {
-    method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-    body: 'null'
-  }).then(r => {
-    if (!r.ok) throw new Error('Token invalide');
-    return r.json();
-  }).then(data => {
-    const name = data.name?.display_name || 'Utilisateur';
-    updateSyncChip('connected', 'Connecté — ' + name);
-    addSyncLog('✅', `Connecté en tant que : ${name}`);
-    showToast('✅ Dropbox connecté !');
-  }).catch(err => {
-    updateSyncChip('disconnected', 'Erreur de connexion');
-    addSyncLog('❌', 'Token invalide ou connexion impossible');
-    showToast('❌ Token invalide');
-    appData.dropboxToken = '';
-    saveLocal();
-  });
-}
-
-function updateSyncChip(status, label) {
-  const chip = document.getElementById('syncChip');
-  chip.className = 'sync-status-chip ' + status;
-  document.getElementById('syncChipLabel').textContent = label;
-}
-
+// ── Push / Pull ──
 function getPayload() {
   return JSON.stringify({
-    version: 1,
-    user: 'Hicham',
-    exportedAt: new Date().toISOString(),
-    streak: appData.streak,
-    bestStreak: appData.bestStreak,
-    totalFasts: appData.totalFasts,
-    startWeight: appData.startWeight,
+    version:       2,
+    user:          'Hicham',
+    exportedAt:    new Date().toISOString(),
+    streak:        appData.streak,
+    bestStreak:    appData.bestStreak,
+    totalFasts:    appData.totalFasts,
+    startWeight:   appData.startWeight,
     weightHistory: appData.weightHistory,
-    fastingLog: appData.fastingLog
+    fastingLog:    appData.fastingLog
   }, null, 2);
 }
 
 async function pushToDropbox() {
-  if (!appData.dropboxToken) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
+  const token = await getValidToken();
+  if (!token) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
   updateSyncChip('syncing', 'Sauvegarde...');
   addSyncLog('⬆️', 'Envoi des données vers Dropbox...');
   try {
     const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + appData.dropboxToken,
-        'Content-Type': 'application/octet-stream',
-        'Dropbox-API-Arg': JSON.stringify({
-          path: DROPBOX_FILE_PATH,
-          mode: 'overwrite',
-          autorename: false,
-          mute: false
-        })
+        'Authorization':   'Bearer ' + token,
+        'Content-Type':    'application/octet-stream',
+        'Dropbox-API-Arg': JSON.stringify({ path: DROPBOX_FILE_PATH, mode: 'overwrite', mute: true })
       },
       body: getPayload()
     });
-    if (!res.ok) throw new Error('Upload failed');
-    const now = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error_summary || 'HTTP ' + res.status);
+    }
     appData.lastSync = new Date().toISOString();
     saveLocal();
+    const t = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
     updateSyncChip('connected', 'Synchronisé ✓');
-    addSyncLog('✅', `Sauvegardé : ${appData.weightHistory.length} mesures de poids`);
-    document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${now}`;
+    addSyncLog('✅', `${appData.weightHistory.length} mesures sauvegardées`);
+    document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${t}`;
     showToast('☁️ Sauvegardé sur Dropbox !');
   } catch(e) {
-    updateSyncChip('disconnected', 'Erreur upload');
-    addSyncLog('❌', 'Échec de l\'upload : ' + e.message);
-    showToast('❌ Échec de la sauvegarde');
+    updateSyncChip('connected', 'Erreur upload');
+    addSyncLog('❌', 'Upload échoué : ' + e.message);
+    showToast('❌ ' + e.message);
   }
 }
 
 async function pullFromDropbox() {
-  if (!appData.dropboxToken) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
+  const token = await getValidToken();
+  if (!token) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
   updateSyncChip('syncing', 'Restauration...');
   addSyncLog('⬇️', 'Téléchargement depuis Dropbox...');
   try {
     const res = await fetch('https://content.dropboxapi.com/2/files/download', {
       method: 'POST',
       headers: {
-        'Authorization': 'Bearer ' + appData.dropboxToken,
+        'Authorization':   'Bearer ' + token,
         'Dropbox-API-Arg': JSON.stringify({ path: DROPBOX_FILE_PATH })
       }
     });
-    if (!res.ok) throw new Error('Fichier non trouvé');
-    const text = await res.text();
-    const remote = JSON.parse(text);
-    // Merge remote into local
-    if (remote.weightHistory) appData.weightHistory = remote.weightHistory;
-    if (remote.fastingLog) appData.fastingLog = remote.fastingLog;
-    if (remote.streak) appData.streak = remote.streak;
-    if (remote.bestStreak) appData.bestStreak = remote.bestStreak;
-    if (remote.totalFasts) appData.totalFasts = remote.totalFasts;
-    if (remote.startWeight) appData.startWeight = remote.startWeight;
+    if (!res.ok) throw new Error('Fichier non trouvé sur Dropbox');
+    const remote = await res.json();
+    if (remote.weightHistory) { appData.weightHistory = remote.weightHistory; }
+    if (remote.fastingLog)    { appData.fastingLog    = remote.fastingLog; }
+    if (remote.streak)        { appData.streak        = remote.streak; }
+    if (remote.bestStreak)    { appData.bestStreak    = remote.bestStreak; }
+    if (remote.totalFasts)    { appData.totalFasts    = remote.totalFasts; }
+    if (remote.startWeight)   { appData.startWeight   = remote.startWeight; }
     inputWeight = getLatestWeight();
     saveLocal();
     renderWeightScreen();
     renderCalendar();
     updateSyncChip('connected', 'Restauré ✓');
-    addSyncLog('✅', `Restauré : ${appData.weightHistory.length} mesures importées`);
-    document.getElementById('lastSyncInfo').textContent = `Restauré le : ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
-    showToast('⬇️ Données restaurées depuis Dropbox !');
+    addSyncLog('✅', `${appData.weightHistory.length} mesures restaurées`);
+    const t = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('lastSyncInfo').textContent = `Restauré le : ${t}`;
+    showToast('⬇️ Données restaurées !');
   } catch(e) {
-    updateSyncChip('disconnected', 'Aucun fichier trouvé');
-    addSyncLog('⚠️', 'Aucune donnée sur Dropbox — commence par sauvegarder');
-    showToast('⚠️ Aucune donnée sur Dropbox');
+    updateSyncChip('connected', 'Aucun fichier');
+    addSyncLog('⚠️', 'Aucune donnée sur Dropbox — sauvegarde d\'abord');
+    showToast('⚠️ ' + e.message);
   }
 }
 
 async function autoSyncDropbox() {
-  if (!appData.dropboxToken) return;
+  const token = await getValidToken().catch(() => null);
+  if (!token) return;
   await pushToDropbox();
+}
+
+// ── Handle OAuth callback (called at page load) ──
+async function handleOAuthCallback() {
+  const params = new URLSearchParams(window.location.search);
+  const code  = params.get('code');
+  const state = params.get('state');
+  const error = params.get('error');
+
+  if (error) {
+    history.replaceState(null, null, window.location.pathname);
+    showToast('❌ Autorisation Dropbox refusée');
+    return;
+  }
+  if (!code || state !== 'ff_auth') return;
+
+  // Clean URL immediately
+  history.replaceState(null, null, window.location.pathname);
+
+  goto('sync');
+  updateSyncChip('syncing', 'Connexion en cours...');
+  addSyncLog('🔗', 'Échange du code OAuth...');
+
+  try {
+    const tokens = await exchangeCode(code);
+    appData.dropboxToken        = tokens.access_token;
+    appData.dropboxRefreshToken = tokens.refresh_token || appData.dropboxRefreshToken;
+    appData.dropboxTokenExpiry  = Date.now() + tokens.expires_in * 1000;
+    sessionStorage.removeItem('dbx_pkce_verifier');
+
+    // Fetch account name
+    const accRes = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + appData.dropboxToken, 'Content-Type': 'application/json' },
+      body: 'null'
+    });
+    const acc = await accRes.json();
+    appData.dropboxAccountName = acc.name?.display_name || 'Hicham';
+    saveLocal();
+    updateSyncUI();
+    addSyncLog('✅', `Connecté : ${appData.dropboxAccountName}`);
+    showToast('✅ Dropbox connecté ! Token permanent activé.');
+    await pushToDropbox();
+  } catch(e) {
+    updateSyncChip('disconnected', 'Erreur OAuth');
+    addSyncLog('❌', 'Connexion échouée : ' + e.message);
+    showToast('❌ ' + e.message);
+  }
 }
 
 // ═══════════════════════════════════════════
@@ -1187,28 +1607,26 @@ if (!appData.weightHistory.length) {
   saveLocal();
 }
 
-// Restore token input if saved
-if (appData.dropboxToken) {
-  document.getElementById('tokenInput').value = appData.dropboxToken;
-  updateSyncChip('connected', 'Token enregistré');
-}
-
-if (appData.lastSync) {
-  const t = new Date(appData.lastSync).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-  document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${t}`;
-}
+// OAuth callback check + UI init
+handleOAuthCallback().then(() => {
+  updateSyncUI();
+  renderSyncLog();
+  if (appData.lastSync) {
+    const t = new Date(appData.lastSync).toLocaleString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
+    document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${t}`;
+  }
+});
 
 // Initial renders
 updateTimer();
 renderWeightScreen();
 renderCalendar();
-renderSyncLog();
 
 // Timer tick every second
 setInterval(updateTimer, 1000);
 
 // Auto-sync every 10 min if token set
-setInterval(() => { if (appData.dropboxToken) autoSyncDropbox(); }, 10 * 60 * 1000);
+setInterval(() => { if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox(); }, 10 * 60 * 1000);
 
 // Check fasting day completion — if at 10:00:00 exactly, mark today as done
 setInterval(() => {
@@ -1226,7 +1644,7 @@ setInterval(() => {
       saveLocal();
       renderCalendar();
       showToast('🏆 Jeûne de 18h complété ! +1 jour');
-      if (appData.dropboxToken) autoSyncDropbox();
+      if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox();
     }
   }
 }, 3000);
