@@ -237,9 +237,6 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
 .sync-log-msg{flex:1;font-size:13px;color:var(--text2);}
 .sync-log-time{font-size:11px;color:var(--text3);}
 
-.oauth-connect-btn{width:100%;height:54px;background:#fff;border:none;border-radius:var(--r3);color:#0D0D0D;font-family:'Syne',sans-serif;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;letter-spacing:0.01em;}
-.oauth-connect-btn:active{opacity:0.9;transform:scale(0.98);}
-.oauth-redirect-info{margin-top:12px;padding:12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);}
 .sync-btns{display:flex;flex-direction:column;gap:8px;padding:0 24px 20px;}
 .sync-btn-push{height:50px;background:linear-gradient(135deg,var(--fire),var(--fire2));border:none;border-radius:var(--r3);color:#fff;font-family:'Syne';font-weight:700;font-size:15px;cursor:pointer;transition:opacity 0.2s;}
 .sync-btn-push:active{opacity:0.8;}
@@ -506,32 +503,15 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
         </div>
       </div>
 
-      <!-- OAuth connect / account card -->
-      <div id="oauthConnectSection" style="padding:0 24px 16px;">
-        <button class="oauth-connect-btn" onclick="startDropboxOAuth()">
-          <svg width="20" height="20" viewBox="0 0 40 40" fill="none" style="flex-shrink:0"><path d="M20 7.5L10 13.75 20 20 10 26.25 20 32.5 30 26.25 20 20 30 13.75z" fill="#0061FF"/><path d="M10 13.75L20 20 30 13.75 20 7.5z" fill="#0061FF" opacity=".6"/></svg>
-          Se connecter avec Dropbox
-        </button>
-        <div class="oauth-redirect-info" id="redirectInfo">
-          <div style="font-size:11px;color:var(--text3);line-height:1.7;">
-            <span style="color:var(--text2);font-weight:600;">⚙️ Dans ton app Dropbox</span> (<a href="https://www.dropbox.com/developers/apps" target="_blank" style="color:var(--blue)">dropbox.com/developers</a>), ajoute cette URL comme redirect URI autorisée :
-          </div>
-          <div id="redirectUriDisplay" style="background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r4);padding:8px 10px;margin-top:6px;font-size:10px;color:var(--teal);word-break:break-all;font-family:monospace;cursor:pointer;" onclick="copyRedirectUri()">
-            (chargement...)
-          </div>
-          <div style="font-size:10px;color:var(--text3);margin-top:4px;">Clique dessus pour copier ↑</div>
+      <!-- Token input -->
+      <div class="token-section">
+        <div class="token-label">Token d'accès Dropbox</div>
+        <div class="token-row">
+          <input class="token-input" id="tokenInput" type="password" placeholder="sl.xxxxxxxxxxxxxxxxxxxx..." autocomplete="off">
+          <button class="token-btn" onclick="connectDropbox()">Connecter</button>
         </div>
-      </div>
-
-      <!-- Connected account card -->
-      <div id="accountCard" style="display:none;padding:0 24px 16px;">
-        <div style="background:var(--bg2);border:1px solid rgba(0,97,255,0.25);border-radius:var(--r2);padding:14px 16px;display:flex;align-items:center;gap:12px;">
-          <div style="width:40px;height:40px;border-radius:50%;background:rgba(0,97,255,0.15);display:flex;align-items:center;justify-content:center;font-size:18px;">☁️</div>
-          <div style="flex:1;">
-            <div style="font-size:13px;font-weight:600;color:var(--text1);" id="accountNameDisplay">—</div>
-            <div style="font-size:11px;color:var(--text3);margin-top:2px;">Token permanent via OAuth · se rafraîchit seul</div>
-          </div>
-          <button onclick="disconnectDropbox()" style="background:none;border:1px solid var(--border2);border-radius:var(--r4);color:var(--text3);font-size:11px;padding:5px 10px;cursor:pointer;">Déconnecter</button>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px;line-height:1.6;">
+          Obtenir un token sur <span style="color:var(--blue)">dropbox.com/developers</span> → Apps → Créer une app → Token d'accès.
         </div>
       </div>
 
@@ -600,10 +580,7 @@ let appData = {
   bestStreak: 18,
   totalFasts: 47,
   startWeight: START_WEIGHT_INIT,
-  dropboxToken:        '',
-  dropboxRefreshToken: '',
-  dropboxTokenExpiry:  null,
-  dropboxAccountName:  '',
+  dropboxToken: '',
   lastSync: null
 };
 
@@ -848,7 +825,7 @@ function saveWeight() {
   saveLocal();
   renderWeightScreen();
   showToast('✅ Poids enregistré : ' + inputWeight.toFixed(1) + ' kg');
-  if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox();
+  if (appData.dropboxToken) autoSyncDropbox();
 }
 
 function renderWeightScreen() {
@@ -1015,146 +992,16 @@ function renderCalendar() {
 }
 
 // ═══════════════════════════════════════════
-// DROPBOX OAUTH PKCE — clé app hey2nvnz07mjq05
-// Tokens permanents via refresh_token
+// DROPBOX SYNC
 // ═══════════════════════════════════════════
-const DROPBOX_APP_KEY   = 'hey2nvnz07mjq05';
 const DROPBOX_FILE_PATH = '/fastflow-hicham-data.json';
 let syncLog = [];
 
-// ── PKCE helpers ──
-function getRedirectUri() {
-  return window.location.origin !== 'null'
-    ? window.location.origin + window.location.pathname
-    : window.location.href.split('?')[0].split('#')[0];
-}
-
-function copyRedirectUri() {
-  const uri = getRedirectUri();
-  navigator.clipboard.writeText(uri).then(() => showToast('📋 URI copiée !'));
-}
-
-function generateVerifier() {
-  const arr = new Uint8Array(32);
-  crypto.getRandomValues(arr);
-  return btoa(String.fromCharCode(...arr)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-
-async function sha256b64url(plain) {
-  const data = new TextEncoder().encode(plain);
-  const digest = await crypto.subtle.digest('SHA-256', data);
-  return btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\+/g,'-').replace(/\//g,'_').replace(/=/g,'');
-}
-
-// ── OAuth Launch ──
-async function startDropboxOAuth() {
-  const verifier = generateVerifier();
-  const challenge = await sha256b64url(verifier);
-  sessionStorage.setItem('dbx_pkce_verifier', verifier);
-
-  const params = new URLSearchParams({
-    client_id:             DROPBOX_APP_KEY,
-    response_type:         'code',
-    code_challenge:        challenge,
-    code_challenge_method: 'S256',
-    redirect_uri:          getRedirectUri(),
-    token_access_type:     'offline',
-    state:                 'ff_auth'
-  });
-  window.location.href = 'https://www.dropbox.com/oauth2/authorize?' + params.toString();
-}
-
-// ── Code exchange ──
-async function exchangeCode(code) {
-  const verifier = sessionStorage.getItem('dbx_pkce_verifier');
-  if (!verifier) throw new Error('PKCE verifier manquant — relance la connexion');
-  const body = new URLSearchParams({
-    code,
-    grant_type:    'authorization_code',
-    code_verifier: verifier,
-    redirect_uri:  getRedirectUri(),
-    client_id:     DROPBOX_APP_KEY
-  });
-  const res = await fetch('https://api.dropbox.com/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error_description || data.error);
-  return data; // { access_token, refresh_token, expires_in, ... }
-}
-
-// ── Auto-refresh access token ──
-async function refreshAccessToken() {
-  if (!appData.dropboxRefreshToken) throw new Error('Aucun refresh token — reconnecte Dropbox');
-  const res = await fetch('https://api.dropbox.com/oauth2/token', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type:    'refresh_token',
-      refresh_token: appData.dropboxRefreshToken,
-      client_id:     DROPBOX_APP_KEY
-    })
-  });
-  const data = await res.json();
-  if (data.error) throw new Error(data.error_description || data.error);
-  appData.dropboxToken       = data.access_token;
-  appData.dropboxTokenExpiry = Date.now() + data.expires_in * 1000;
-  saveLocal();
-  addSyncLog('🔄', 'Token rafraîchi automatiquement');
-}
-
-async function getValidToken() {
-  if (!appData.dropboxToken) return null;
-  const MARGIN = 5 * 60 * 1000; // 5 min avant expiry
-  if (appData.dropboxTokenExpiry && Date.now() > appData.dropboxTokenExpiry - MARGIN) {
-    await refreshAccessToken();
-  }
-  return appData.dropboxToken;
-}
-
-// ── Disconnect ──
-function disconnectDropbox() {
-  appData.dropboxToken        = '';
-  appData.dropboxRefreshToken = '';
-  appData.dropboxTokenExpiry  = null;
-  appData.dropboxAccountName  = '';
-  saveLocal();
-  updateSyncUI();
-  addSyncLog('🚪', 'Compte Dropbox déconnecté');
-  showToast('Déconnecté de Dropbox');
-}
-
-// ── UI helpers ──
-function updateSyncChip(status, label) {
-  const chip = document.getElementById('syncChip');
-  chip.className = 'sync-status-chip ' + status;
-  document.getElementById('syncChipLabel').textContent = label;
-}
-
-function updateSyncUI() {
-  const connected = !!appData.dropboxRefreshToken;
-  document.getElementById('oauthConnectSection').style.display = connected ? 'none' : 'block';
-  document.getElementById('accountCard').style.display = connected ? 'block' : 'none';
-  if (connected) {
-    document.getElementById('accountNameDisplay').textContent = appData.dropboxAccountName || 'Hicham Dropbox';
-    updateSyncChip('connected', 'Connecté (OAuth)');
-  } else {
-    updateSyncChip('disconnected', 'Non connecté');
-  }
-  // Always show redirect URI hint
-  const el = document.getElementById('redirectUriDisplay');
-  if (el) el.textContent = getRedirectUri();
-}
-
-// ── Sync Log ──
 function addSyncLog(icon, msg) {
   const now = new Date();
   const t = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
   syncLog.unshift({ icon, msg, t });
-  if (syncLog.length > 10) syncLog.pop();
+  if (syncLog.length > 8) syncLog.pop();
   renderSyncLog();
 }
 
@@ -1172,143 +1019,129 @@ function renderSyncLog() {
     </div>`).join('');
 }
 
-// ── Push / Pull ──
+function connectDropbox() {
+  const token = document.getElementById('tokenInput').value.trim();
+  if (!token) { showToast('⚠️ Colle ton token Dropbox'); return; }
+  appData.dropboxToken = token;
+  saveLocal();
+  updateSyncChip('syncing', 'Connexion en cours...');
+  addSyncLog('🔗', 'Tentative de connexion Dropbox...');
+  // Validate token by getting account info
+  fetch('https://api.dropboxapi.com/2/users/get_current_account', {
+    method: 'POST',
+    headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+    body: 'null'
+  }).then(r => {
+    if (!r.ok) throw new Error('Token invalide');
+    return r.json();
+  }).then(data => {
+    const name = data.name?.display_name || 'Utilisateur';
+    updateSyncChip('connected', 'Connecté — ' + name);
+    addSyncLog('✅', `Connecté en tant que : ${name}`);
+    showToast('✅ Dropbox connecté !');
+  }).catch(err => {
+    updateSyncChip('disconnected', 'Erreur de connexion');
+    addSyncLog('❌', 'Token invalide ou connexion impossible');
+    showToast('❌ Token invalide');
+    appData.dropboxToken = '';
+    saveLocal();
+  });
+}
+
+function updateSyncChip(status, label) {
+  const chip = document.getElementById('syncChip');
+  chip.className = 'sync-status-chip ' + status;
+  document.getElementById('syncChipLabel').textContent = label;
+}
+
 function getPayload() {
   return JSON.stringify({
-    version:       2,
-    user:          'Hicham',
-    exportedAt:    new Date().toISOString(),
-    streak:        appData.streak,
-    bestStreak:    appData.bestStreak,
-    totalFasts:    appData.totalFasts,
-    startWeight:   appData.startWeight,
+    version: 1,
+    user: 'Hicham',
+    exportedAt: new Date().toISOString(),
+    streak: appData.streak,
+    bestStreak: appData.bestStreak,
+    totalFasts: appData.totalFasts,
+    startWeight: appData.startWeight,
     weightHistory: appData.weightHistory,
-    fastingLog:    appData.fastingLog
+    fastingLog: appData.fastingLog
   }, null, 2);
 }
 
 async function pushToDropbox() {
-  const token = await getValidToken();
-  if (!token) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
+  if (!appData.dropboxToken) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
   updateSyncChip('syncing', 'Sauvegarde...');
   addSyncLog('⬆️', 'Envoi des données vers Dropbox...');
   try {
     const res = await fetch('https://content.dropboxapi.com/2/files/upload', {
       method: 'POST',
       headers: {
-        'Authorization':   'Bearer ' + token,
-        'Content-Type':    'application/octet-stream',
-        'Dropbox-API-Arg': JSON.stringify({ path: DROPBOX_FILE_PATH, mode: 'overwrite', mute: true })
+        'Authorization': 'Bearer ' + appData.dropboxToken,
+        'Content-Type': 'application/octet-stream',
+        'Dropbox-API-Arg': JSON.stringify({
+          path: DROPBOX_FILE_PATH,
+          mode: 'overwrite',
+          autorename: false,
+          mute: false
+        })
       },
       body: getPayload()
     });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.error_summary || 'HTTP ' + res.status);
-    }
+    if (!res.ok) throw new Error('Upload failed');
+    const now = new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     appData.lastSync = new Date().toISOString();
     saveLocal();
-    const t = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
     updateSyncChip('connected', 'Synchronisé ✓');
-    addSyncLog('✅', `${appData.weightHistory.length} mesures sauvegardées`);
-    document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${t}`;
+    addSyncLog('✅', `Sauvegardé : ${appData.weightHistory.length} mesures de poids`);
+    document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${now}`;
     showToast('☁️ Sauvegardé sur Dropbox !');
   } catch(e) {
-    updateSyncChip('connected', 'Erreur upload');
-    addSyncLog('❌', 'Upload échoué : ' + e.message);
-    showToast('❌ ' + e.message);
+    updateSyncChip('disconnected', 'Erreur upload');
+    addSyncLog('❌', 'Échec de l\'upload : ' + e.message);
+    showToast('❌ Échec de la sauvegarde');
   }
 }
 
 async function pullFromDropbox() {
-  const token = await getValidToken();
-  if (!token) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
+  if (!appData.dropboxToken) { showToast('⚠️ Connecte Dropbox d\'abord'); goto('sync'); return; }
   updateSyncChip('syncing', 'Restauration...');
   addSyncLog('⬇️', 'Téléchargement depuis Dropbox...');
   try {
     const res = await fetch('https://content.dropboxapi.com/2/files/download', {
       method: 'POST',
       headers: {
-        'Authorization':   'Bearer ' + token,
+        'Authorization': 'Bearer ' + appData.dropboxToken,
         'Dropbox-API-Arg': JSON.stringify({ path: DROPBOX_FILE_PATH })
       }
     });
-    if (!res.ok) throw new Error('Fichier non trouvé sur Dropbox');
-    const remote = await res.json();
-    if (remote.weightHistory) { appData.weightHistory = remote.weightHistory; }
-    if (remote.fastingLog)    { appData.fastingLog    = remote.fastingLog; }
-    if (remote.streak)        { appData.streak        = remote.streak; }
-    if (remote.bestStreak)    { appData.bestStreak    = remote.bestStreak; }
-    if (remote.totalFasts)    { appData.totalFasts    = remote.totalFasts; }
-    if (remote.startWeight)   { appData.startWeight   = remote.startWeight; }
+    if (!res.ok) throw new Error('Fichier non trouvé');
+    const text = await res.text();
+    const remote = JSON.parse(text);
+    // Merge remote into local
+    if (remote.weightHistory) appData.weightHistory = remote.weightHistory;
+    if (remote.fastingLog) appData.fastingLog = remote.fastingLog;
+    if (remote.streak) appData.streak = remote.streak;
+    if (remote.bestStreak) appData.bestStreak = remote.bestStreak;
+    if (remote.totalFasts) appData.totalFasts = remote.totalFasts;
+    if (remote.startWeight) appData.startWeight = remote.startWeight;
     inputWeight = getLatestWeight();
     saveLocal();
     renderWeightScreen();
     renderCalendar();
     updateSyncChip('connected', 'Restauré ✓');
-    addSyncLog('✅', `${appData.weightHistory.length} mesures restaurées`);
-    const t = new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
-    document.getElementById('lastSyncInfo').textContent = `Restauré le : ${t}`;
-    showToast('⬇️ Données restaurées !');
+    addSyncLog('✅', `Restauré : ${appData.weightHistory.length} mesures importées`);
+    document.getElementById('lastSyncInfo').textContent = `Restauré le : ${new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}`;
+    showToast('⬇️ Données restaurées depuis Dropbox !');
   } catch(e) {
-    updateSyncChip('connected', 'Aucun fichier');
-    addSyncLog('⚠️', 'Aucune donnée sur Dropbox — sauvegarde d\'abord');
-    showToast('⚠️ ' + e.message);
+    updateSyncChip('disconnected', 'Aucun fichier trouvé');
+    addSyncLog('⚠️', 'Aucune donnée sur Dropbox — commence par sauvegarder');
+    showToast('⚠️ Aucune donnée sur Dropbox');
   }
 }
 
 async function autoSyncDropbox() {
-  const token = await getValidToken().catch(() => null);
-  if (!token) return;
+  if (!appData.dropboxToken) return;
   await pushToDropbox();
-}
-
-// ── Handle OAuth callback (called at page load) ──
-async function handleOAuthCallback() {
-  const params = new URLSearchParams(window.location.search);
-  const code  = params.get('code');
-  const state = params.get('state');
-  const error = params.get('error');
-
-  if (error) {
-    history.replaceState(null, null, window.location.pathname);
-    showToast('❌ Autorisation Dropbox refusée');
-    return;
-  }
-  if (!code || state !== 'ff_auth') return;
-
-  // Clean URL immediately
-  history.replaceState(null, null, window.location.pathname);
-
-  goto('sync');
-  updateSyncChip('syncing', 'Connexion en cours...');
-  addSyncLog('🔗', 'Échange du code OAuth...');
-
-  try {
-    const tokens = await exchangeCode(code);
-    appData.dropboxToken        = tokens.access_token;
-    appData.dropboxRefreshToken = tokens.refresh_token || appData.dropboxRefreshToken;
-    appData.dropboxTokenExpiry  = Date.now() + tokens.expires_in * 1000;
-    sessionStorage.removeItem('dbx_pkce_verifier');
-
-    // Fetch account name
-    const accRes = await fetch('https://api.dropboxapi.com/2/users/get_current_account', {
-      method: 'POST',
-      headers: { 'Authorization': 'Bearer ' + appData.dropboxToken, 'Content-Type': 'application/json' },
-      body: 'null'
-    });
-    const acc = await accRes.json();
-    appData.dropboxAccountName = acc.name?.display_name || 'Hicham';
-    saveLocal();
-    updateSyncUI();
-    addSyncLog('✅', `Connecté : ${appData.dropboxAccountName}`);
-    showToast('✅ Dropbox connecté ! Token permanent activé.');
-    await pushToDropbox();
-  } catch(e) {
-    updateSyncChip('disconnected', 'Erreur OAuth');
-    addSyncLog('❌', 'Connexion échouée : ' + e.message);
-    showToast('❌ ' + e.message);
-  }
 }
 
 // ═══════════════════════════════════════════
@@ -1354,26 +1187,28 @@ if (!appData.weightHistory.length) {
   saveLocal();
 }
 
-// OAuth callback check + UI init
-handleOAuthCallback().then(() => {
-  updateSyncUI();
-  renderSyncLog();
-  if (appData.lastSync) {
-    const t = new Date(appData.lastSync).toLocaleString('fr-FR', { day:'numeric', month:'short', hour:'2-digit', minute:'2-digit' });
-    document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${t}`;
-  }
-});
+// Restore token input if saved
+if (appData.dropboxToken) {
+  document.getElementById('tokenInput').value = appData.dropboxToken;
+  updateSyncChip('connected', 'Token enregistré');
+}
+
+if (appData.lastSync) {
+  const t = new Date(appData.lastSync).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  document.getElementById('lastSyncInfo').textContent = `Dernière sync : ${t}`;
+}
 
 // Initial renders
 updateTimer();
 renderWeightScreen();
 renderCalendar();
+renderSyncLog();
 
 // Timer tick every second
 setInterval(updateTimer, 1000);
 
 // Auto-sync every 10 min if token set
-setInterval(() => { if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox(); }, 10 * 60 * 1000);
+setInterval(() => { if (appData.dropboxToken) autoSyncDropbox(); }, 10 * 60 * 1000);
 
 // Check fasting day completion — if at 10:00:00 exactly, mark today as done
 setInterval(() => {
@@ -1391,7 +1226,7 @@ setInterval(() => {
       saveLocal();
       renderCalendar();
       showToast('🏆 Jeûne de 18h complété ! +1 jour');
-      if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox();
+      if (appData.dropboxToken) autoSyncDropbox();
     }
   }
 }, 3000);
