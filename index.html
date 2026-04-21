@@ -280,6 +280,9 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
 .phase-hormones{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
 .hormone-tag{background:rgba(255,90,31,0.1);border:1px solid rgba(255,90,31,0.2);border-radius:100px;padding:4px 10px;font-size:11px;color:var(--fire2);font-weight:500;}
 .active-pulse{width:8px;height:8px;border-radius:50%;background:var(--fire);flex-shrink:0;animation:blink 1.5s infinite;}
+/* EARLY START BUTTON */
+.early-fast-btn{width:100%;height:52px;background:linear-gradient(135deg,rgba(255,90,31,0.12),rgba(255,184,48,0.08));border:1.5px solid rgba(255,90,31,0.35);border-radius:var(--r3);color:var(--fire2);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;transition:all 0.2s;letter-spacing:0.01em;}
+.early-fast-btn:active{background:rgba(255,90,31,0.2);transform:scale(0.98);}
 /* STOP BUTTON */
 .stop-fast-btn{width:100%;height:48px;background:rgba(255,68,68,0.08);border:1.5px solid rgba(255,68,68,0.25);border-radius:var(--r3);color:#ff8888;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s;}
 .stop-fast-btn:active{background:rgba(255,68,68,0.15);}
@@ -387,13 +390,48 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
         </div>
       </div>
 
-      <!-- Stop fasting button -->
-      <div id="stopFastRow" style="padding:0 24px 4px;display:none;">
-        <button class="stop-fast-btn" onclick="confirmStopFast()">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-          Arrêter le jeûne maintenant
-        </button>
+      <!-- PRIMARY CTA — changes based on fasting state -->
+      <div style="padding:0 24px 16px;">
+        <div id="ctaEarlyStart" style="display:none;">
+          <button onclick="showEarlyStartModal()" style="
+            width:100%; height:64px;
+            background:linear-gradient(135deg, #FF5A1F, #FFB830);
+            border:none; border-radius:18px;
+            color:#fff; font-family:'Syne',sans-serif;
+            font-size:18px; font-weight:800;
+            cursor:pointer; letter-spacing:0.01em;
+            display:flex; align-items:center; justify-content:center; gap:12px;
+            box-shadow:0 10px 32px rgba(255,90,31,0.45);
+            transition:transform 0.15s, box-shadow 0.15s;
+          " onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(0.97)'" ontouchend="this.style.transform=''">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="5,3 19,12 5,21"/></svg>
+            Commencer le jeûne
+          </button>
+          <div style="text-align:center;margin-top:8px;font-size:11px;color:var(--text3);">
+            Le prochain jeûne automatique commence à <b style="color:var(--text2)">16h00</b>
+          </div>
+        </div>
+
+        <div id="ctaStopFast" style="display:none;">
+          <button onclick="confirmStopFast()" style="
+            width:100%; height:52px;
+            background:rgba(255,68,68,0.08);
+            border:1.5px solid rgba(255,68,68,0.3); border-radius:14px;
+            color:#ff8888; font-family:'Syne',sans-serif;
+            font-size:14px; font-weight:700;
+            cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:10px;
+          ">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+            Arrêter le jeûne avant la fin
+          </button>
+        </div>
       </div>
+
+      <!-- Stop fasting button (hidden — replaced by ctaStopFast above) -->
+      <div id="stopFastRow" style="display:none;"></div>
+      <!-- Early fast button (hidden — replaced by ctaEarlyStart above) -->
+      <div id="earlyFastRow" style="display:none;"></div>
 
       <!-- Rich phase cards -->
       <div style="padding:0 24px 8px;">
@@ -403,6 +441,23 @@ body{min-height:100%;display:flex;justify-content:center;align-items:flex-start;
 
       <div class="spacer"></div>
     </div><!-- /home -->
+
+    <!-- EARLY START MODAL -->
+    <div id="earlyModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:flex-end;justify-content:center;z-index:200;">
+      <div style="width:390px;background:var(--bg2);border-radius:22px 22px 0 0;border-top:1px solid var(--border2);padding:24px 24px 44px;">
+        <div style="width:40px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 20px;"></div>
+        <div style="text-align:center;margin-bottom:6px;font-size:32px;">🚀</div>
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text1);margin-bottom:10px;text-align:center;">Commencer maintenant ?</div>
+        <div style="font-size:14px;color:var(--text2);line-height:1.7;margin-bottom:8px;text-align:center;" id="earlyModalTime">—</div>
+        <div style="background:var(--bg3);border-radius:var(--r3);padding:12px 14px;font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:20px;border-left:3px solid var(--fire);">
+          Le compteur de 18h démarrera <b style="color:var(--text1)">immédiatement</b>. Ton corps entrera en combustion des graisses bien avant l'heure habituelle. 💪
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+          <button onclick="doEarlyStart()" style="height:54px;background:linear-gradient(135deg,var(--fire),var(--fire2));border:none;border-radius:var(--r3);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;letter-spacing:0.01em;box-shadow:0 6px 20px rgba(255,90,31,0.35);">🔥 Oui, commencer le jeûne !</button>
+          <button onclick="document.getElementById('earlyModal').style.display='none'" style="height:46px;background:transparent;border:1px solid var(--border2);border-radius:var(--r3);color:var(--text3);font-family:'DM Sans',sans-serif;font-size:14px;cursor:pointer;">Annuler — attendre 16h00</button>
+        </div>
+      </div>
+    </div>
 
     <!-- STOP FAST MODAL -->
     <div id="stopModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.8);display:none;align-items:flex-end;justify-content:center;z-index:200;">
@@ -657,7 +712,8 @@ let appData = {
   dropboxRefreshToken: '',
   dropboxTokenExpiry:  null,
   dropboxAccountName:  '',
-  lastSync: null
+  lastSync: null,
+  earlyFastStart: null   // timestamp ms si jeûne démarré manuellement avant 16h
 };
 
 let inputWeight = 85.0;
@@ -687,41 +743,53 @@ function getTodayStr() {
 }
 
 // ═══════════════════════════════════════════
-// FASTING LOGIC — AUTO BASED ON CLOCK
+// FASTING LOGIC — AUTO BASED ON CLOCK + EARLY START
 // ═══════════════════════════════════════════
 function getFastingState() {
   const now = new Date();
+  const nowMs = now.getTime();
+  const totalSec = FAST_DURATION_H * 3600; // 64800
+
+  // ── CASE 1: Manual early start override ──
+  if (appData.earlyFastStart) {
+    const elapsedSec = Math.floor((nowMs - appData.earlyFastStart) / 1000);
+    if (elapsedSec >= totalSec) {
+      // Fast completed — clear override
+      appData.earlyFastStart = null;
+      saveLocal();
+    } else {
+      const remainingSec = totalSec - elapsedSec;
+      const pct = Math.min(100, Math.round((elapsedSec / totalSec) * 100));
+      const startDate = new Date(appData.earlyFastStart);
+      const startH = String(startDate.getHours()).padStart(2,'0');
+      const startM = String(startDate.getMinutes()).padStart(2,'0');
+      return { isFasting: true, elapsedSec, remainingSec, totalSec, pct, isEarly: true, startLabel: `${startH}h${startM}` };
+    }
+  }
+
+  // ── CASE 2: Auto schedule (16h → 10h) ──
   const h = now.getHours();
   const m = now.getMinutes();
   const s = now.getSeconds();
-  const nowMin = h * 3600 + m * 60 + s;       // seconds since midnight
-  const startSec = FAST_START_HOUR * 3600;     // 16:00 = 57600
-  const endSec   = FAST_END_HOUR * 3600;       // 10:00 = 36000
-  const totalSec = FAST_DURATION_H * 3600;     // 64800
+  const nowSec = h * 3600 + m * 60 + s;
+  const startSec = FAST_START_HOUR * 3600; // 57600
+  const endSec   = FAST_END_HOUR * 3600;   // 36000
 
-  let isFasting, elapsedSec, remainingSec;
-
-  if (nowMin >= startSec) {
-    // After 16:00 today → fasting
-    isFasting = true;
-    elapsedSec = nowMin - startSec;
-  } else if (nowMin < endSec) {
-    // Before 10:00 → still fasting from yesterday
-    isFasting = true;
-    elapsedSec = (86400 - startSec) + nowMin;
+  let isFasting, elapsedSec;
+  if (nowSec >= startSec) {
+    isFasting = true; elapsedSec = nowSec - startSec;
+  } else if (nowSec < endSec) {
+    isFasting = true; elapsedSec = (86400 - startSec) + nowSec;
   } else {
-    // 10:00–16:00 → eating window
-    isFasting = false;
-    elapsedSec = null;
+    isFasting = false; elapsedSec = null;
   }
 
   if (isFasting) {
-    remainingSec = Math.max(0, totalSec - elapsedSec);
+    const remainingSec = Math.max(0, totalSec - elapsedSec);
     const pct = Math.min(100, Math.round((elapsedSec / totalSec) * 100));
-    return { isFasting: true, elapsedSec, remainingSec, totalSec, pct };
+    return { isFasting: true, elapsedSec, remainingSec, totalSec, pct, isEarly: false, startLabel: `${FAST_START_HOUR}h00` };
   } else {
-    // Time until next fast (next 16:00)
-    const secsToStart = startSec - nowMin;
+    const secsToStart = startSec - nowSec;
     return { isFasting: false, secsToStart };
   }
 }
@@ -776,9 +844,19 @@ function updateTimer() {
     banner.className = 'status-banner fasting';
     bannerDot.className = 'banner-dot red';
     bannerLabel.className = 'banner-label red';
-    bannerLabel.textContent = 'JEÛNE ACTIF';
-    bannerSub.textContent = `Démarré à ${FAST_START_HOUR}h00 · ${fmtHMS(state.elapsedSec)} écoulé`;
-    bannerNext.innerHTML = `Fin à<br>${String(FAST_END_HOUR).padStart(2,'0')}h00`;
+    bannerLabel.textContent = state.isEarly ? '🚀 JEÛNE ANTICIPÉ' : 'JEÛNE ACTIF';
+    bannerSub.textContent = `Démarré à ${state.startLabel} · ${fmtHMS(state.elapsedSec)} écoulé`;
+
+    // Compute end time dynamically for early start
+    let endLabel;
+    if (state.isEarly) {
+      const endMs = appData.earlyFastStart + FAST_DURATION_H * 3600 * 1000;
+      const endDate = new Date(endMs);
+      endLabel = `${String(endDate.getHours()).padStart(2,'0')}h${String(endDate.getMinutes()).padStart(2,'0')}`;
+    } else {
+      endLabel = `${String(FAST_END_HOUR).padStart(2,'0')}h00`;
+    }
+    bannerNext.innerHTML = `Fin à<br><b>${endLabel}</b>`;
 
     ringTime.textContent = fmtHMS(state.remainingSec);
     ringTime.style.color = 'var(--text1)';
@@ -793,7 +871,14 @@ function updateTimer() {
     ringGlow.style.strokeDashoffset = offset;
     ringGlow.style.stroke = 'rgba(255,90,31,0.12)';
 
-    // Stage pills
+    // Show stop btn, hide early start
+    const earlyRow = document.getElementById('earlyFastRow');
+    if (earlyRow) earlyRow.style.display = 'none';
+    const ctaEarly = document.getElementById('ctaEarlyStart');
+    const ctaStop  = document.getElementById('ctaStopFast');
+    if (ctaEarly) ctaEarly.style.display = 'none';
+    if (ctaStop)  ctaStop.style.display  = 'block';
+
     const elapsedH = state.elapsedSec / 3600;
     updateStagePills(elapsedH);
     updateBodyStates(elapsedH);
@@ -807,21 +892,29 @@ function updateTimer() {
     bannerSub.textContent = `Mange librement jusqu'à 16h00`;
     const h = Math.floor(state.secsToStart / 3600);
     const m = Math.floor((state.secsToStart % 3600) / 60);
-    bannerNext.innerHTML = `Jeûne dans<br><b style="color:var(--fire2)">${h}h${m > 0 ? m : ''}</b>`;
+    bannerNext.innerHTML = `Jeûne dans<br><b style="color:var(--fire2)">${h}h${m > 0 ? String(m).padStart(2,'0') : ''}</b>`;
 
     const pct = Math.round((1 - state.secsToStart / (EATING_WINDOW_H * 3600)) * 100);
     ringTime.textContent = fmtHMS(state.secsToStart);
     ringTime.style.color = 'var(--teal)';
-    ringLabel.textContent = `avant le jeûne de 16h00`;
+    ringLabel.textContent = `avant le jeûne automatique de 16h00`;
     ringPct.textContent = `Fenêtre ouverte`;
     ringPct.style.color = 'var(--teal)';
     ringPhase.textContent = 'TEMPS RESTANT POUR MANGER';
     ringProg.setAttribute('stroke', 'url(#rg2)');
 
-    const offset = circ * (1 - Math.max(0, Math.min(1, pct / 100)));
-    ringProg.style.strokeDashoffset = offset;
+    const offset2 = circ * (1 - Math.max(0, Math.min(1, pct / 100)));
+    ringProg.style.strokeDashoffset = offset2;
     ringGlow.style.stroke = 'rgba(0,212,168,0.1)';
-    ringGlow.style.strokeDashoffset = offset;
+    ringGlow.style.strokeDashoffset = offset2;
+
+    // Show early start button, hide stop
+    const earlyRow = document.getElementById('earlyFastRow');
+    if (earlyRow) earlyRow.style.display = 'none';
+    const ctaEarly2 = document.getElementById('ctaEarlyStart');
+    const ctaStop2  = document.getElementById('ctaStopFast');
+    if (ctaEarly2) ctaEarly2.style.display = 'block';
+    if (ctaStop2)  ctaStop2.style.display  = 'none';
 
     updateStagePills(-1);
     updateBodyStates(-1);
@@ -1047,6 +1140,36 @@ function renderPhaseCards(elapsedH) {
 
 function togglePhase(i) { /* no longer used — content always visible */ }
 
+// ── EARLY START ──
+function showEarlyStartModal() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  const endDate = new Date(now.getTime() + FAST_DURATION_H * 3600 * 1000);
+  const endH = String(endDate.getHours()).padStart(2,'0');
+  const endM = String(endDate.getMinutes()).padStart(2,'0');
+  document.getElementById('earlyModalTime').innerHTML =
+    `Démarrage à <b style="color:var(--fire2)">${hh}h${mm}</b> → fin prévue à <b style="color:var(--teal)">${endH}h${endM}</b>`;
+  document.getElementById('earlyModal').style.display = 'flex';
+}
+
+function doEarlyStart() {
+  document.getElementById('earlyModal').style.display = 'none';
+  appData.earlyFastStart = Date.now();
+  saveLocal();
+  // Swap CTA buttons
+  const ctaEarly = document.getElementById('ctaEarlyStart');
+  const ctaStop  = document.getElementById('ctaStopFast');
+  if (ctaEarly) ctaEarly.style.display = 'none';
+  if (ctaStop)  ctaStop.style.display  = 'block';
+  updateTimer();
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2,'0');
+  const mm = String(now.getMinutes()).padStart(2,'0');
+  showToast(`🔥 Jeûne démarré à ${hh}h${mm} !`);
+  if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox();
+}
+
 // ── STOP FAST ──
 function confirmStopFast() {
   const state = getFastingState();
@@ -1066,6 +1189,8 @@ function doStopFast() {
   const state = getFastingState();
   const elapsed = state.isFasting ? state.elapsedSec : 0;
   const hours = (elapsed / 3600).toFixed(1);
+  // Clear early start override
+  appData.earlyFastStart = null;
   // Log as partial fast
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10);
