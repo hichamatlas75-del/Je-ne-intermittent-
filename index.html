@@ -713,7 +713,8 @@ let appData = {
   dropboxTokenExpiry:  null,
   dropboxAccountName:  '',
   lastSync: null,
-  earlyFastStart: null   // timestamp ms si jeûne démarré manuellement avant 16h
+  earlyFastStart: null,   // timestamp ms si jeûne démarré manuellement avant 16h
+  fastStoppedAt:  null    // timestamp ms quand jeûne arrêté manuellement
 };
 
 let inputWeight = 85.0;
@@ -749,6 +750,25 @@ function getFastingState() {
   const now = new Date();
   const nowMs = now.getTime();
   const totalSec = FAST_DURATION_H * 3600; // 64800
+
+  // ── CASE 0: User manually stopped the fast ──
+  // Stays stopped until the NEXT automatic 16h trigger fires
+  if (appData.fastStoppedAt) {
+    const stoppedDate = new Date(appData.fastStoppedAt);
+    // Find the next 16h00 after the stop
+    const next16h = new Date(stoppedDate);
+    next16h.setHours(FAST_START_HOUR, 0, 0, 0);
+    if (next16h <= stoppedDate) next16h.setDate(next16h.getDate() + 1);
+    if (nowMs < next16h.getTime()) {
+      // Still before next auto-start — report as eating window
+      const secsToStart = Math.round((next16h.getTime() - nowMs) / 1000);
+      return { isFasting: false, secsToStart, forcedStop: true };
+    } else {
+      // Next 16h has passed — clear the stop flag, resume auto schedule
+      appData.fastStoppedAt = null;
+      saveLocal();
+    }
+  }
 
   // ── CASE 1: Manual early start override ──
   if (appData.earlyFastStart) {
@@ -889,7 +909,9 @@ function updateTimer() {
     bannerDot.className = 'banner-dot green';
     bannerLabel.className = 'banner-label green';
     bannerLabel.textContent = 'FENÊTRE ALIMENTAIRE';
-    bannerSub.textContent = `Mange librement jusqu'à 16h00`;
+    bannerSub.textContent = state.forcedStop
+      ? `Jeûne arrêté — reprend automatiquement à 16h00`
+      : `Mange librement jusqu'à 16h00`;
     const h = Math.floor(state.secsToStart / 3600);
     const m = Math.floor((state.secsToStart % 3600) / 60);
     bannerNext.innerHTML = `Jeûne dans<br><b style="color:var(--fire2)">${h}h${m > 0 ? String(m).padStart(2,'0') : ''}</b>`;
@@ -1189,8 +1211,11 @@ function doStopFast() {
   const state = getFastingState();
   const elapsed = state.isFasting ? state.elapsedSec : 0;
   const hours = (elapsed / 3600).toFixed(1);
-  // Clear early start override
-  appData.earlyFastStart = null;
+
+  // ── Set the stop flag — this blocks getFastingState from returning isFasting:true ──
+  appData.fastStoppedAt  = Date.now();
+  appData.earlyFastStart = null;   // clear any manual early start too
+
   // Log as partial fast
   const now = new Date();
   const dateStr = now.toISOString().slice(0, 10);
@@ -1201,8 +1226,17 @@ function doStopFast() {
     appData.fastingLog.push({ date: dateStr, completed: false, hours: parseFloat(hours) });
   }
   saveLocal();
+
+  // Immediately swap CTAs: show "Commencer" button, hide "Arrêter"
+  const ctaEarly = document.getElementById('ctaEarlyStart');
+  const ctaStop  = document.getElementById('ctaStopFast');
+  if (ctaEarly) ctaEarly.style.display = 'block';
+  if (ctaStop)  ctaStop.style.display  = 'none';
+
+  // Force timer to re-evaluate now
+  updateTimer();
   renderCalendar();
-  showToast(`Jeûne arrêté à ${hours}h. Bien joué quand même 💪`);
+  showToast(`⏹ Jeûne arrêté à ${hours}h. Bien joué quand même 💪`);
   if (appData.dropboxRefreshToken || appData.dropboxToken) autoSyncDropbox();
 }
 
